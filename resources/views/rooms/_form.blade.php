@@ -3,16 +3,18 @@
     $action = $isEdit ? route('rooms.update', $room) : route('rooms.store');
 @endphp
 
-<div class="max-w-2xl mx-auto">
-    <h2 class="text-2xl font-bold text-gray-900 mb-2">{{ $isEdit ? 'Editar Sala' : 'Nova Sala' }}</h2>
-    <p class="text-sm text-gray-600 mb-6">
-        {{ $isEdit ? 'Atualize os dados da sala.' : 'Cadastre uma nova sala para uso na agenda.' }}
-    </p>
+<div class="col-12 col-lg-8 col-xl-6 mx-auto">
+    <div class="app-page-header">
+        <h1 class="app-section-title">{{ $isEdit ? 'Editar Sala' : 'Nova Sala' }}</h1>
+        <p class="app-section-subtitle">
+            {{ $isEdit ? 'Atualize os dados da sala.' : 'Cadastre uma nova sala para uso na agenda.' }}
+        </p>
+    </div>
 
     @if ($errors->any())
-        <div class="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-            <p class="font-semibold mb-1">Nao foi possivel salvar:</p>
-            <ul class="list-disc ms-5 space-y-1">
+        <div class="alert alert-danger" role="alert">
+            <p class="fw-semibold mb-2">Nao foi possivel salvar:</p>
+            <ul class="mb-0 ps-3">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -20,14 +22,14 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ $action }}" class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm space-y-5">
+    <form method="POST" action="{{ $action }}" class="app-card p-4 p-md-5">
         @csrf
         @if ($isEdit)
             @method('PUT')
         @endif
 
-        <div>
-            <label for="name" class="mb-1 block text-sm font-medium text-gray-700">Nome da sala</label>
+        <div class="mb-4">
+            <label for="name" class="form-label">Nome da sala</label>
             <input
                 id="name"
                 type="text"
@@ -35,40 +37,35 @@
                 value="{{ old('name', $isEdit ? $room->name : '') }}"
                 maxlength="255"
                 required
-                class="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                class="form-control @error('name') is-invalid @enderror"
                 placeholder="Ex.: Sala 203"
             >
+            @error('name')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
-        <div>
+        <div class="form-check form-switch mb-4">
             <input type="hidden" name="is_active" value="0">
-            <label class="inline-flex items-center gap-2 text-sm text-gray-700">
-                <input
-                    type="checkbox"
-                    name="is_active"
-                    value="1"
-                    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
-                    @checked((bool) old('is_active', $isEdit ? $room->is_active : true))
-                >
-                Sala ativa para novos agendamentos
-            </label>
+            <input
+                id="is_active"
+                type="checkbox"
+                name="is_active"
+                value="1"
+                class="form-check-input"
+                @checked((bool) old('is_active', $isEdit ? $room->is_active : true))
+            >
+            <label for="is_active" class="form-check-label">Sala ativa para novos agendamentos</label>
         </div>
 
-        <div class="mt-2 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4">
-            <p class="text-xs text-gray-500">Use sala inativa para impedir novos agendamentos sem apagar historico.</p>
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 border-top pt-4">
+            <p class="small text-body-secondary mb-0">Use sala inativa para impedir novos agendamentos sem apagar historico.</p>
 
-            <div class="flex items-center gap-3">
-                <a
-                    href="{{ route('rooms.index') }}"
-                    class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
-                >
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ route('rooms.index') }}" class="btn btn-outline-secondary">
                     Cancelar
                 </a>
-                <button
-                    type="submit"
-                    class="inline-flex items-center rounded-md border border-transparent px-4 py-2 text-sm font-semibold shadow-sm"
-                    style="background-color:#2563eb;color:#ffffff;"
-                >
+                <button type="submit" class="btn btn-primary">
                     {{ $isEdit ? 'Salvar alteracoes' : 'Criar sala' }}
                 </button>
             </div>

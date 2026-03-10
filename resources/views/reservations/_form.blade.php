@@ -21,53 +21,53 @@
     }
 @endphp
 
-<div class="max-w-3xl mx-auto">
-    <h2 class="text-2xl font-bold text-gray-900 mb-2">{{ $isEdit ? 'Editar Agendamento' : 'Novo Agendamento' }}</h2>
-    <p class="text-sm text-gray-600 mb-6">
-        {{ $isEdit ? 'Atualize os dados e salve as alteracoes.' : 'Preencha os dados para registrar um novo horario.' }}
-    </p>
+<div class="col-12 col-xl-9 mx-auto">
+    <div class="app-page-header">
+        <h1 class="app-section-title">{{ $isEdit ? 'Editar Agendamento' : 'Novo Agendamento' }}</h1>
+        <p class="app-section-subtitle">
+            {{ $isEdit ? 'Atualize os dados e salve as alteracoes.' : 'Preencha os dados para registrar um novo horario.' }}
+        </p>
+    </div>
 
     @if ($showConflictAlert)
-        <div class="mb-5 overflow-hidden rounded-xl border border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 text-amber-950 shadow-sm">
-            <div class="flex items-start gap-3 border-b border-amber-200 bg-amber-100/60 px-4 py-3">
-                <div class="flex h-7 w-7 items-center justify-center rounded-full bg-amber-200/80 text-amber-900">
-                    !
-                </div>
-                <div>
-                    <p class="text-sm font-semibold">Horario indisponivel para essa sala</p>
-                    <p class="mt-0.5 text-xs text-amber-900/80">{{ $conflictMessage }}</p>
-                </div>
-            </div>
+        <div class="alert alert-warning border-0 shadow-sm" role="alert">
+            <div class="d-flex align-items-start gap-3">
+                <div class="fs-4 lh-1">!</div>
+                <div class="w-100">
+                    <p class="fw-semibold mb-1">Horario indisponivel para essa sala</p>
+                    <p class="small mb-3">{{ $conflictMessage }}</p>
 
-            <div class="space-y-3 px-4 py-4">
-                <div class="rounded-lg border border-amber-200 bg-white/90 px-4 py-3">
-                    <p class="text-[11px] font-semibold uppercase tracking-wide text-amber-800">Horario ocupado</p>
-                    <p class="mt-1 text-lg font-semibold leading-tight text-amber-950">{{ $conflictStart }} - {{ $conflictEnd }}</p>
-                    <p class="mt-1 text-sm text-amber-900">{{ $conflictDate }} | Sala {{ $conflictRoomName }}</p>
-                </div>
-
-                <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 text-sm">
-                    <div class="rounded-lg border border-amber-200 bg-white/70 px-3 py-2">
-                        <p class="text-[11px] font-semibold uppercase tracking-wide text-amber-800">Titulo da reserva existente</p>
-                        <p class="mt-1 font-medium text-amber-950">{{ $conflictTitle }}</p>
+                    <div class="app-card-soft p-3 mb-3">
+                        <p class="text-uppercase small fw-semibold text-warning-emphasis mb-1">Horario ocupado</p>
+                        <p class="h5 mb-1">{{ $conflictStart }} - {{ $conflictEnd }}</p>
+                        <p class="mb-0">{{ $conflictDate }} | Sala {{ $conflictRoomName }}</p>
                     </div>
-                    <div class="rounded-lg border border-amber-200 bg-white/70 px-3 py-2">
-                        <p class="text-[11px] font-semibold uppercase tracking-wide text-amber-800">Solicitante</p>
-                        <p class="mt-1 font-medium text-amber-950">{{ $conflictRequester }}</p>
-                    </div>
-                </div>
 
-                <p class="text-xs text-amber-900/90">
-                    Sugestao: escolha outro horario livre ou altere a sala para concluir o agendamento.
-                </p>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <div class="app-card-soft p-3 h-100">
+                                <p class="text-uppercase small fw-semibold text-warning-emphasis mb-1">Titulo da reserva existente</p>
+                                <p class="mb-0 fw-medium">{{ $conflictTitle }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="app-card-soft p-3 h-100">
+                                <p class="text-uppercase small fw-semibold text-warning-emphasis mb-1">Solicitante</p>
+                                <p class="mb-0 fw-medium">{{ $conflictRequester }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="small mb-0">Sugestao: escolha outro horario livre ou altere a sala para concluir o agendamento.</p>
+                </div>
             </div>
         </div>
     @endif
 
     @if ($otherErrors->isNotEmpty())
-        <div class="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-            <p class="font-semibold mb-1">Nao foi possivel salvar:</p>
-            <ul class="list-disc ms-5 space-y-1">
+        <div class="alert alert-danger" role="alert">
+            <p class="fw-semibold mb-2">Nao foi possivel salvar:</p>
+            <ul class="mb-0 ps-3">
                 @foreach ($otherErrors as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -75,20 +75,20 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ $formAction }}" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
+    <form method="POST" action="{{ $formAction }}" class="app-card p-4 p-md-5">
         @csrf
         @if ($isEdit)
             @method('PUT')
         @endif
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="sm:col-span-2">
-                <label for="room_id" class="block text-sm font-medium text-gray-700 mb-1">Sala</label>
+        <div class="row g-4">
+            <div class="col-12">
+                <label for="room_id" class="form-label">Sala</label>
                 <select
                     id="room_id"
                     name="room_id"
                     required
-                    class="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                    class="form-select @error('room_id') is-invalid @enderror"
                 >
                     <option value="">Selecione</option>
                     @foreach ($rooms as $room)
@@ -97,10 +97,13 @@
                         </option>
                     @endforeach
                 </select>
+                @error('room_id')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
-            <div>
-                <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Data</label>
+            <div class="col-md-6">
+                <label for="date" class="form-label">Data</label>
                 <input
                     id="date"
                     type="text"
@@ -108,13 +111,16 @@
                     value="{{ $dateValue }}"
                     data-min-date="{{ now()->toDateString() }}"
                     required
-                    class="js-date-picker w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                    class="js-date-picker form-control @error('date') is-invalid @enderror"
                     placeholder="dd/mm/aaaa"
                 >
+                @error('date')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
-            <div>
-                <label for="requester" class="block text-sm font-medium text-gray-700 mb-1">Solicitante</label>
+            <div class="col-md-6">
+                <label for="requester" class="form-label">Solicitante</label>
                 <input
                     id="requester"
                     type="text"
@@ -122,37 +128,46 @@
                     value="{{ old('requester', $isEdit ? $reservation->requester : '') }}"
                     maxlength="255"
                     required
-                    class="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                    class="form-control @error('requester') is-invalid @enderror"
                     placeholder="Nome de quem pediu a reserva"
                 >
+                @error('requester')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
-            <div>
-                <label for="start_time" class="block text-sm font-medium text-gray-700 mb-1">Hora inicio</label>
+            <div class="col-md-6">
+                <label for="start_time" class="form-label">Hora inicio</label>
                 <input
                     id="start_time"
                     type="time"
                     name="start_time"
                     value="{{ $startValue }}"
                     required
-                    class="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                    class="form-control @error('start_time') is-invalid @enderror"
                 >
+                @error('start_time')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
-            <div>
-                <label for="end_time" class="block text-sm font-medium text-gray-700 mb-1">Hora fim</label>
+            <div class="col-md-6">
+                <label for="end_time" class="form-label">Hora fim</label>
                 <input
                     id="end_time"
                     type="time"
                     name="end_time"
                     value="{{ $endValue }}"
                     required
-                    class="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                    class="form-control @error('end_time') is-invalid @enderror"
                 >
+                @error('end_time')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
-            <div class="sm:col-span-2">
-                <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Titulo</label>
+            <div class="col-12">
+                <label for="title" class="form-label">Titulo</label>
                 <input
                     id="title"
                     type="text"
@@ -160,37 +175,39 @@
                     value="{{ old('title', $isEdit ? $reservation->title : '') }}"
                     maxlength="255"
                     required
-                    class="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                    class="form-control @error('title') is-invalid @enderror"
                     placeholder="Ex.: Reuniao de equipe"
                 >
+                @error('title')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
-            <div class="sm:col-span-2">
-                <label for="contact" class="block text-sm font-medium text-gray-700 mb-1">Contato (opcional)</label>
+            <div class="col-12">
+                <label for="contact" class="form-label">Contato (opcional)</label>
                 <input
                     id="contact"
                     type="text"
                     name="contact"
                     value="{{ old('contact', $isEdit ? $reservation->contact : '') }}"
                     maxlength="255"
-                    class="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                    class="form-control @error('contact') is-invalid @enderror"
                     placeholder="Telefone, ramal ou e-mail"
                 >
+                @error('contact')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
         </div>
 
-        <div class="pt-4 mt-2 border-t border-gray-100 flex flex-wrap items-center justify-between gap-3">
-            <p class="text-xs text-gray-500">Revise os dados e clique em salvar para concluir.</p>
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 border-top pt-4 mt-4">
+            <p class="small text-body-secondary mb-0">Revise os dados e clique em salvar para concluir.</p>
 
-            <div class="flex items-center gap-3">
-                <a href="{{ route('reservations.index') }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">
-                Cancelar
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ route('reservations.index') }}" class="btn btn-outline-secondary">
+                    Cancelar
                 </a>
-                <button
-                    type="submit"
-                    class="inline-flex items-center rounded-md border border-transparent px-4 py-2 text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2"
-                    style="background-color:#2563eb;color:#ffffff;"
-                >
+                <button type="submit" class="btn btn-primary">
                     {{ $isEdit ? 'Salvar alteracoes' : 'Criar agendamento' }}
                 </button>
             </div>
