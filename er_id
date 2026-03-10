@@ -1,0 +1,15 @@
+[90m= [39m[34;4mApp\Models\Reservation[39;24m {#6514
+    [34mid[39m: [35m240[39m,
+    [34mroom_id[39m: [35m4[39m,
+    [34muser_id[39m: [36mnull[39m,
+    [34mdate[39m: "[32m2026-03-05[39m",
+    [34mstart_time[39m: "[32m08:00[39m",
+    [34mend_time[39m: "[32m09:00[39m",
+    [34mtitle[39m: "[32mTreinamento - 305[39m",
+    [34mrequester[39m: "[32mLéo[39m",
+    [34mcontact[39m: [36mnull[39m,
+    [34mcreated_at[39m: "[32m2026-02-19 18:05:37[39m",
+    [34mupdated_at[39m: "[32m2026-02-19 18:05:37[39m",
+    [34mupdated_by[39m: [36mnull[39m,
+  }
+
