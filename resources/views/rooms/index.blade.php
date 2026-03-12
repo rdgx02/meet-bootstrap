@@ -6,12 +6,13 @@
     <div class="col-12 col-xl-10 mx-auto">
         <div class="app-page-header d-flex flex-wrap align-items-center justify-content-between gap-3">
             <div>
+                <span class="app-kicker">Cadastro</span>
                 <h1 class="app-section-title">Salas</h1>
                 <p class="app-section-subtitle">Gerencie as salas disponiveis para agendamento.</p>
             </div>
 
             @can('create', \App\Models\Room::class)
-                <a href="{{ route('rooms.create') }}" class="btn btn-primary">
+                <a href="{{ route('rooms.create') }}" class="btn btn-primary app-btn-primary">
                     Nova sala
                 </a>
             @endcan

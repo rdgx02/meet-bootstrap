@@ -4,17 +4,20 @@
 
 @section('content')
     <div class="col-12">
-        <div class="app-page-header d-flex flex-wrap align-items-center justify-content-between gap-3">
-            <div>
-                <h1 class="app-section-title">{{ $title ?? 'Agendamentos' }}</h1>
-                <p class="app-section-subtitle">{{ $subtitle ?? '' }}</p>
-            </div>
+        <div class="app-hero mb-4">
+            <div class="app-page-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-0">
+                <div>
+                    <span class="app-kicker">Painel</span>
+                    <h1 class="app-section-title">{{ $title ?? 'Agendamentos' }}</h1>
+                    <p class="app-section-subtitle">{{ $subtitle ?? '' }}</p>
+                </div>
 
-            @if (($scope ?? 'upcoming') === 'upcoming')
-                @can('create', \App\Models\Reservation::class)
-                    <a class="btn btn-primary" href="{{ route('reservations.create') }}">Novo agendamento</a>
-                @endcan
-            @endif
+                @if (($scope ?? 'upcoming') === 'upcoming')
+                    @can('create', \App\Models\Reservation::class)
+                        <a class="btn btn-primary app-btn-primary" href="{{ route('reservations.create') }}">Novo agendamento</a>
+                    @endcan
+                @endif
+            </div>
         </div>
 
         @if (session('success'))
@@ -23,7 +26,7 @@
             </div>
         @endif
 
-        <div class="app-card p-4 mb-4">
+        <div class="app-card app-filter-card p-4 mb-4">
             <form method="GET" action="{{ route($filterRoute ?? 'reservations.index') }}" class="row g-3 align-items-end">
                 <div class="col-12 col-lg-4">
                     <label for="q" class="form-label">Buscar</label>
@@ -86,7 +89,7 @@
 
                 <div class="col-12 col-lg-auto">
                     <div class="d-flex flex-wrap gap-2">
-                        <button type="submit" class="btn btn-primary">Aplicar</button>
+                        <button type="submit" class="btn btn-primary app-btn-primary">Aplicar</button>
                         <a class="btn btn-outline-secondary" href="{{ route($filterRoute ?? 'reservations.index', ['per_page' => request('per_page', 10)]) }}">
                             Limpar filtros
                         </a>
@@ -96,8 +99,8 @@
         </div>
 
         <div class="d-flex flex-wrap gap-2 mb-3">
-            <span class="badge rounded-pill text-bg-light border text-dark px-3 py-2">Total: {{ $reservations->total() }}</span>
-            <span class="badge rounded-pill text-bg-light border text-dark px-3 py-2">Nesta pagina: {{ $reservations->count() }}</span>
+            <span class="badge rounded-pill app-stat-badge px-3 py-2">Total: {{ $reservations->total() }}</span>
+            <span class="badge rounded-pill app-stat-badge px-3 py-2">Nesta pagina: {{ $reservations->count() }}</span>
         </div>
 
         @if ($reservations->count() === 0)
@@ -127,7 +130,7 @@
                                     <td class="fw-semibold">{{ $r->date_br }}</td>
                                     <td>{{ $r->start_time_br }}</td>
                                     <td>{{ $r->end_time_br }}</td>
-                                    <td><span class="badge rounded-pill text-bg-light border text-dark">{{ $r->room?->name }}</span></td>
+                                    <td><span class="badge rounded-pill app-room-badge">{{ $r->room?->name }}</span></td>
                                     <td><div class="app-truncate" title="{{ $r->title }}">{{ $r->title }}</div></td>
                                     <td><div class="app-truncate" title="{{ $r->requester }}">{{ $r->requester }}</div></td>
                                     <td>
@@ -174,7 +177,7 @@
                 </div>
             </div>
 
-            <div class="d-flex justify-content-center mt-4">
+            <div class="d-flex justify-content-center mt-4 app-pagination-wrap">
                 {{ $reservations->appends(request()->query())->links() }}
             </div>
         @endif

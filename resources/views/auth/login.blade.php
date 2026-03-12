@@ -6,6 +6,7 @@
     @endif
 
     <div class="mb-4">
+        <span class="app-kicker">Acesso</span>
         <h2 class="h4 mb-1">Entrar</h2>
         <p class="text-body-secondary mb-0">Use sua conta para acessar agendamentos e salas.</p>
     </div>
@@ -57,7 +58,7 @@
                 </a>
             @endif
 
-            <button type="submit" class="btn btn-primary px-4">
+            <button type="submit" class="btn btn-primary app-btn-primary px-4">
                 Entrar
             </button>
         </div>

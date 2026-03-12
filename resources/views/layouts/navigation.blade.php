@@ -1,10 +1,10 @@
 <nav class="navbar navbar-expand-lg sticky-top app-navbar">
-    <div class="container">
+    <div class="container app-container">
         <a href="{{ route('reservations.index') }}" class="navbar-brand d-flex align-items-center gap-3 fw-semibold">
             <span class="app-brand-mark">M</span>
-            <span>
-                Meet
-                <small class="d-block text-body-secondary fw-normal">LADETEC</small>
+            <span class="app-brand-copy">
+                <span class="app-brand-title">Meet</span>
+                <small class="app-brand-subtitle">LADETEC</small>
             </span>
         </a>
 
@@ -21,32 +21,32 @@
         </button>
 
         <div class="collapse navbar-collapse" id="appNavbar">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <ul class="navbar-nav app-nav-links me-auto mb-3 mb-lg-0">
                 <li class="nav-item">
                     <a
-                        class="nav-link @if (request()->routeIs('reservations.index') || request()->routeIs('reservations.create') || request()->routeIs('reservations.show') || request()->routeIs('reservations.edit')) active fw-semibold @endif"
+                        class="nav-link @if (request()->routeIs('reservations.index') || request()->routeIs('reservations.create') || request()->routeIs('reservations.show') || request()->routeIs('reservations.edit')) active @endif"
                         href="{{ route('reservations.index') }}"
                     >
                         Agendamentos
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link @if (request()->routeIs('reservations.history')) active fw-semibold @endif" href="{{ route('reservations.history') }}">
+                    <a class="nav-link @if (request()->routeIs('reservations.history')) active @endif" href="{{ route('reservations.history') }}">
                         Historico
                     </a>
                 </li>
                 @can('viewAny', \App\Models\Room::class)
                     <li class="nav-item">
-                        <a class="nav-link @if (request()->routeIs('rooms.*')) active fw-semibold @endif" href="{{ route('rooms.index') }}">
+                        <a class="nav-link @if (request()->routeIs('rooms.*')) active @endif" href="{{ route('rooms.index') }}">
                             Salas
                         </a>
                     </li>
                 @endcan
             </ul>
 
-            <div class="dropdown">
+            <div class="dropdown app-user-menu">
                 <button
-                    class="btn btn-light border dropdown-toggle d-flex align-items-center gap-2"
+                    class="btn app-user-toggle dropdown-toggle d-flex align-items-center gap-2"
                     type="button"
                     data-bs-toggle="dropdown"
                     aria-expanded="false"

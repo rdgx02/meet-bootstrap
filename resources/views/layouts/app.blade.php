@@ -18,14 +18,14 @@
 
         @isset($header)
             <header class="border-bottom bg-white bg-opacity-75">
-                <div class="container py-4">
+                <div class="container app-container py-4">
                     {{ $header }}
                 </div>
             </header>
         @endisset
 
         <main class="app-main">
-            <div class="container">
+            <div class="container app-container">
                 @yield('content')
 
                 @isset($slot)

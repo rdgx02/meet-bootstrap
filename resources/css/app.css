@@ -2,34 +2,46 @@
 @import 'flatpickr/dist/flatpickr.min.css';
 
 :root {
-    --app-bg: #f4f7fb;
+    --app-bg: #edf3fb;
     --app-surface: #ffffff;
-    --app-border: #d9e2ef;
-    --app-text-muted: #5f6b7a;
-    --app-brand: #0d6efd;
+    --app-border: #d7e1f0;
+    --app-border-strong: #c1d0e5;
+    --app-text-muted: #64748b;
+    --app-brand: #2563eb;
+    --app-brand-strong: #1d4ed8;
+    --app-hero-start: rgba(255, 255, 255, 0.86);
+    --app-hero-end: rgba(230, 239, 252, 0.94);
 }
 
 body {
     min-height: 100vh;
     background:
-        radial-gradient(circle at top, rgba(13, 110, 253, 0.08), transparent 28%),
+        radial-gradient(circle at top, rgba(37, 99, 235, 0.12), transparent 26%),
         linear-gradient(180deg, #f8fbff 0%, var(--app-bg) 100%);
-    color: #1f2937;
+    color: #172033;
+    font-feature-settings: "ss01" on, "cv02" on;
 }
 
 .app-shell {
     min-height: 100vh;
 }
 
+.app-container {
+    max-width: 1280px;
+}
+
 .app-main {
-    padding-top: 2rem;
-    padding-bottom: 2.5rem;
+    padding-top: 2.5rem;
+    padding-bottom: 3rem;
 }
 
 .app-navbar {
-    backdrop-filter: blur(12px);
-    background: rgba(255, 255, 255, 0.92);
-    border-bottom: 1px solid rgba(217, 226, 239, 0.9);
+    backdrop-filter: blur(18px);
+    background: rgba(255, 255, 255, 0.82);
+    border-bottom: 1px solid rgba(215, 225, 240, 0.95);
+    box-shadow: 0 0.5rem 1.5rem rgba(15, 23, 42, 0.05);
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
 }
 
 .app-brand-mark {
@@ -42,18 +54,110 @@ body {
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    box-shadow: 0 0.75rem 1.5rem rgba(13, 110, 253, 0.16);
+    box-shadow: 0 0.9rem 2rem rgba(37, 99, 235, 0.18);
+}
+
+.app-brand-copy {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.05;
+}
+
+.app-brand-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    color: #111827;
+}
+
+.app-brand-subtitle {
+    color: var(--app-text-muted);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+}
+
+.app-nav-links {
+    gap: 0.35rem;
+}
+
+.app-nav-links .nav-link {
+    border-radius: 999px;
+    color: #475569;
+    font-weight: 600;
+    padding: 0.7rem 1rem;
+    transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.app-nav-links .nav-link:hover,
+.app-nav-links .nav-link:focus {
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.app-nav-links .nav-link.active {
+    color: #0f172a;
+    background: linear-gradient(180deg, #fff 0%, #f3f7ff 100%);
+    box-shadow: inset 0 0 0 1px rgba(193, 208, 229, 0.9);
+}
+
+.app-user-menu {
+    margin-left: 1rem;
+}
+
+.app-user-toggle {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(193, 208, 229, 0.92);
+    border-radius: 0.9rem;
+    box-shadow: 0 0.5rem 1rem rgba(15, 23, 42, 0.05);
+    padding: 0.55rem 0.75rem;
+}
+
+.app-user-toggle:hover,
+.app-user-toggle:focus {
+    background: #fff;
+    border-color: rgba(163, 180, 206, 0.95);
 }
 
 .app-page-header {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
+}
+
+.app-hero {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--app-hero-start) 0%, var(--app-hero-end) 100%);
+    border: 1px solid rgba(215, 225, 240, 0.95);
+    border-radius: 1.6rem;
+    padding: 2rem;
+    box-shadow: 0 1rem 2rem rgba(37, 99, 235, 0.08);
+}
+
+.app-hero::after {
+    content: "";
+    position: absolute;
+    inset: auto -4rem -5rem auto;
+    width: 15rem;
+    height: 15rem;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.14), transparent 62%);
+    pointer-events: none;
+}
+
+.app-kicker {
+    display: inline-block;
+    margin-bottom: 0.55rem;
+    color: var(--app-brand-strong);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
 }
 
 .app-card {
     background: var(--app-surface);
     border: 1px solid var(--app-border);
-    border-radius: 1rem;
-    box-shadow: 0 0.5rem 1.5rem rgba(15, 23, 42, 0.05);
+    border-radius: 1.2rem;
+    box-shadow: 0 0.85rem 2.2rem rgba(15, 23, 42, 0.06);
 }
 
 .app-card-soft {
@@ -63,27 +167,78 @@ body {
 }
 
 .app-section-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 0.25rem;
+    font-size: clamp(1.85rem, 2.4vw, 2.35rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    margin-bottom: 0.45rem;
 }
 
 .app-section-subtitle {
     color: var(--app-text-muted);
     margin-bottom: 0;
+    font-size: 1rem;
+}
+
+.app-filter-card .form-label {
+    color: #334155;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+.app-card .form-control,
+.app-card .form-select {
+    min-height: 3rem;
+    border-color: var(--app-border-strong);
+    border-radius: 0.85rem;
+    box-shadow: none;
+}
+
+.app-card .form-control:focus,
+.app-card .form-select:focus {
+    border-color: rgba(37, 99, 235, 0.5);
+    box-shadow: 0 0 0 0.22rem rgba(37, 99, 235, 0.12);
+}
+
+.app-btn-primary {
+    background: linear-gradient(135deg, var(--app-brand) 0%, var(--app-brand-strong) 100%);
+    border-color: var(--app-brand);
+    box-shadow: 0 0.7rem 1.5rem rgba(37, 99, 235, 0.18);
+}
+
+.app-btn-primary:hover,
+.app-btn-primary:focus,
+.app-btn-primary:active {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%) !important;
+    border-color: #1d4ed8 !important;
 }
 
 .app-table thead th {
-    font-size: 0.75rem;
+    border-bottom-width: 1px;
+    border-color: rgba(215, 225, 240, 0.95);
+    font-size: 0.72rem;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.08em;
     color: var(--app-text-muted);
-    background-color: #f8fafc;
+    background-color: #f8fbff;
     white-space: nowrap;
+    padding-top: 0.95rem;
+    padding-bottom: 0.95rem;
+}
+
+.app-table tbody td {
+    padding-top: 0.95rem;
+    padding-bottom: 0.95rem;
+    border-color: rgba(225, 232, 242, 0.85);
+}
+
+.app-table tbody tr:hover {
+    --bs-table-hover-bg: rgba(37, 99, 235, 0.04);
 }
 
 .app-table tbody tr.row-mine {
-    --bs-table-bg: rgba(13, 110, 253, 0.08);
+    --bs-table-bg: rgba(37, 99, 235, 0.09);
 }
 
 .app-user-chip {
@@ -97,7 +252,7 @@ body {
     width: 2rem;
     height: 2rem;
     border-radius: 999px;
-    background: linear-gradient(135deg, #0d6efd 0%, #6ea8fe 100%);
+    background: linear-gradient(135deg, var(--app-brand) 0%, #60a5fa 100%);
     color: #fff;
     display: inline-flex;
     align-items: center;
@@ -109,10 +264,50 @@ body {
 
 .app-truncate {
     min-width: 0;
-    max-width: 17rem;
+    max-width: 18rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.app-stat-badge {
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(193, 208, 229, 0.95);
+    color: #1e293b;
+    font-weight: 700;
+}
+
+.app-room-badge {
+    background: #f8fafc;
+    border: 1px solid rgba(193, 208, 229, 0.95);
+    color: #334155;
+    font-weight: 700;
+    padding: 0.45rem 0.65rem;
+}
+
+.app-pagination-wrap .pagination {
+    gap: 0.35rem;
+}
+
+.app-pagination-wrap .page-link {
+    border: 1px solid rgba(193, 208, 229, 0.95);
+    border-radius: 0.75rem;
+    color: #334155;
+    min-width: 2.5rem;
+    text-align: center;
+    box-shadow: 0 0.35rem 0.9rem rgba(15, 23, 42, 0.04);
+}
+
+.app-pagination-wrap .page-link:hover {
+    color: #0f172a;
+    background: #fff;
+    border-color: rgba(163, 180, 206, 0.95);
+}
+
+.app-pagination-wrap .active > .page-link,
+.app-pagination-wrap .page-link.active {
+    background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+    border-color: #334155;
 }
 
 .app-auth-shell {
@@ -120,7 +315,10 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem 1rem;
+    padding: 2.5rem 1rem;
+    background:
+        radial-gradient(circle at top, rgba(37, 99, 235, 0.12), transparent 30%),
+        linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
 }
 
 .app-auth-card {
@@ -128,6 +326,30 @@ body {
     max-width: 28rem;
 }
 
+.app-auth-surface {
+    backdrop-filter: blur(10px);
+}
+
 .flatpickr-input[readonly] {
     background-color: var(--bs-body-bg);
+}
+
+@media (max-width: 991.98px) {
+    .app-navbar {
+        padding-top: 0.55rem;
+        padding-bottom: 0.55rem;
+    }
+
+    .app-user-menu {
+        margin-left: 0;
+        margin-top: 1rem;
+    }
+
+    .app-hero {
+        padding: 1.5rem;
+    }
+
+    .app-main {
+        padding-top: 1.5rem;
+    }
 }

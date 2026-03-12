@@ -15,7 +15,7 @@
 <body>
     <div class="app-auth-shell">
         <div class="app-auth-card">
-            <div class="text-center mb-4">
+            <div class="text-center mb-4 mb-md-5">
                 <a href="/" class="text-decoration-none text-dark">
                     <span class="app-brand-mark mx-auto mb-3">M</span>
                     <h1 class="h3 mb-1">Meet LADETEC</h1>
@@ -23,7 +23,7 @@
                 </a>
             </div>
 
-            <div class="app-card p-4 p-md-5">
+            <div class="app-card app-auth-surface p-4 p-md-5">
                 {{ $slot }}
             </div>
         </div>
