@@ -277,6 +277,21 @@ body {
     font-weight: 700;
 }
 
+.app-grid-header {
+    margin-bottom: 1rem;
+}
+
+.app-grid-card {
+    border-radius: 1.3rem;
+    overflow: hidden;
+    box-shadow: 0 1rem 2rem rgba(15, 23, 42, 0.08);
+}
+
+.app-grid-table-wrap {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
 .app-room-badge {
     background: #f8fafc;
     border: 1px solid rgba(193, 208, 229, 0.95);
@@ -308,6 +323,125 @@ body {
 .app-pagination-wrap .page-link.active {
     background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
     border-color: #334155;
+}
+
+.power-grid-table {
+    margin-bottom: 0;
+}
+
+.power-grid-table thead th {
+    border-bottom-width: 1px;
+    border-color: rgba(215, 225, 240, 0.95);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--app-text-muted);
+    background-color: #f8fbff;
+    white-space: nowrap;
+    padding-top: 0.95rem;
+    padding-bottom: 0.95rem;
+}
+
+.power-grid-table tbody td {
+    padding-top: 0.95rem;
+    padding-bottom: 0.95rem;
+    border-color: rgba(225, 232, 242, 0.85);
+    vertical-align: middle;
+}
+
+.power-grid-table tbody tr:hover {
+    --bs-table-hover-bg: rgba(37, 99, 235, 0.04);
+}
+
+.power-grid-table tbody tr.row-mine {
+    --bs-table-bg: rgba(37, 99, 235, 0.09);
+}
+
+.pg-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.app-table-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.app-action-btn {
+    border-radius: 999px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    padding-inline: 0.85rem;
+    box-shadow: 0 0.35rem 0.9rem rgba(15, 23, 42, 0.06);
+}
+
+.app-action-btn-secondary {
+    background: #fff;
+    border-color: rgba(193, 208, 229, 0.95);
+    color: #334155;
+}
+
+.app-action-btn-secondary:hover,
+.app-action-btn-secondary:focus {
+    background: #f8fbff;
+    border-color: rgba(148, 163, 184, 0.9);
+    color: #0f172a;
+}
+
+.app-action-btn-danger {
+    background: rgba(220, 38, 38, 0.08);
+    border-color: rgba(248, 113, 113, 0.45);
+    color: #b91c1c;
+}
+
+.app-action-btn-danger:hover,
+.app-action-btn-danger:focus {
+    background: rgba(220, 38, 38, 0.14);
+    border-color: rgba(239, 68, 68, 0.6);
+    color: #991b1b;
+}
+
+.dt--bottom-section .pagination {
+    gap: 0.35rem;
+}
+
+.dt--bottom-section .page-link {
+    border: 1px solid rgba(193, 208, 229, 0.95);
+    border-radius: 0.75rem;
+    color: #334155;
+    min-width: 2.5rem;
+    text-align: center;
+    box-shadow: 0 0.35rem 0.9rem rgba(15, 23, 42, 0.04);
+}
+
+.dt--bottom-section .page-link:hover {
+    color: #0f172a;
+    background: #fff;
+    border-color: rgba(163, 180, 206, 0.95);
+}
+
+.dt--bottom-section .active > .page-link,
+.dt--bottom-section .page-link.active {
+    background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+    border-color: #334155;
+}
+
+.dt--bottom-section .form-select {
+    min-height: 2.65rem;
+    border-color: var(--app-border-strong);
+    border-radius: 0.85rem;
+    box-shadow: none;
+}
+
+.dt--bottom-section {
+    margin-top: 1rem;
+    color: #475569;
+}
+
+.dt--bottom-section footer {
+    padding: 0.25rem 0.1rem 0.5rem;
 }
 
 .app-auth-shell {

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Reservations\CreateReservationAction;
-use App\Actions\Reservations\ListReservationsAction;
 use App\Actions\Reservations\UpdateReservationAction;
 use App\Exceptions\ReservationConflictException;
 use App\Http\Requests\ListReservationsRequest;
@@ -15,14 +14,14 @@ use Illuminate\View\View;
 
 class ReservationController extends Controller
 {
-    public function index(ListReservationsRequest $request, ListReservationsAction $listReservations)
+    public function index(ListReservationsRequest $request)
     {
-        return $this->renderList($request, $listReservations, 'upcoming');
+        return $this->renderList($request, 'upcoming');
     }
 
-    public function history(ListReservationsRequest $request, ListReservationsAction $listReservations): View
+    public function history(ListReservationsRequest $request): View
     {
-        return $this->renderList($request, $listReservations, 'history');
+        return $this->renderList($request, 'history');
     }
 
     public function create()
@@ -108,30 +107,16 @@ class ReservationController extends Controller
 
     private function renderList(
         ListReservationsRequest $request,
-        ListReservationsAction $listReservations,
         string $scope
     ): View {
         $this->authorize('viewAny', Reservation::class);
-
-        $rooms = Room::active()
-            ->orderBy('name')
-            ->get();
-
-        $reservations = $listReservations->execute($request->validated(), $scope);
 
         $title = $scope === 'history' ? 'Historico de Agendamentos' : 'Agendamentos';
         $subtitle = $scope === 'history'
             ? 'Consulte reservas que ja aconteceram (somente leitura).'
             : 'Consulte e gerencie os agendamentos de hoje e futuros.';
-        $filterRoute = $scope === 'history' ? 'reservations.history' : 'reservations.index';
+        $filters = $request->validated();
 
-        return view('reservations.index', compact(
-            'reservations',
-            'rooms',
-            'scope',
-            'title',
-            'subtitle',
-            'filterRoute'
-        ));
+        return view('reservations.index', compact('scope', 'title', 'subtitle', 'filters'));
     }
 }
