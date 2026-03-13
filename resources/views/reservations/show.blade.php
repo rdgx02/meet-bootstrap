@@ -3,53 +3,54 @@
 @section('title', 'Detalhes do Agendamento')
 
 @section('content')
-    <div class="col-12 col-xl-9 mx-auto" x-data="{ showDeleteModal: false }">
-        <div class="app-page-header d-flex flex-wrap align-items-center justify-content-between gap-3">
-            <div>
-                <h1 class="app-section-title">Detalhes do Agendamento</h1>
-                <p class="app-section-subtitle">Consulte os dados completos da reserva.</p>
+    <div class="app-form-shell" x-data="{ showDeleteModal: false }">
+        <section class="app-page-header-panel">
+            <div class="app-page-header-copy">
+                <div class="app-page-eyebrow">Agendamentos</div>
+                <h1 class="app-page-title">Detalhes do Agendamento</h1>
+                <p class="app-page-note">Consulte os dados completos da reserva.</p>
             </div>
 
-            <div class="d-flex align-items-center gap-2">
+            <div class="app-page-header-actions">
                 <a href="{{ route('reservations.index') }}" class="btn btn-outline-secondary">
                     Voltar
                 </a>
                 @can('update', $reservation)
-                    <a href="{{ route('reservations.edit', $reservation) }}" class="btn btn-primary">
+                    <a href="{{ route('reservations.edit', $reservation) }}" class="btn btn-primary app-btn-primary">
                         Editar
                     </a>
                 @endcan
             </div>
-        </div>
+        </section>
 
-        <div class="app-card p-4 p-md-5">
-            <dl class="row g-4 mb-0">
+        <div class="app-card app-form-panel p-4 p-md-5">
+            <dl class="row g-4 mb-0 app-detail-list">
                 <div class="col-md-6">
-                    <dt class="small text-uppercase text-body-secondary">Data</dt>
+                    <dt class="app-form-label">Data</dt>
                     <dd class="fs-5 fw-semibold mb-0">{{ $reservation->date_br }}</dd>
                 </div>
                 <div class="col-md-6">
-                    <dt class="small text-uppercase text-body-secondary">Sala</dt>
+                    <dt class="app-form-label">Sala</dt>
                     <dd class="fs-5 fw-semibold mb-0">{{ $reservation->room?->name }}</dd>
                 </div>
                 <div class="col-md-6">
-                    <dt class="small text-uppercase text-body-secondary">Hora inicio</dt>
+                    <dt class="app-form-label">Hora inicio</dt>
                     <dd class="mb-0">{{ $reservation->start_time_br }}</dd>
                 </div>
                 <div class="col-md-6">
-                    <dt class="small text-uppercase text-body-secondary">Hora fim</dt>
+                    <dt class="app-form-label">Hora fim</dt>
                     <dd class="mb-0">{{ $reservation->end_time_br }}</dd>
                 </div>
                 <div class="col-12">
-                    <dt class="small text-uppercase text-body-secondary">Titulo</dt>
+                    <dt class="app-form-label">Titulo</dt>
                     <dd class="mb-0">{{ $reservation->title }}</dd>
                 </div>
                 <div class="col-md-6">
-                    <dt class="small text-uppercase text-body-secondary">Solicitante</dt>
+                    <dt class="app-form-label">Solicitante</dt>
                     <dd class="mb-0">{{ $reservation->requester }}</dd>
                 </div>
                 <div class="col-md-6">
-                    <dt class="small text-uppercase text-body-secondary">Contato</dt>
+                    <dt class="app-form-label">Contato</dt>
                     <dd class="mb-0">{{ $reservation->contact ?: '-' }}</dd>
                 </div>
             </dl>

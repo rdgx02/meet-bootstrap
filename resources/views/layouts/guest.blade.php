@@ -8,7 +8,7 @@
     <title>{{ config('app.name', 'Meet LADETEC') }}</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=ibm-plex-sans:400,500,600,700&display=swap" rel="stylesheet" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
@@ -18,9 +18,11 @@
         <div class="app-auth-card">
             <div class="text-center mb-4 mb-md-5">
                 <a href="/" class="text-decoration-none text-dark">
-                    <span class="app-brand-mark mx-auto mb-3">M</span>
-                    <h1 class="h3 mb-1">Meet LADETEC</h1>
-                    <p class="text-body-secondary mb-0">Agenda de salas com Laravel + Bootstrap</p>
+                    <span class="app-auth-brand">
+                        <img src="{{ asset('images/ladetec-logo.svg') }}" alt="LADETEC" class="app-brand-logo">
+                    </span>
+                    <h1 class="h3 mb-1">LADETEC</h1>
+                    <p class="text-body-secondary mb-0">Agenda interna de salas</p>
                 </a>
             </div>
 

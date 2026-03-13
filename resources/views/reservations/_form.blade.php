@@ -21,13 +21,16 @@
     }
 @endphp
 
-<div class="col-12 col-xl-9 mx-auto">
-    <div class="app-page-header">
-        <h1 class="app-section-title">{{ $isEdit ? 'Editar Agendamento' : 'Novo Agendamento' }}</h1>
-        <p class="app-section-subtitle">
-            {{ $isEdit ? 'Atualize os dados e salve as alteracoes.' : 'Preencha os dados para registrar um novo horario.' }}
-        </p>
-    </div>
+<div class="app-form-shell">
+    <section class="app-page-header-panel">
+        <div class="app-page-header-copy">
+            <div class="app-page-eyebrow">Agendamentos</div>
+            <h1 class="app-page-title">{{ $isEdit ? 'Editar Agendamento' : 'Novo Agendamento' }}</h1>
+            <p class="app-page-note">
+                {{ $isEdit ? 'Atualize os dados e salve as alteracoes.' : 'Preencha os dados para registrar um novo horario.' }}
+            </p>
+        </div>
+    </section>
 
     @if ($showConflictAlert)
         <div class="alert alert-warning border-0 shadow-sm" role="alert">
@@ -75,15 +78,15 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ $formAction }}" class="app-card p-4 p-md-5">
+    <form method="POST" action="{{ $formAction }}" class="app-card app-form-panel p-4 p-md-5">
         @csrf
         @if ($isEdit)
             @method('PUT')
         @endif
 
-        <div class="row g-4">
+        <div class="row g-4 app-form-grid">
             <div class="col-12">
-                <label for="room_id" class="form-label">Sala</label>
+                <label for="room_id" class="form-label app-form-label">Sala</label>
                 <select
                     id="room_id"
                     name="room_id"
@@ -103,7 +106,7 @@
             </div>
 
             <div class="col-md-6">
-                <label for="date" class="form-label">Data</label>
+                <label for="date" class="form-label app-form-label">Data</label>
                 <input
                     id="date"
                     type="text"
@@ -120,7 +123,7 @@
             </div>
 
             <div class="col-md-6">
-                <label for="requester" class="form-label">Solicitante</label>
+                <label for="requester" class="form-label app-form-label">Solicitante</label>
                 <input
                     id="requester"
                     type="text"
@@ -137,7 +140,7 @@
             </div>
 
             <div class="col-md-6">
-                <label for="start_time" class="form-label">Hora inicio</label>
+                <label for="start_time" class="form-label app-form-label">Hora inicio</label>
                 <input
                     id="start_time"
                     type="time"
@@ -152,7 +155,7 @@
             </div>
 
             <div class="col-md-6">
-                <label for="end_time" class="form-label">Hora fim</label>
+                <label for="end_time" class="form-label app-form-label">Hora fim</label>
                 <input
                     id="end_time"
                     type="time"
@@ -167,7 +170,7 @@
             </div>
 
             <div class="col-12">
-                <label for="title" class="form-label">Titulo</label>
+                <label for="title" class="form-label app-form-label">Titulo</label>
                 <input
                     id="title"
                     type="text"
@@ -184,7 +187,7 @@
             </div>
 
             <div class="col-12">
-                <label for="contact" class="form-label">Contato (opcional)</label>
+                <label for="contact" class="form-label app-form-label">Contato (opcional)</label>
                 <input
                     id="contact"
                     type="text"
@@ -200,14 +203,14 @@
             </div>
         </div>
 
-        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 border-top pt-4 mt-4">
+        <div class="app-form-actions">
             <p class="small text-body-secondary mb-0">Revise os dados e clique em salvar para concluir.</p>
 
             <div class="d-flex align-items-center gap-2">
                 <a href="{{ route('reservations.index') }}" class="btn btn-outline-secondary">
                     Cancelar
                 </a>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary app-btn-primary">
                     {{ $isEdit ? 'Salvar alteracoes' : 'Criar agendamento' }}
                 </button>
             </div>

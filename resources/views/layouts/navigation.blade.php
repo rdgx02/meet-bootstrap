@@ -1,73 +1,72 @@
-<nav class="navbar navbar-expand-lg sticky-top app-navbar">
-    <div class="container app-container">
-        <a href="{{ route('reservations.index') }}" class="navbar-brand d-flex align-items-center gap-3 fw-semibold">
-            <span class="app-brand-mark">M</span>
-            <span class="app-brand-copy">
-                <span class="app-brand-title">Meet</span>
-                <small class="app-brand-subtitle">LADETEC</small>
-            </span>
-        </a>
+@php
+    $usersRoute = \Illuminate\Support\Facades\Route::has('users.index') ? route('users.index') : null;
+    $canViewRooms = auth()->user()?->can('viewAny', \App\Models\Room::class) ?? false;
+    $reservationsActive = request()->routeIs('reservations.index')
+        || request()->routeIs('reservations.create')
+        || request()->routeIs('reservations.show')
+        || request()->routeIs('reservations.edit');
+@endphp
 
-        <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#appNavbar"
-            aria-controls="appNavbar"
-            aria-expanded="false"
-            aria-label="Alternar navegacao"
-        >
-            <span class="navbar-toggler-icon"></span>
-        </button>
+<aside
+    id="appSidebar"
+    class="offcanvas-lg offcanvas-start app-sidebar"
+    tabindex="-1"
+    aria-labelledby="appSidebarLabel"
+>
+    <div class="offcanvas-header d-lg-none border-bottom">
+        <div class="d-flex align-items-center gap-3">
+            <img src="{{ asset('images/ladetec-logo.svg') }}" alt="LADETEC" class="app-brand-logo">
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#appSidebar" aria-label="Fechar"></button>
+    </div>
 
-        <div class="collapse navbar-collapse" id="appNavbar">
-            <ul class="navbar-nav app-nav-links me-auto mb-3 mb-lg-0">
-                <li class="nav-item">
-                    <a
-                        class="nav-link @if (request()->routeIs('reservations.index') || request()->routeIs('reservations.create') || request()->routeIs('reservations.show') || request()->routeIs('reservations.edit')) active @endif"
-                        href="{{ route('reservations.index') }}"
-                    >
-                        Agendamentos
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @if (request()->routeIs('reservations.history')) active @endif" href="{{ route('reservations.history') }}">
-                        Historico
-                    </a>
-                </li>
-                @can('viewAny', \App\Models\Room::class)
-                    <li class="nav-item">
-                        <a class="nav-link @if (request()->routeIs('rooms.*')) active @endif" href="{{ route('rooms.index') }}">
-                            Salas
-                        </a>
-                    </li>
-                @endcan
-            </ul>
+    <div class="offcanvas-body p-0 d-flex flex-column">
+        <div class="app-sidebar-brand d-none d-lg-flex">
+            <a href="{{ route('reservations.index') }}" class="app-sidebar-brand-link">
+                <img src="{{ asset('images/ladetec-logo.svg') }}" alt="LADETEC" class="app-brand-logo">
+            </a>
+        </div>
 
-            <div class="dropdown app-user-menu">
-                <button
-                    class="btn app-user-toggle dropdown-toggle d-flex align-items-center gap-2"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                >
-                    <span class="app-avatar app-avatar-soft">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
-                    <span class="text-start">
-                        <span class="d-block fw-semibold">{{ Auth::user()->name }}</span>
-                        <small class="d-block text-body-secondary">{{ Auth::user()->email }}</small>
-                    </span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Perfil</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="dropdown-item text-danger">Sair</button>
-                        </form>
-                    </li>
-                </ul>
+        <div class="app-sidebar-section-label">Menu principal</div>
+
+        <nav class="app-sidebar-nav">
+            <a class="app-side-link {{ $reservationsActive ? 'is-active' : '' }}" href="{{ route('reservations.index') }}">
+                <span class="app-side-link-icon">AG</span>
+                <span class="app-side-link-label">Agendamentos</span>
+            </a>
+
+            <a class="app-side-link {{ request()->routeIs('reservations.history') ? 'is-active' : '' }}" href="{{ route('reservations.history') }}">
+                <span class="app-side-link-icon">HI</span>
+                <span class="app-side-link-label">Historico</span>
+            </a>
+
+            <a
+                class="app-side-link {{ request()->routeIs('rooms.*') ? 'is-active' : '' }} {{ $canViewRooms ? '' : 'is-disabled' }}"
+                href="{{ $canViewRooms ? route('rooms.index') : '#' }}"
+                @if (! $canViewRooms) aria-disabled="true" tabindex="-1" @endif
+            >
+                <span class="app-side-link-icon">SA</span>
+                <span class="app-side-link-label">Salas</span>
+            </a>
+
+            <a
+                class="app-side-link {{ request()->routeIs('users.*') ? 'is-active' : '' }} {{ $usersRoute ? '' : 'is-disabled' }}"
+                href="{{ $usersRoute ?? '#' }}"
+                @if (! $usersRoute) aria-disabled="true" tabindex="-1" @endif
+            >
+                <span class="app-side-link-icon">US</span>
+                <span class="app-side-link-label">Usuarios</span>
+            </a>
+        </nav>
+
+        <div class="app-sidebar-footer mt-auto">
+            <div class="app-sidebar-user">
+                <span class="app-avatar app-avatar-soft">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                <div>
+                    <strong>{{ Auth::user()->name }}</strong>
+                    <small>{{ Auth::user()->email }}</small>
+                </div>
             </div>
         </div>
     </div>
-</nav>
+</aside>

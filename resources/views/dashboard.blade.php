@@ -1,17 +1,15 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
-                </div>
+@section('title', 'Dashboard')
+
+@section('content')
+    <div class="app-page app-form-shell">
+        <section class="app-page-header-panel">
+            <div class="app-page-header-copy">
+                <div class="app-page-eyebrow">Painel</div>
+                <h1 class="app-page-title">Dashboard</h1>
+                <p class="app-page-note">Voce esta autenticado e pronto para administrar a agenda.</p>
             </div>
-        </div>
+        </section>
     </div>
-</x-app-layout>
+@endsection

@@ -5,8 +5,8 @@
         </div>
     @endif
 
-    <div class="mb-4">
-        <span class="app-kicker">Acesso</span>
+    <div class="mb-4 app-auth-intro">
+        <span class="app-page-eyebrow">Acesso</span>
         <h2 class="h4 mb-1">Entrar</h2>
         <p class="text-body-secondary mb-0">Use sua conta para acessar agendamentos e salas.</p>
     </div>
@@ -15,7 +15,7 @@
         @csrf
 
         <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
+            <label for="email" class="form-label app-form-label">Email</label>
             <input
                 id="email"
                 class="form-control @error('email') is-invalid @enderror"
@@ -32,7 +32,7 @@
         </div>
 
         <div class="mb-3">
-            <label for="password" class="form-label">Senha</label>
+            <label for="password" class="form-label app-form-label">Senha</label>
             <input
                 id="password"
                 class="form-control @error('password') is-invalid @enderror"

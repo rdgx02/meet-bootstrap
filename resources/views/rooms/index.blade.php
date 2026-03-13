@@ -3,12 +3,12 @@
 @section('title', 'Salas')
 
 @section('content')
-    <div class="col-12 col-xl-10 mx-auto">
-        <div class="app-page-header d-flex flex-wrap align-items-center justify-content-between gap-3">
-            <div>
-                <span class="app-kicker">Cadastro</span>
-                <h1 class="app-section-title">Salas</h1>
-                <p class="app-section-subtitle">Gerencie as salas disponiveis para agendamento.</p>
+    <div class="app-page app-form-shell app-page-wide">
+        <section class="app-page-header-panel">
+            <div class="app-page-header-copy">
+                <div class="app-page-eyebrow">Cadastro</div>
+                <h1 class="app-page-title">Salas</h1>
+                <p class="app-page-note">Gerencie as salas disponiveis para agendamento.</p>
             </div>
 
             @can('create', \App\Models\Room::class)
@@ -16,7 +16,7 @@
                     Nova sala
                 </a>
             @endcan
-        </div>
+        </section>
 
         @if (session('success'))
             <div class="alert alert-success shadow-sm" role="alert">
@@ -24,7 +24,7 @@
             </div>
         @endif
 
-        <div class="app-card overflow-hidden">
+        <div class="app-card app-form-panel overflow-hidden">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0 app-table">
                     <thead>

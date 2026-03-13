@@ -1,6 +1,8 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+    <div class="mb-4 app-auth-intro">
+        <span class="app-page-eyebrow">Recuperacao</span>
+        <h2 class="h4 mb-1">Esqueceu a senha?</h2>
+        <p class="text-body-secondary mb-0">Informe seu e-mail para receber um link de redefinicao.</p>
     </div>
 
     <!-- Session Status -->
@@ -11,15 +13,17 @@
 
         <!-- Email Address -->
         <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <label for="email" class="form-label app-form-label">Email</label>
+            <input id="email" class="form-control" type="email" name="email" value="{{ old('email') }}" required autofocus />
+            @error('email')
+                <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
+        <div class="d-flex justify-content-end mt-4">
+            <button type="submit" class="btn btn-primary app-btn-primary">
+                Enviar link de redefinicao
+            </button>
         </div>
     </form>
 </x-guest-layout>
