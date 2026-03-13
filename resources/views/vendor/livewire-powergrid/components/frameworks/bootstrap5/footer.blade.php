@@ -8,7 +8,7 @@
         >
             <div class="col-auto overflow-auto my-sm-2 my-md-0 ms-sm-0">
                 @if (filled(data_get($setUp, 'footer.perPage')) && count(data_get($setUp, 'footer.perPageValues')) > 1)
-                    <div class="d-flex flex-lg-row align-items-center">
+                    <div class="d-flex flex-lg-row align-items-center app-footer-select-wrap">
                         <label class="w-auto">
                             <select
                                     wire:model.live="setUp.footer.perPage"
@@ -25,7 +25,7 @@
                                 @endforeach
                             </select>
                         </label>
-                        <small class="ms-2 text-muted">
+                        <small class="ms-2 text-muted app-footer-select-label">
                             {{ trans('livewire-powergrid::datatable.labels.results_per_page') }}
                         </small>
                     </div>

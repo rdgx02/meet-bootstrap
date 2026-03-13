@@ -3,11 +3,13 @@
 namespace Tests\Feature;
 
 use App\Enums\UserRole;
+use App\Livewire\ReservationsTable;
 use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class ReservationManagementTest extends TestCase
@@ -168,6 +170,31 @@ class ReservationManagementTest extends TestCase
         $this->assertDatabaseHas('reservations', [
             'id' => $reservation->id,
             'title' => 'Reserva encerrada',
+        ]);
+    }
+
+    public function test_secretary_can_delete_future_reservation_via_destroy_route(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::Secretary]);
+        $room = Room::create(['name' => 'Sala Rota Delete', 'is_active' => true]);
+
+        $reservation = Reservation::create([
+            'room_id' => $room->id,
+            'user_id' => $user->id,
+            'date' => now()->addDay()->toDateString(),
+            'start_time' => '09:00',
+            'end_time' => '10:00',
+            'title' => 'Reserva pela rota',
+            'requester' => 'Secretaria',
+            'contact' => null,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->delete(route('reservations.destroy', $reservation));
+
+        $response->assertRedirect(route('reservations.index'));
+        $this->assertDatabaseMissing('reservations', [
+            'id' => $reservation->id,
         ]);
     }
 

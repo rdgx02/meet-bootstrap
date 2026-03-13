@@ -3,7 +3,7 @@
 @section('title', 'Detalhes do Agendamento')
 
 @section('content')
-    <div class="col-12 col-xl-9 mx-auto">
+    <div class="col-12 col-xl-9 mx-auto" x-data="{ showDeleteModal: false }">
         <div class="app-page-header d-flex flex-wrap align-items-center justify-content-between gap-3">
             <div>
                 <h1 class="app-section-title">Detalhes do Agendamento</h1>
@@ -56,18 +56,58 @@
         </div>
 
         @can('delete', $reservation)
-            <form
-                method="POST"
-                action="{{ route('reservations.destroy', $reservation) }}"
-                class="mt-4 d-flex justify-content-end"
-                onsubmit="return confirm('Tem certeza que deseja excluir este agendamento?');"
-            >
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-outline-danger">
+            <div class="mt-4 d-flex justify-content-end">
+                <button type="button" class="btn btn-outline-danger" x-on:click="showDeleteModal = true">
                     Excluir agendamento
                 </button>
-            </form>
+            </div>
+
+            <template x-if="showDeleteModal">
+                <div>
+                    <div class="app-modal-backdrop" x-on:click="showDeleteModal = false"></div>
+
+                    <div class="app-modal-shell" role="dialog" aria-modal="true" aria-labelledby="deleteReservationDetailTitle">
+                        <div class="app-modal-card">
+                            <div class="app-modal-header">
+                                <div>
+                                    <span class="app-modal-kicker">Confirmar exclusao</span>
+                                    <h2 id="deleteReservationDetailTitle" class="app-modal-title">Excluir agendamento?</h2>
+                                </div>
+
+                                <button type="button" class="btn-close" aria-label="Fechar" x-on:click="showDeleteModal = false"></button>
+                            </div>
+
+                            <div class="app-modal-body">
+                                <p class="app-modal-text">
+                                    Essa acao remove o agendamento da agenda e nao pode ser desfeita.
+                                </p>
+
+                                <div class="app-modal-summary">
+                                    <div><span>Titulo</span><strong>{{ $reservation->title }}</strong></div>
+                                    <div><span>Data</span><strong>{{ $reservation->date_br }}</strong></div>
+                                    <div><span>Horario</span><strong>{{ $reservation->start_time_br }} - {{ $reservation->end_time_br }}</strong></div>
+                                    <div><span>Sala</span><strong>{{ $reservation->room?->name ?? '-' }}</strong></div>
+                                </div>
+                            </div>
+
+                            <div class="app-modal-footer">
+                                <button type="button" class="btn btn-outline-secondary" x-on:click="showDeleteModal = false">
+                                    Cancelar
+                                </button>
+
+                                <form method="POST" action="{{ route('reservations.destroy', $reservation) }}">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button type="submit" class="btn btn-danger app-delete-confirm-btn">
+                                        Excluir agendamento
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
         @endcan
     </div>
 @endsection

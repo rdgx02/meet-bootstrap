@@ -1,7 +1,7 @@
 import './bootstrap';
 
 import Alpine from 'alpinejs';
-import 'bootstrap';
+import * as bootstrap from 'bootstrap';
 import '../../vendor/power-components/livewire-powergrid/dist/powergrid';
 import flatpickr from 'flatpickr';
 import { Portuguese } from 'flatpickr/dist/l10n/pt.js';
@@ -72,4 +72,52 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initDatePickers);
 } else {
     initDatePickers();
+}
+
+const initReservationDeleteModal = () => {
+    const modalElement = document.getElementById('reservationDeleteModal');
+
+    if (!modalElement || document.body.dataset.reservationDeleteModalReady === '1') {
+        return;
+    }
+
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+    const form = modalElement.querySelector('[data-delete-form]');
+    const summaryFields = {
+        title: modalElement.querySelector('[data-delete-summary="title"]'),
+        date: modalElement.querySelector('[data-delete-summary="date"]'),
+        time: modalElement.querySelector('[data-delete-summary="time"]'),
+        room: modalElement.querySelector('[data-delete-summary="room"]'),
+    };
+
+    document.addEventListener('click', (event) => {
+        const trigger = event.target.closest('.js-reservation-delete-trigger');
+
+        if (!trigger) {
+            return;
+        }
+
+        form.action = trigger.dataset.deleteUrl;
+        summaryFields.title.textContent = trigger.dataset.title ?? '-';
+        summaryFields.date.textContent = trigger.dataset.date ?? '-';
+        summaryFields.time.textContent = trigger.dataset.time ?? '-';
+        summaryFields.room.textContent = trigger.dataset.room ?? '-';
+
+        modal.show();
+    });
+
+    modalElement.addEventListener('hidden.bs.modal', () => {
+        form.action = '';
+        Object.values(summaryFields).forEach((field) => {
+            field.textContent = '-';
+        });
+    });
+
+    document.body.dataset.reservationDeleteModalReady = '1';
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initReservationDeleteModal);
+} else {
+    initReservationDeleteModal();
 }

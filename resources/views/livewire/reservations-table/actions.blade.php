@@ -12,9 +12,12 @@
     @if ($canDelete)
         <button
             type="button"
-            class="btn btn-sm app-action-btn app-action-btn-danger"
-            wire:click="deleteReservation({{ $reservation->id }})"
-            wire:confirm="Excluir este agendamento?"
+            class="btn btn-sm app-action-btn app-action-btn-danger js-reservation-delete-trigger"
+            data-delete-url="{{ route('reservations.destroy', $reservation) }}"
+            data-title="{{ $reservation->title }}"
+            data-date="{{ $reservation->date_br }}"
+            data-time="{{ $reservation->start_time_br }} - {{ $reservation->end_time_br }}"
+            data-room="{{ $reservation->room?->name ?? '-' }}"
         >
             Excluir
         </button>

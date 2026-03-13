@@ -235,17 +235,6 @@ final class ReservationsTable extends PowerGridComponent
         ];
     }
 
-    public function deleteReservation(int $rowId): void
-    {
-        $reservation = Reservation::query()->findOrFail($rowId);
-
-        $this->authorize('delete', $reservation);
-
-        $reservation->delete();
-
-        session()->flash('success', 'Agendamento excluído com sucesso!');
-    }
-
     public function applyFilters(): void
     {
         $this->gotoPage(1, data_get($this->setUp, 'footer.pageName'));

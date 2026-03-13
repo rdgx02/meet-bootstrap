@@ -51,7 +51,7 @@
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                 >
-                    <span class="app-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                    <span class="app-avatar app-avatar-soft">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
                     <span class="text-start">
                         <span class="d-block fw-semibold">{{ Auth::user()->name }}</span>
                         <small class="d-block text-body-secondary">{{ Auth::user()->email }}</small>
