@@ -8,6 +8,11 @@ use Illuminate\Validation\Validator;
 
 class UpdateReservationRequest extends ReservationRequest
 {
+    public function rules(): array
+    {
+        return $this->singleReservationRules();
+    }
+
     public function authorize(): bool
     {
         $reservation = $this->route('reservation');

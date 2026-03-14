@@ -26,6 +26,10 @@ body {
     min-height: 100%;
 }
 
+[x-cloak] {
+    display: none !important;
+}
+
 body,
 button,
 input,
@@ -678,6 +682,110 @@ a {
 .app-form-grid-compact .form-select:focus {
     border-color: #8ea8cb;
     box-shadow: 0 0 0 0.12rem rgba(43, 93, 170, 0.12);
+}
+
+.app-choice-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
+}
+
+.app-choice-grid-compact {
+    gap: 0.7rem;
+}
+
+.app-choice-card {
+    position: relative;
+    display: block;
+    padding: 0.9rem;
+    border: 1px solid #d7dde6;
+    border-radius: 0.4rem;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: border-color 0.16s ease, background-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.app-choice-card:hover {
+    border-color: #bcc8d6;
+    background: #fbfcfe;
+}
+
+.app-choice-card.is-active {
+    border-color: #9db4d6;
+    background: #eef4fb;
+    box-shadow: inset 0 0 0 1px rgba(43, 93, 170, 0.08);
+}
+
+.app-choice-card input {
+    position: absolute;
+    top: 0.85rem;
+    right: 0.85rem;
+}
+
+.app-choice-card-body {
+    display: block;
+    padding-right: 1.6rem;
+}
+
+.app-choice-card-body strong,
+.app-choice-card-body small {
+    display: block;
+}
+
+.app-choice-card-body strong {
+    color: #223149;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.app-choice-card-body small {
+    margin-top: 0.22rem;
+    color: #66758a;
+    font-size: 0.72rem;
+    line-height: 1.45;
+}
+
+.app-choice-card-compact {
+    min-height: 100%;
+}
+
+.app-weekday-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+
+.app-weekday-chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2rem;
+    padding: 0.2rem 0.65rem;
+    border: 1px solid #d3dbe4;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #314056;
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.app-weekday-chip input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.app-weekday-chip:has(input:checked) {
+    border-color: #a8bddc;
+    background: #eaf2ff;
+    color: #1f4a89;
+}
+
+.app-recurring-conflict-list {
+    display: grid;
+    gap: 0.7rem;
 }
 
 .app-form-toggle-row {
@@ -1592,7 +1700,8 @@ a {
 
     .app-form-grid-2,
     .app-alert-grid,
-    .app-detail-grid {
+    .app-detail-grid,
+    .app-choice-grid {
         grid-template-columns: 1fr;
     }
 

@@ -11,8 +11,11 @@ class Reservation extends Model
 {
     protected $fillable = [
         'room_id',
+        'series_id',
         'user_id', // quem criou
         'date',
+        'original_date',
+        'is_exception',
         'start_time',
         'end_time',
         'title',
@@ -48,6 +51,11 @@ class Reservation extends Model
     public function room(): BelongsTo
     {
         return $this->belongsTo(Room::class);
+    }
+
+    public function series(): BelongsTo
+    {
+        return $this->belongsTo(ReservationSeries::class, 'series_id');
     }
 
     // Usuário que CRIOU

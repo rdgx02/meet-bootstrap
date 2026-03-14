@@ -22,6 +22,11 @@ class UpdateReservationAction
                 throw ReservationConflictException::forRoomAndTime($conflict);
             }
 
+            if ($reservation->series_id !== null) {
+                $data['is_exception'] = true;
+                $data['original_date'] = $reservation->original_date ?? $reservation->date;
+            }
+
             $reservation->update($data);
 
             return $reservation->refresh();

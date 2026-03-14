@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Reservations\CreateReservationAction;
+use App\Actions\Reservations\CreateRecurringReservationSeriesAction;
 use App\Actions\Reservations\UpdateReservationAction;
+use App\Exceptions\RecurringReservationConflictException;
 use App\Exceptions\ReservationConflictException;
 use App\Http\Requests\ListReservationsRequest;
 use App\Http\Requests\StoreReservationRequest;
@@ -35,8 +37,47 @@ class ReservationController extends Controller
         return view('reservations.create', compact('rooms'));
     }
 
-    public function store(StoreReservationRequest $request, CreateReservationAction $createReservation)
-    {
+    public function store(
+        StoreReservationRequest $request,
+        CreateReservationAction $createReservation,
+        CreateRecurringReservationSeriesAction $createRecurringReservationSeries
+    ) {
+        if ($request->validated('booking_mode') === 'recurring') {
+            try {
+                $result = $createRecurringReservationSeries->execute(
+                    $request->validated(),
+                    (int) $request->user()->id
+                );
+            } catch (RecurringReservationConflictException $exception) {
+                return back()
+                    ->withInput()
+                    ->with('recurring_conflicts', $exception->conflicts())
+                    ->withErrors([
+                        'recurrence_ends_on' => $exception->getMessage(),
+                    ]);
+            }
+
+            $redirect = redirect()->route('reservations.index')
+                ->with(
+                    'success',
+                    $result['created_count'] === 1
+                        ? 'Serie recorrente criada com 1 ocorrencia.'
+                        : sprintf('Serie recorrente criada com %d ocorrencias.', $result['created_count'])
+                );
+
+            if ($result['conflicts'] !== []) {
+                $redirect->with(
+                    'warning',
+                    sprintf(
+                        '%d ocorrencias nao foram criadas por conflito de horario.',
+                        count($result['conflicts'])
+                    )
+                );
+            }
+
+            return $redirect;
+        }
+
         try {
             $createReservation->execute(
                 $request->validated(),
