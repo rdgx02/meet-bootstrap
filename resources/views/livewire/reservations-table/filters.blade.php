@@ -1,4 +1,8 @@
 <div class="lims-grid-toolbar-wrap">
+    @php
+        $canManageReservations = auth()->user()?->canManageAgenda() ?? false;
+    @endphp
+
     @if (session('success'))
         <div class="alert alert-success lims-inline-alert" role="alert">
             {{ session('success') }}
@@ -13,11 +17,29 @@
 
     <div class="lims-grid-toolbar">
         <div class="lims-grid-toolbar-actions">
+            @php
+                $canManageReservations = auth()->user()?->canManageAgenda() ?? false;
+            @endphp
+
             @can('create', \App\Models\Reservation::class)
                 <a href="{{ route('reservations.create') }}" class="btn btn-sm lims-toolbar-btn lims-toolbar-btn-primary">
                     Cadastrar Agendamento
                 </a>
             @endcan
+
+            <button type="button" class="btn btn-sm lims-toolbar-btn" wire:click="viewSelected">
+                Visualizar
+            </button>
+
+            @if ($canManageReservations && $scope !== 'history')
+                <button type="button" class="btn btn-sm lims-toolbar-btn" wire:click="editSelected">
+                    Editar
+                </button>
+
+                <button type="button" class="btn btn-sm lims-toolbar-btn lims-toolbar-btn-danger" wire:click="promptDeleteSelected">
+                    Excluir
+                </button>
+            @endif
 
             <button type="button" class="btn btn-sm lims-toolbar-btn lims-toolbar-btn-icon-only" wire:click="exportSelection" aria-label="Exportar">
                 <span class="lims-toolbar-btn-icon-mark" aria-hidden="true">

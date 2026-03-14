@@ -159,10 +159,6 @@ final class ReservationsTable extends PowerGridComponent
             Column::make('Editado por', 'editor_name')
                 ->headerAttribute('app-col-user-head', 'min-width: 8.5rem;')
                 ->bodyAttribute('app-col-user'),
-
-            Column::action('Acoes')
-                ->headerAttribute('app-col-actions-head', 'min-width: 8rem;')
-                ->bodyAttribute('app-col-actions'),
         ];
     }
 
@@ -234,20 +230,6 @@ final class ReservationsTable extends PowerGridComponent
                 ->placeholder('Editado por')
                 ->filterRelation('editor', 'name'),
         ];
-    }
-
-    public function actions(Reservation $row): array
-    {
-        return [];
-    }
-
-    public function actionsFromView(Reservation $row): string
-    {
-        return view('livewire.reservations-table.actions', [
-            'reservation' => $row,
-            'canUpdate' => Auth::user()?->can('update', $row) ?? false,
-            'canDelete' => Auth::user()?->can('delete', $row) ?? false,
-        ])->render();
     }
 
     public function actionRules($row): array
@@ -330,6 +312,58 @@ final class ReservationsTable extends PowerGridComponent
         ]);
     }
 
+    public function viewSelected()
+    {
+        $reservation = $this->selectedReservationForSingleAction('visualizar');
+
+        if (! $reservation instanceof Reservation) {
+            return null;
+        }
+
+        return redirect()->route('reservations.show', $reservation);
+    }
+
+    public function editSelected()
+    {
+        $reservation = $this->selectedReservationForSingleAction('editar');
+
+        if (! $reservation instanceof Reservation) {
+            return null;
+        }
+
+        if (! (Auth::user()?->can('update', $reservation) ?? false)) {
+            session()->flash('warning', 'O agendamento selecionado nao pode mais ser editado.');
+
+            return null;
+        }
+
+        return redirect()->route('reservations.edit', $reservation);
+    }
+
+    public function promptDeleteSelected(): void
+    {
+        $reservation = $this->selectedReservationForSingleAction('excluir');
+
+        if (! $reservation instanceof Reservation) {
+            return;
+        }
+
+        if (! (Auth::user()?->can('delete', $reservation) ?? false)) {
+            session()->flash('warning', 'O agendamento selecionado nao pode mais ser excluido.');
+
+            return;
+        }
+
+        $this->dispatch(
+            'reservation-delete-requested',
+            deleteUrl: route('reservations.destroy', $reservation),
+            title: $reservation->title,
+            date: $reservation->date_br,
+            time: $reservation->start_time_br . ' - ' . $reservation->end_time_br,
+            room: $reservation->room?->name ?? '-'
+        );
+    }
+
     public function refreshDataset(): void
     {
         $this->checkboxAll = false;
@@ -363,5 +397,29 @@ final class ReservationsTable extends PowerGridComponent
         }
 
         return $reservation->date === now()->toDateString() ? 'confirmed' : 'reserved';
+    }
+
+    private function selectedReservationForSingleAction(string $actionLabel): ?Reservation
+    {
+        $selectedIds = collect($this->checkboxValues)
+            ->map(fn (mixed $id): int => (int) $id)
+            ->filter()
+            ->values();
+
+        if ($selectedIds->isEmpty()) {
+            session()->flash('warning', sprintf('Selecione um agendamento para %s.', $actionLabel));
+
+            return null;
+        }
+
+        if ($selectedIds->count() > 1) {
+            session()->flash('warning', sprintf('Selecione apenas um agendamento para %s.', $actionLabel));
+
+            return null;
+        }
+
+        return Reservation::query()
+            ->with('room')
+            ->find($selectedIds->first());
     }
 }

@@ -125,6 +125,20 @@ const initReservationDeleteModal = () => {
         modal.show();
     });
 
+    document.addEventListener('livewire:init', () => {
+        Livewire.on('reservation-delete-requested', (event) => {
+            const payload = Array.isArray(event) ? event[0] : event;
+
+            form.action = payload.deleteUrl ?? '';
+            summaryFields.title.textContent = payload.title ?? '-';
+            summaryFields.date.textContent = payload.date ?? '-';
+            summaryFields.time.textContent = payload.time ?? '-';
+            summaryFields.room.textContent = payload.room ?? '-';
+
+            modal.show();
+        });
+    });
+
     modalElement.addEventListener('hidden.bs.modal', () => {
         form.action = '';
         Object.values(summaryFields).forEach((field) => {

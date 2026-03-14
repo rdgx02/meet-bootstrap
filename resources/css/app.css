@@ -1290,6 +1290,19 @@ a {
     color: #314056;
 }
 
+.lims-toolbar-btn-danger {
+    border-color: #e2c1c1;
+    background: #fff7f7;
+    color: #a33232;
+}
+
+.lims-toolbar-btn-danger:hover,
+.lims-toolbar-btn-danger:focus {
+    border-color: #d39a9a;
+    background: #fff1f1;
+    color: #8f2020;
+}
+
 .lims-toolbar-btn-icon-only {
     width: 2.1rem;
     min-width: 2.1rem;
