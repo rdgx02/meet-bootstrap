@@ -3,62 +3,69 @@
 @section('title', 'Detalhes do Agendamento')
 
 @section('content')
-    <div class="app-form-shell" x-data="{ showDeleteModal: false }">
-        <section class="app-page-header-panel">
-            <div class="app-page-header-copy">
-                <div class="app-page-eyebrow">Agendamentos</div>
-                <h1 class="app-page-title">Detalhes do Agendamento</h1>
-                <p class="app-page-note">Consulte os dados completos da reserva.</p>
+    <div class="app-module-shell" x-data="{ showDeleteModal: false }">
+        <section class="app-module-header">
+            <div>
+                <div class="app-module-kicker">Consulta</div>
+                <h1 class="app-module-title">Detalhes do Agendamento</h1>
+                <p class="app-module-note">Visualizacao consolidada do registro selecionado na agenda.</p>
             </div>
 
-            <div class="app-page-header-actions">
-                <a href="{{ route('reservations.index') }}" class="btn btn-outline-secondary">
+            <div class="app-inline-actions">
+                <a href="{{ route('reservations.index') }}" class="btn app-section-btn app-section-btn-light">
                     Voltar
                 </a>
                 @can('update', $reservation)
-                    <a href="{{ route('reservations.edit', $reservation) }}" class="btn btn-primary app-btn-primary">
+                    <a href="{{ route('reservations.edit', $reservation) }}" class="btn app-btn-primary app-section-btn">
                         Editar
                     </a>
                 @endcan
             </div>
         </section>
 
-        <div class="app-card app-form-panel p-4 p-md-5">
-            <dl class="row g-4 mb-0 app-detail-list">
-                <div class="col-md-6">
-                    <dt class="app-form-label">Data</dt>
-                    <dd class="fs-5 fw-semibold mb-0">{{ $reservation->date_br }}</dd>
+        <section class="app-subpanel">
+            <div class="app-subpanel-head">
+                <div>
+                    <h2 class="app-subpanel-title">Ficha do agendamento</h2>
+                    <p class="app-subpanel-note">Dados principais da reserva em formato de consulta administrativa.</p>
                 </div>
-                <div class="col-md-6">
-                    <dt class="app-form-label">Sala</dt>
-                    <dd class="fs-5 fw-semibold mb-0">{{ $reservation->room?->name }}</dd>
+            </div>
+
+            <div class="app-detail-grid">
+                <div class="app-detail-card">
+                    <span class="app-detail-label">Data</span>
+                    <strong>{{ $reservation->date_br }}</strong>
                 </div>
-                <div class="col-md-6">
-                    <dt class="app-form-label">Hora inicio</dt>
-                    <dd class="mb-0">{{ $reservation->start_time_br }}</dd>
+                <div class="app-detail-card">
+                    <span class="app-detail-label">Sala</span>
+                    <strong>{{ $reservation->room?->name }}</strong>
                 </div>
-                <div class="col-md-6">
-                    <dt class="app-form-label">Hora fim</dt>
-                    <dd class="mb-0">{{ $reservation->end_time_br }}</dd>
+                <div class="app-detail-card">
+                    <span class="app-detail-label">Hora inicio</span>
+                    <strong>{{ $reservation->start_time_br }}</strong>
                 </div>
-                <div class="col-12">
-                    <dt class="app-form-label">Titulo</dt>
-                    <dd class="mb-0">{{ $reservation->title }}</dd>
+                <div class="app-detail-card">
+                    <span class="app-detail-label">Hora fim</span>
+                    <strong>{{ $reservation->end_time_br }}</strong>
                 </div>
-                <div class="col-md-6">
-                    <dt class="app-form-label">Solicitante</dt>
-                    <dd class="mb-0">{{ $reservation->requester }}</dd>
+                <div class="app-detail-card app-detail-card-wide">
+                    <span class="app-detail-label">Titulo</span>
+                    <strong>{{ $reservation->title }}</strong>
                 </div>
-                <div class="col-md-6">
-                    <dt class="app-form-label">Contato</dt>
-                    <dd class="mb-0">{{ $reservation->contact ?: '-' }}</dd>
+                <div class="app-detail-card">
+                    <span class="app-detail-label">Solicitante</span>
+                    <strong>{{ $reservation->requester }}</strong>
                 </div>
-            </dl>
-        </div>
+                <div class="app-detail-card">
+                    <span class="app-detail-label">Contato</span>
+                    <strong>{{ $reservation->contact ?: '-' }}</strong>
+                </div>
+            </div>
+        </section>
 
         @can('delete', $reservation)
-            <div class="mt-4 d-flex justify-content-end">
-                <button type="button" class="btn btn-outline-danger" x-on:click="showDeleteModal = true">
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn app-ghost-btn app-ghost-btn-danger" x-on:click="showDeleteModal = true">
                     Excluir agendamento
                 </button>
             </div>
@@ -79,6 +86,10 @@
                             </div>
 
                             <div class="app-modal-body">
+                                <div class="app-delete-alert">
+                                    Essa exclusao remove o agendamento da agenda e do historico administrativo.
+                                </div>
+
                                 <p class="app-modal-text">
                                     Essa acao remove o agendamento da agenda e nao pode ser desfeita.
                                 </p>
@@ -92,7 +103,7 @@
                             </div>
 
                             <div class="app-modal-footer">
-                                <button type="button" class="btn btn-outline-secondary" x-on:click="showDeleteModal = false">
+                                <button type="button" class="btn btn-outline-secondary app-section-btn app-section-btn-light" x-on:click="showDeleteModal = false">
                                     Cancelar
                                 </button>
 

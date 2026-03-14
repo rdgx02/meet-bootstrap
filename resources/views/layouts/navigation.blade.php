@@ -102,9 +102,32 @@
             </a>
         </nav>
 
-        <div class="app-sidebar-footer mt-auto">
-            <div class="app-sidebar-user app-sidebar-user-compact">
-                <strong>{{ Auth::user()->name }}</strong>
+        <div class="app-sidebar-account mt-auto">
+            <div class="app-sidebar-account-menu">
+                <a href="{{ route('profile.edit') }}" class="app-side-link app-side-link-account">
+                    <span class="app-side-link-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    <span class="app-side-link-copy">
+                        <span class="app-side-link-label">Usuario</span>
+                    </span>
+                </a>
+
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="app-side-link app-side-link-account app-side-link-danger w-100 text-start">
+                        <span class="app-side-link-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M15 17l5-5-5-5M20 12H9M12 19H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                        <span class="app-side-link-copy">
+                            <span class="app-side-link-label">Sair do Sistema</span>
+                        </span>
+                    </button>
+                </form>
             </div>
         </div>
     </div>

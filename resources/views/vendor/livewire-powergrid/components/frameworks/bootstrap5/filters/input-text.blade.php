@@ -17,6 +17,7 @@
         $inputTextOptions = $fieldClassName::getInputTextOperators();
         $inputTextOptions = count($operators) > 0 ? $operators : $inputTextOptions;
         $showSelectOptions = !(count($inputTextOptions) === 1 && in_array('contains', $inputTextOptions));
+        $isTimeField = $placeholder === 'HH:MM' || str_contains($field, 'time');
 
         $defaultPlaceholder = data_get($column, 'placeholder') ?: data_get($column, 'title');
         $overridePlaceholder = $placeholder ?: $defaultPlaceholder;
@@ -47,14 +48,22 @@
             :attributes="new \Illuminate\View\ComponentAttributeBag($params)"
         />
     @else
-        <div class="{{ theme_style($theme, 'filterInputText.base') }}">
+        <div @class([theme_style($theme, 'filterInputText.base'), 'app-grid-filter', 'app-grid-filter-inline' => $inline])>
             @if (!$inline)
                 <label class="form-label fw-semibold mb-1">{{ $title }}</label>
             @endif
-                <div @class(["d-flex", "flex-row gap-2 align-items-center" => !$inline, "flex-column align-items-start gap-1" => $inline])>
+                <div @class([
+                    'd-flex',
+                    'flex-row gap-2 align-items-center' => !$inline,
+                    'flex-column gap-1 align-items-stretch app-grid-filter-stack' => $inline,
+                ])>
                 @if ($showSelectOptions)
                     <select
-                        @class(["form-select form-select-sm", "w-auto" => !$inline, "w-full" => $inline])
+                        @class([
+                            'form-select form-select-sm app-grid-filter-select',
+                            'w-auto' => !$inline,
+                            'w-100' => $inline,
+                        ])
                         style="{{ data_get($column, 'headerStyle') }}"
                         {{ $defaultAttributes['selectAttributes'] }}
                     >
@@ -69,11 +78,16 @@
                 <input
                     wire:key="input-{{ $field }}"
                     data-id="{{ $field }}"
+                    @if ($isTimeField)
+                        inputmode="numeric"
+                        maxlength="5"
+                        oninput="this.value = this.value.replace(/\D/g, '').slice(0, 4).replace(/(\d{2})(\d)/, '$1:$2')"
+                    @endif
                     @if (isset($enabledFilters[$field]['disabled']) && boolval($enabledFilters[$field]['disabled']) === true) disabled
                         @else
                             {{ $defaultAttributes['inputAttributes'] }} @endif
                     type="text"
-                    class="form-control form-control-sm"
+                    class="form-control form-control-sm app-grid-filter-input"
                     placeholder="{{ $placeholder }}"
                 />
             </div>

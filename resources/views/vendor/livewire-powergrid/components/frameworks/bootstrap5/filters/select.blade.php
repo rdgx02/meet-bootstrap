@@ -26,15 +26,15 @@
         :attributes="new \Illuminate\View\ComponentAttributeBag($params)"
     />
 @else
-    <div class="mb-2">
+    <div @class(['mb-2 app-grid-filter', 'app-grid-filter-inline' => $inline])>
         @if (!$inline)
             <label class="form-label fw-semibold mb-1">{{ $title ?? '' }}</label>
         @endif
         <div
-            class="{{ theme_style($theme, 'filterSelect.base') }}"
+            class="{{ theme_style($theme, 'filterSelect.base') }} app-grid-filter-control"
         >
             <select
-                class="{{ $filterClasses }}"
+                class="{{ $filterClasses }} app-grid-filter-select"
                 style="{{ data_get($column, 'headerStyle') }}"
                 {{ $defaultAttributes['selectAttributes'] }}
             >

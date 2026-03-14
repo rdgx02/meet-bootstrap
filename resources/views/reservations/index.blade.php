@@ -5,9 +5,7 @@
 @section('content')
     <div class="lims-page lims-page-samples">
         <section class="lims-page-header lims-page-header-plain">
-            <div class="lims-page-header-copy">
-                <h1 class="lims-page-title">{{ $scope === 'history' ? 'Historico' : 'Agendamentos' }}</h1>
-            </div>
+            <h1 class="lims-page-title">{{ $scope === 'history' ? 'Historico' : 'Agendamentos' }}</h1>
 
             <div class="lims-dataset-switch">
                 <a

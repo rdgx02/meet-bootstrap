@@ -14,6 +14,7 @@ flatpickr.localize(Portuguese);
 
 const initDatePickers = () => {
     const dateInputs = document.querySelectorAll('input.js-date-picker');
+    const timeInputs = document.querySelectorAll('input.js-time-picker');
 
     dateInputs.forEach((input) => {
         if (input.dataset.flatpickrReady === '1') {
@@ -42,6 +43,24 @@ const initDatePickers = () => {
         }
 
         flatpickr(input, options);
+        input.dataset.flatpickrReady = '1';
+    });
+
+    timeInputs.forEach((input) => {
+        if (input.dataset.flatpickrReady === '1') {
+            return;
+        }
+
+        flatpickr(input, {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: 'H:i',
+            time_24hr: true,
+            minuteIncrement: 5,
+            disableMobile: true,
+            locale: Portuguese,
+        });
+
         input.dataset.flatpickrReady = '1';
     });
 
@@ -116,8 +135,48 @@ const initReservationDeleteModal = () => {
     document.body.dataset.reservationDeleteModalReady = '1';
 };
 
+const initRoomDeleteModal = () => {
+    const modalElement = document.getElementById('roomDeleteModal');
+
+    if (!modalElement || document.body.dataset.roomDeleteModalReady === '1') {
+        return;
+    }
+
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+    const form = modalElement.querySelector('[data-room-delete-form]');
+    const summaryFields = {
+        name: modalElement.querySelector('[data-room-delete-summary="name"]'),
+        status: modalElement.querySelector('[data-room-delete-summary="status"]'),
+    };
+
+    document.addEventListener('click', (event) => {
+        const trigger = event.target.closest('.js-room-delete-trigger');
+
+        if (!trigger) {
+            return;
+        }
+
+        form.action = trigger.dataset.roomDeleteUrl;
+        summaryFields.name.textContent = trigger.dataset.roomName ?? '-';
+        summaryFields.status.textContent = trigger.dataset.roomStatus ?? '-';
+
+        modal.show();
+    });
+
+    modalElement.addEventListener('hidden.bs.modal', () => {
+        form.action = '';
+        Object.values(summaryFields).forEach((field) => {
+            field.textContent = '-';
+        });
+    });
+
+    document.body.dataset.roomDeleteModalReady = '1';
+};
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initReservationDeleteModal);
+    document.addEventListener('DOMContentLoaded', initRoomDeleteModal);
 } else {
     initReservationDeleteModal();
+    initRoomDeleteModal();
 }

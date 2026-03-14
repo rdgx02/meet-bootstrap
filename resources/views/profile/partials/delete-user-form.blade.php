@@ -30,6 +30,10 @@
                         </div>
 
                         <div class="app-modal-body">
+                            <div class="app-delete-alert">
+                                Essa operacao encerra permanentemente seu acesso ao sistema.
+                            </div>
+
                             <p class="app-modal-text">
                                 Essa acao remove permanentemente sua conta. Digite sua senha para confirmar.
                             </p>
@@ -44,10 +48,10 @@
                         </div>
 
                         <div class="app-modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" x-on:click="showDeleteModal = false">
+                            <button type="button" class="btn btn-outline-secondary app-section-btn app-section-btn-light" x-on:click="showDeleteModal = false">
                                 Cancelar
                             </button>
-                            <button type="submit" class="btn btn-danger">
+                            <button type="submit" class="btn btn-danger app-delete-confirm-btn">
                                 Excluir conta
                             </button>
                         </div>

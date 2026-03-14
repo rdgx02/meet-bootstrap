@@ -116,42 +116,52 @@ final class ReservationsTable extends PowerGridComponent
         return [
             Column::make('Codigo', 'code', 'id')
                 ->sortable()
+                ->headerAttribute('app-col-code-head', 'min-width: 8.75rem;')
                 ->bodyAttribute('app-col-code'),
 
             Column::make('Sala', 'room_name', 'room.name')
                 ->sortable()
                 ->searchable()
+                ->headerAttribute('app-col-room-head', 'min-width: 6rem;')
                 ->bodyAttribute('app-col-room'),
 
             Column::make('Titulo', 'title', 'title')
                 ->sortable()
                 ->searchable()
+                ->headerAttribute('app-col-title-head', 'min-width: 13rem;')
                 ->bodyAttribute('app-col-title'),
 
             Column::make('Solicitante', 'requester', 'requester')
                 ->sortable()
                 ->searchable()
+                ->headerAttribute('app-col-requester-head', 'min-width: 9rem;')
                 ->bodyAttribute('app-col-requester'),
 
             Column::make('Data', 'date_br', 'date')
                 ->sortable()
+                ->headerAttribute('app-col-date-head', 'min-width: 8.5rem;')
                 ->bodyAttribute('app-col-date'),
 
             Column::make('Inicio', 'start_time_br', 'start_time')
                 ->sortable()
+                ->headerAttribute('app-col-time-head', 'min-width: 6.5rem;')
                 ->bodyAttribute('app-col-time'),
 
             Column::make('Fim', 'end_time_br', 'end_time')
                 ->sortable()
+                ->headerAttribute('app-col-time-head', 'min-width: 6.5rem;')
                 ->bodyAttribute('app-col-time'),
 
             Column::make('Criado por', 'user_name')
+                ->headerAttribute('app-col-user-head', 'min-width: 8.5rem;')
                 ->bodyAttribute('app-col-user'),
 
             Column::make('Editado por', 'editor_name')
+                ->headerAttribute('app-col-user-head', 'min-width: 8.5rem;')
                 ->bodyAttribute('app-col-user'),
 
             Column::action('Acoes')
+                ->headerAttribute('app-col-actions-head', 'min-width: 8rem;')
                 ->bodyAttribute('app-col-actions'),
         ];
     }
@@ -194,14 +204,24 @@ final class ReservationsTable extends PowerGridComponent
                 ->operators(['contains'])
                 ->placeholder('Solicitante'),
 
-            Filter::datepicker('date_br', 'date'),
+            Filter::datepicker('date_br', 'date')
+                ->params([
+                    'enableTime' => false,
+                    'dateFormat' => 'Y-m-d',
+                    'altInput' => true,
+                    'altFormat' => 'd/m/Y',
+                    'mode' => 'single',
+                    'monthSelectorType' => 'static',
+                    'prevArrow' => '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"/></svg>',
+                    'nextArrow' => '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"/></svg>',
+                ]),
 
             Filter::inputText('start_time_br', 'start_time')
-                ->operators(['starts_with', 'contains'])
+                ->operators(['contains'])
                 ->placeholder('HH:MM'),
 
             Filter::inputText('end_time_br', 'end_time')
-                ->operators(['starts_with', 'contains'])
+                ->operators(['contains'])
                 ->placeholder('HH:MM'),
 
             Filter::inputText('user_name')
@@ -325,17 +345,6 @@ final class ReservationsTable extends PowerGridComponent
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
-    }
-
-    public function cancelSelected(): void
-    {
-        if (count($this->checkboxValues) === 0) {
-            session()->flash('warning', 'Selecione ao menos um agendamento para executar esta acao.');
-
-            return;
-        }
-
-        session()->flash('warning', 'O fluxo de cancelamento em massa ainda nao existe no dominio atual. A barra de acao foi preparada para essa evolucao.');
     }
 
     public function refreshDataset(): void

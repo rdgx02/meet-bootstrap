@@ -23,16 +23,12 @@
                 Editar em massa
             </button>
 
-            <button type="button" class="btn btn-sm lims-toolbar-btn" wire:click="exportSelection">
-                Exportar
-            </button>
-
-            <button type="button" class="btn btn-sm lims-toolbar-btn" wire:click="cancelSelected">
-                Cancelar/Reativar
-            </button>
-
-            <button type="button" class="btn btn-sm lims-toolbar-btn" wire:click="refreshDataset">
-                Atualizar
+            <button type="button" class="btn btn-sm lims-toolbar-btn lims-toolbar-btn-icon-only" wire:click="exportSelection" aria-label="Exportar">
+                <span class="lims-toolbar-btn-icon-mark" aria-hidden="true">
+                    <svg viewBox="0 0 20 20" fill="none">
+                        <path d="M10 3v8M6.5 7.5 10 11l3.5-3.5M4 13.5v1A1.5 1.5 0 0 0 5.5 16h9a1.5 1.5 0 0 0 1.5-1.5v-1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
             </button>
         </div>
 
@@ -60,6 +56,10 @@
             </div>
 
             <div class="modal-body">
+                <div class="app-delete-alert">
+                    Essa exclusao remove o agendamento da agenda operacional e do historico consultivo.
+                </div>
+
                 <p class="lims-modal-text">
                     Este registro sera removido da base operacional e nao podera ser recuperado.
                 </p>
@@ -72,16 +72,16 @@
                 </div>
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
-                    Fechar
+            <div class="modal-footer app-modal-footer-compact">
+                <button type="button" class="btn btn-outline-secondary btn-sm app-section-btn app-section-btn-light" data-bs-dismiss="modal">
+                    Cancelar
                 </button>
 
                 <form method="POST" data-delete-form>
                     @csrf
                     @method('DELETE')
 
-                    <button type="submit" class="btn btn-danger btn-sm">
+                    <button type="submit" class="btn btn-danger btn-sm app-delete-confirm-btn">
                         Confirmar exclusao
                     </button>
                 </form>

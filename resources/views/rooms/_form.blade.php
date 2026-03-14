@@ -3,19 +3,19 @@
     $action = $isEdit ? route('rooms.update', $room) : route('rooms.store');
 @endphp
 
-<div class="app-form-shell app-form-shell-narrow">
-    <section class="app-page-header-panel">
-        <div class="app-page-header-copy">
-            <div class="app-page-eyebrow">Salas</div>
-            <h1 class="app-page-title">{{ $isEdit ? 'Editar Sala' : 'Nova Sala' }}</h1>
-            <p class="app-page-note">
-                {{ $isEdit ? 'Atualize os dados da sala.' : 'Cadastre uma nova sala para uso na agenda.' }}
+<div class="app-module-shell app-module-shell-form">
+    <section class="app-module-header">
+        <div>
+            <div class="app-module-kicker">Cadastro</div>
+            <h1 class="app-module-title">{{ $isEdit ? 'Editar Sala' : 'Nova Sala' }}</h1>
+            <p class="app-module-note">
+                {{ $isEdit ? 'Atualize os dados estruturais da sala.' : 'Cadastre um novo ambiente para uso na agenda institucional.' }}
             </p>
         </div>
     </section>
 
     @if ($errors->any())
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger app-danger-alert" role="alert">
             <p class="fw-semibold mb-2">Nao foi possivel salvar:</p>
             <ul class="mb-0 ps-3">
                 @foreach ($errors->all() as $error)
@@ -25,50 +25,65 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ $action }}" class="app-card app-form-panel p-4 p-md-5">
+    <form method="POST" action="{{ $action }}" class="app-subpanel app-form-sheet">
         @csrf
         @if ($isEdit)
             @method('PUT')
         @endif
 
-        <div class="mb-4">
-            <label for="name" class="form-label app-form-label">Nome da sala</label>
-            <input
-                id="name"
-                type="text"
-                name="name"
-                value="{{ old('name', $isEdit ? $room->name : '') }}"
-                maxlength="255"
-                required
-                class="form-control @error('name') is-invalid @enderror"
-                placeholder="Ex.: Sala 203"
-            >
-            @error('name')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+        <div class="app-subpanel-head">
+            <div>
+                <h2 class="app-subpanel-title">Dados da sala</h2>
+                <p class="app-subpanel-note">Preencha os campos abaixo para manter o cadastro atualizado.</p>
+            </div>
         </div>
 
-        <div class="form-check form-switch mb-4 app-form-switch">
-            <input type="hidden" name="is_active" value="0">
-            <input
-                id="is_active"
-                type="checkbox"
-                name="is_active"
-                value="1"
-                class="form-check-input"
-                @checked((bool) old('is_active', $isEdit ? $room->is_active : true))
-            >
-            <label for="is_active" class="form-check-label">Sala ativa para novos agendamentos</label>
+        <div class="app-form-grid-compact">
+            <div class="app-form-field">
+                <label for="name" class="app-form-label">Nome da sala</label>
+                <input
+                    id="name"
+                    type="text"
+                    name="name"
+                    value="{{ old('name', $isEdit ? $room->name : '') }}"
+                    maxlength="255"
+                    required
+                    class="form-control @error('name') is-invalid @enderror"
+                    placeholder="Ex.: Sala 203"
+                >
+                @error('name')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="app-form-field app-form-toggle-row">
+                <div>
+                    <label for="is_active" class="app-form-label">Disponibilidade</label>
+                    <p class="app-field-hint mb-0">Controle se a sala pode receber novos agendamentos.</p>
+                </div>
+                <div class="form-check form-switch app-form-switch mb-0">
+                    <input type="hidden" name="is_active" value="0">
+                    <input
+                        id="is_active"
+                        type="checkbox"
+                        name="is_active"
+                        value="1"
+                        class="form-check-input"
+                        @checked((bool) old('is_active', $isEdit ? $room->is_active : true))
+                    >
+                    <label for="is_active" class="form-check-label">Sala ativa</label>
+                </div>
+            </div>
         </div>
 
-        <div class="app-form-actions">
+        <div class="app-form-actions app-form-actions-compact">
             <p class="small text-body-secondary mb-0">Use sala inativa para impedir novos agendamentos sem apagar historico.</p>
 
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('rooms.index') }}" class="btn btn-outline-secondary">
+                <a href="{{ route('rooms.index') }}" class="btn btn-outline-secondary app-section-btn app-section-btn-light">
                     Cancelar
                 </a>
-                <button type="submit" class="btn btn-primary app-btn-primary">
+                <button type="submit" class="btn app-btn-primary app-section-btn">
                     {{ $isEdit ? 'Salvar alteracoes' : 'Criar sala' }}
                 </button>
             </div>

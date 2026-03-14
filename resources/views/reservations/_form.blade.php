@@ -21,54 +21,43 @@
     }
 @endphp
 
-<div class="app-form-shell">
-    <section class="app-page-header-panel">
-        <div class="app-page-header-copy">
-            <div class="app-page-eyebrow">Agendamentos</div>
-            <h1 class="app-page-title">{{ $isEdit ? 'Editar Agendamento' : 'Novo Agendamento' }}</h1>
-            <p class="app-page-note">
-                {{ $isEdit ? 'Atualize os dados e salve as alteracoes.' : 'Preencha os dados para registrar um novo horario.' }}
+<div class="app-module-shell app-module-shell-form">
+    <section class="app-module-header">
+        <div>
+            <div class="app-module-kicker">Agenda</div>
+            <h1 class="app-module-title">{{ $isEdit ? 'Editar Agendamento' : 'Novo Agendamento' }}</h1>
+            <p class="app-module-note">
+                {{ $isEdit ? 'Atualize os dados do registro selecionado.' : 'Preencha os campos para registrar um novo agendamento.' }}
             </p>
         </div>
     </section>
 
     @if ($showConflictAlert)
-        <div class="alert alert-warning border-0 shadow-sm" role="alert">
-            <div class="d-flex align-items-start gap-3">
-                <div class="fs-4 lh-1">!</div>
-                <div class="w-100">
+        <div class="alert alert-warning app-warning-alert" role="alert">
+            <div class="app-alert-stack">
+                <div>
                     <p class="fw-semibold mb-1">Horario indisponivel para essa sala</p>
-                    <p class="small mb-3">{{ $conflictMessage }}</p>
+                    <p class="small mb-0">{{ $conflictMessage }}</p>
+                </div>
 
-                    <div class="app-card-soft p-3 mb-3">
-                        <p class="text-uppercase small fw-semibold text-warning-emphasis mb-1">Horario ocupado</p>
-                        <p class="h5 mb-1">{{ $conflictStart }} - {{ $conflictEnd }}</p>
-                        <p class="mb-0">{{ $conflictDate }} | Sala {{ $conflictRoomName }}</p>
+                <div class="app-alert-grid">
+                    <div class="app-card-soft p-3">
+                        <span class="app-alert-label">Horario ocupado</span>
+                        <strong>{{ $conflictStart }} - {{ $conflictEnd }}</strong>
+                        <small>{{ $conflictDate }} | Sala {{ $conflictRoomName }}</small>
                     </div>
-
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <div class="app-card-soft p-3 h-100">
-                                <p class="text-uppercase small fw-semibold text-warning-emphasis mb-1">Titulo da reserva existente</p>
-                                <p class="mb-0 fw-medium">{{ $conflictTitle }}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="app-card-soft p-3 h-100">
-                                <p class="text-uppercase small fw-semibold text-warning-emphasis mb-1">Solicitante</p>
-                                <p class="mb-0 fw-medium">{{ $conflictRequester }}</p>
-                            </div>
-                        </div>
+                    <div class="app-card-soft p-3">
+                        <span class="app-alert-label">Reserva existente</span>
+                        <strong>{{ $conflictTitle }}</strong>
+                        <small>{{ $conflictRequester }}</small>
                     </div>
-
-                    <p class="small mb-0">Sugestao: escolha outro horario livre ou altere a sala para concluir o agendamento.</p>
                 </div>
             </div>
         </div>
     @endif
 
     @if ($otherErrors->isNotEmpty())
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger app-danger-alert" role="alert">
             <p class="fw-semibold mb-2">Nao foi possivel salvar:</p>
             <ul class="mb-0 ps-3">
                 @foreach ($otherErrors as $error)
@@ -78,15 +67,22 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ $formAction }}" class="app-card app-form-panel p-4 p-md-5">
+    <form method="POST" action="{{ $formAction }}" class="app-subpanel app-form-sheet">
         @csrf
         @if ($isEdit)
             @method('PUT')
         @endif
 
-        <div class="row g-4 app-form-grid">
-            <div class="col-12">
-                <label for="room_id" class="form-label app-form-label">Sala</label>
+        <div class="app-subpanel-head">
+            <div>
+                <h2 class="app-subpanel-title">Dados do agendamento</h2>
+                <p class="app-subpanel-note">Formulario operacional para controle de reservas de sala.</p>
+            </div>
+        </div>
+
+        <div class="app-form-grid-compact app-form-grid-2">
+            <div class="app-form-field">
+                <label for="room_id" class="app-form-label">Sala</label>
                 <select
                     id="room_id"
                     name="room_id"
@@ -105,8 +101,8 @@
                 @enderror
             </div>
 
-            <div class="col-md-6">
-                <label for="date" class="form-label app-form-label">Data</label>
+            <div class="app-form-field">
+                <label for="date" class="app-form-label">Data</label>
                 <input
                     id="date"
                     type="text"
@@ -122,8 +118,8 @@
                 @enderror
             </div>
 
-            <div class="col-md-6">
-                <label for="requester" class="form-label app-form-label">Solicitante</label>
+            <div class="app-form-field">
+                <label for="requester" class="app-form-label">Solicitante</label>
                 <input
                     id="requester"
                     type="text"
@@ -139,38 +135,8 @@
                 @enderror
             </div>
 
-            <div class="col-md-6">
-                <label for="start_time" class="form-label app-form-label">Hora inicio</label>
-                <input
-                    id="start_time"
-                    type="time"
-                    name="start_time"
-                    value="{{ $startValue }}"
-                    required
-                    class="form-control @error('start_time') is-invalid @enderror"
-                >
-                @error('start_time')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="col-md-6">
-                <label for="end_time" class="form-label app-form-label">Hora fim</label>
-                <input
-                    id="end_time"
-                    type="time"
-                    name="end_time"
-                    value="{{ $endValue }}"
-                    required
-                    class="form-control @error('end_time') is-invalid @enderror"
-                >
-                @error('end_time')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="col-12">
-                <label for="title" class="form-label app-form-label">Titulo</label>
+            <div class="app-form-field">
+                <label for="title" class="app-form-label">Titulo</label>
                 <input
                     id="title"
                     type="text"
@@ -186,8 +152,42 @@
                 @enderror
             </div>
 
-            <div class="col-12">
-                <label for="contact" class="form-label app-form-label">Contato (opcional)</label>
+            <div class="app-form-field">
+                <label for="start_time" class="app-form-label">Hora inicio</label>
+                <input
+                    id="start_time"
+                    type="text"
+                    name="start_time"
+                    value="{{ $startValue }}"
+                    required
+                    class="js-time-picker form-control @error('start_time') is-invalid @enderror"
+                    inputmode="numeric"
+                    placeholder="HH:MM"
+                >
+                @error('start_time')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="app-form-field">
+                <label for="end_time" class="app-form-label">Hora fim</label>
+                <input
+                    id="end_time"
+                    type="text"
+                    name="end_time"
+                    value="{{ $endValue }}"
+                    required
+                    class="js-time-picker form-control @error('end_time') is-invalid @enderror"
+                    inputmode="numeric"
+                    placeholder="HH:MM"
+                >
+                @error('end_time')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="app-form-field app-form-field-full">
+                <label for="contact" class="app-form-label">Contato</label>
                 <input
                     id="contact"
                     type="text"
@@ -203,14 +203,14 @@
             </div>
         </div>
 
-        <div class="app-form-actions">
-            <p class="small text-body-secondary mb-0">Revise os dados e clique em salvar para concluir.</p>
+        <div class="app-form-actions app-form-actions-compact">
+            <p class="small text-body-secondary mb-0">Revise os dados antes de confirmar a operacao.</p>
 
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('reservations.index') }}" class="btn btn-outline-secondary">
+                <a href="{{ route('reservations.index') }}" class="btn btn-outline-secondary app-section-btn app-section-btn-light">
                     Cancelar
                 </a>
-                <button type="submit" class="btn btn-primary app-btn-primary">
+                <button type="submit" class="btn app-btn-primary app-section-btn">
                     {{ $isEdit ? 'Salvar alteracoes' : 'Criar agendamento' }}
                 </button>
             </div>
