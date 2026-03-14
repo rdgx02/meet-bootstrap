@@ -7,12 +7,13 @@ use App\Models\Room;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
-use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
+use PowerComponents\LivewirePowerGrid\Facades\Filter;
 use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\Facades\Rule;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class ReservationsTable extends PowerGridComponent
 {
@@ -22,15 +23,7 @@ final class ReservationsTable extends PowerGridComponent
 
     public string $scope = 'upcoming';
 
-    public string $q = '';
-
-    public ?string $room_id = null;
-
-    public ?string $date_from = null;
-
-    public ?string $date_to = null;
-
-    public int $initialPerPage = 10;
+    public int $initialPerPage = 20;
 
     public function mount(string $scope = 'upcoming', array $filters = []): void
     {
@@ -39,11 +32,7 @@ final class ReservationsTable extends PowerGridComponent
             ? 'reservations-history-table'
             : 'reservations-upcoming-table';
 
-        $this->q = trim((string) ($filters['q'] ?? ''));
-        $this->room_id = filled($filters['room_id'] ?? null) ? (string) $filters['room_id'] : null;
-        $this->date_from = filled($filters['date_from'] ?? null) ? (string) $filters['date_from'] : null;
-        $this->date_to = filled($filters['date_to'] ?? null) ? (string) $filters['date_to'] : null;
-        $this->initialPerPage = $this->resolvePerPage($filters['per_page'] ?? 10);
+        $this->initialPerPage = $this->resolvePerPage($filters['per_page'] ?? 20);
         $this->sortField = 'date';
         $this->sortDirection = $scope === 'history' ? 'desc' : 'asc';
 
@@ -52,12 +41,14 @@ final class ReservationsTable extends PowerGridComponent
 
     public function setUp(): array
     {
+        $this->showCheckBox('id');
+
         return [
             PowerGrid::header()
                 ->includeViewOnTop('livewire.reservations-table.filters')
                 ->withoutLoading(),
             PowerGrid::footer()
-                ->showPerPage($this->initialPerPage, [10, 20, 50, 100])
+                ->showPerPage($this->initialPerPage, [20, 50, 100])
                 ->showRecordCount('short')
                 ->pageName($this->scope === 'history' ? 'historyPage' : 'reservationsPage'),
         ];
@@ -89,28 +80,6 @@ final class ReservationsTable extends PowerGridComponent
             });
         }
 
-        if (filled($this->room_id)) {
-            $query->where('room_id', (int) $this->room_id);
-        }
-
-        if (filled($this->date_from)) {
-            $query->whereDate('date', '>=', $this->date_from);
-        }
-
-        if (filled($this->date_to)) {
-            $query->whereDate('date', '<=', $this->date_to);
-        }
-
-        if ($this->q !== '') {
-            $query->where(function (Builder $searchQuery): void {
-                $searchQuery->where('title', 'like', "%{$this->q}%")
-                    ->orWhere('requester', 'like', "%{$this->q}%")
-                    ->orWhereHas('room', function (Builder $roomQuery): void {
-                        $roomQuery->where('name', 'like', "%{$this->q}%");
-                    });
-            });
-        }
-
         return $query;
     }
 
@@ -118,12 +87,16 @@ final class ReservationsTable extends PowerGridComponent
     {
         return [
             'room' => ['name'],
+            'user' => ['name'],
+            'editor' => ['name'],
         ];
     }
 
     public function fields(): PowerGridFields
     {
         return PowerGrid::fields()
+            ->add('id')
+            ->add('code', fn (Reservation $reservation): string => 'AG-' . str_pad((string) $reservation->id, 5, '0', STR_PAD_LEFT))
             ->add('date')
             ->add('date_br', fn (Reservation $reservation): string => $reservation->date_br)
             ->add('start_time')
@@ -131,90 +104,121 @@ final class ReservationsTable extends PowerGridComponent
             ->add('end_time')
             ->add('end_time_br', fn (Reservation $reservation): string => $reservation->end_time_br)
             ->add('room_name', fn (Reservation $reservation): string => e($reservation->room?->name ?? '-'))
-            ->add('room_badge', fn (Reservation $reservation): string => sprintf(
-                '<span class="badge rounded-pill app-room-badge">%s</span>',
-                e($reservation->room?->name ?? '-')
-            ))
-            ->add('title')
-            ->add('title_truncate', fn (Reservation $reservation): string => sprintf(
-                '<div class="app-truncate" title="%s">%s</div>',
-                e($reservation->title),
-                e($reservation->title)
-            ))
-            ->add('requester')
-            ->add('requester_truncate', fn (Reservation $reservation): string => sprintf(
-                '<div class="app-truncate" title="%s">%s</div>',
-                e($reservation->requester),
-                e($reservation->requester)
-            ))
+            ->add('title', fn (Reservation $reservation): string => e($reservation->title))
+            ->add('requester', fn (Reservation $reservation): string => e($reservation->requester))
             ->add('user_name', fn (Reservation $reservation): string => e($reservation->user?->name ?? '-'))
-            ->add('user_chip', fn (Reservation $reservation): string => $this->userChip($reservation->user?->name))
             ->add('editor_name', fn (Reservation $reservation): string => e($reservation->editor?->name ?? '-'))
-            ->add('editor_chip', fn (Reservation $reservation): string => $this->userChip($reservation->editor?->name))
-            ->add('row_class', fn (Reservation $reservation): string => Auth::id() === $reservation->user_id ? 'row-mine' : '');
+            ->add('row_state', fn (Reservation $reservation): string => $this->rowState($reservation));
     }
 
     public function columns(): array
     {
         return [
-            Column::make('Data', 'date_br', 'date')
+            Column::make('Codigo', 'code', 'id')
+                ->sortable()
+                ->bodyAttribute('app-col-code'),
+
+            Column::make('Sala', 'room_name', 'room.name')
                 ->sortable()
                 ->searchable()
-                ->bodyAttribute('fw-semibold'),
+                ->bodyAttribute('app-col-room'),
+
+            Column::make('Titulo', 'title', 'title')
+                ->sortable()
+                ->searchable()
+                ->bodyAttribute('app-col-title'),
+
+            Column::make('Solicitante', 'requester', 'requester')
+                ->sortable()
+                ->searchable()
+                ->bodyAttribute('app-col-requester'),
+
+            Column::make('Data', 'date_br', 'date')
+                ->sortable()
+                ->bodyAttribute('app-col-date'),
 
             Column::make('Inicio', 'start_time_br', 'start_time')
-                ->sortable(),
+                ->sortable()
+                ->bodyAttribute('app-col-time'),
 
             Column::make('Fim', 'end_time_br', 'end_time')
-                ->sortable(),
+                ->sortable()
+                ->bodyAttribute('app-col-time'),
 
-            Column::make('Sala', 'room_badge', 'room.name')
-                ->searchable(),
+            Column::make('Criado por', 'user_name')
+                ->bodyAttribute('app-col-user'),
 
-            Column::make('Titulo', 'title_truncate', 'title')
-                ->searchable()
-                ->sortable(),
-
-            Column::make('Solicitante', 'requester_truncate', 'requester')
-                ->searchable()
-                ->sortable(),
-
-            Column::make('Criado por', 'user_chip')
-                ->bodyAttribute('text-nowrap'),
-
-            Column::make('Editado por', 'editor_chip')
-                ->bodyAttribute('text-nowrap'),
+            Column::make('Editado por', 'editor_name')
+                ->bodyAttribute('app-col-user'),
 
             Column::action('Acoes')
-                ->bodyAttribute('text-nowrap'),
+                ->bodyAttribute('app-col-actions'),
+        ];
+    }
+
+    public function filters(): array
+    {
+        return [
+            Filter::inputText('code', 'id')
+                ->operators(['contains', 'is'])
+                ->placeholder('Codigo')
+                ->builder(function (Builder $query, array $values): void {
+                    $value = preg_replace('/\D+/', '', (string) ($values['value'] ?? ''));
+
+                    if ($value === '' || $value === null) {
+                        return;
+                    }
+
+                    if (($values['selected'] ?? 'contains') === 'is') {
+                        $query->where('id', (int) $value);
+
+                        return;
+                    }
+
+                    $query->where('id', 'like', '%' . $value . '%');
+                }),
+
+            Filter::select('room_name', 'room_id')
+                ->dataSource($this->rooms()->map(fn (Room $room): array => [
+                    'id' => $room->id,
+                    'name' => $room->name,
+                ])->all())
+                ->optionValue('id')
+                ->optionLabel('name'),
+
+            Filter::inputText('title', 'title')
+                ->operators(['contains'])
+                ->placeholder('Titulo'),
+
+            Filter::inputText('requester', 'requester')
+                ->operators(['contains'])
+                ->placeholder('Solicitante'),
+
+            Filter::datepicker('date_br', 'date'),
+
+            Filter::inputText('start_time_br', 'start_time')
+                ->operators(['starts_with', 'contains'])
+                ->placeholder('HH:MM'),
+
+            Filter::inputText('end_time_br', 'end_time')
+                ->operators(['starts_with', 'contains'])
+                ->placeholder('HH:MM'),
+
+            Filter::inputText('user_name')
+                ->operators(['contains'])
+                ->placeholder('Criado por')
+                ->filterRelation('user', 'name'),
+
+            Filter::inputText('editor_name')
+                ->operators(['contains'])
+                ->placeholder('Editado por')
+                ->filterRelation('editor', 'name'),
         ];
     }
 
     public function actions(Reservation $row): array
     {
-        $actions = [
-            Button::add('view')
-                ->slot('Ver')
-                ->class('btn btn-outline-secondary btn-sm')
-                ->route('reservations.show', [$row]),
-        ];
-
-        if (Auth::user()?->can('update', $row)) {
-            $actions[] = Button::add('edit')
-                ->slot('Editar')
-                ->class('btn btn-outline-secondary btn-sm')
-                ->route('reservations.edit', [$row]);
-        }
-
-        if (Auth::user()?->can('delete', $row)) {
-            $actions[] = Button::add('delete')
-                ->slot('Excluir')
-                ->class('btn btn-outline-danger btn-sm')
-                ->confirm('Excluir este agendamento?')
-                ->call('deleteReservation', ['rowId' => $row->id]);
-        }
-
-        return $actions;
+        return [];
     }
 
     public function actionsFromView(Reservation $row): string
@@ -230,24 +234,115 @@ final class ReservationsTable extends PowerGridComponent
     {
         return [
             Rule::rows()
-                ->when(fn () => Auth::id() === $row->user_id)
-                ->setAttribute('class', 'row-mine'),
+                ->when(fn () => $this->rowState($row) === 'confirmed')
+                ->setAttribute('class', 'app-grid-row app-grid-row-confirmed'),
+            Rule::rows()
+                ->when(fn () => $this->rowState($row) === 'reserved')
+                ->setAttribute('class', 'app-grid-row app-grid-row-reserved'),
+            Rule::rows()
+                ->when(fn () => $this->rowState($row) === 'archived')
+                ->setAttribute('class', 'app-grid-row app-grid-row-archived'),
         ];
     }
 
-    public function applyFilters(): void
+    public function bulkEditSelected()
     {
-        $this->gotoPage(1, data_get($this->setUp, 'footer.pageName'));
+        if (count($this->checkboxValues) === 0) {
+            session()->flash('warning', 'Selecione um agendamento para editar.');
+
+            return null;
+        }
+
+        if (count($this->checkboxValues) > 1) {
+            session()->flash('warning', 'A edicao em massa ainda nao esta disponivel. Selecione apenas um registro.');
+
+            return null;
+        }
+
+        return redirect()->route('reservations.edit', (int) $this->checkboxValues[0]);
     }
 
-    public function clearFilters(): void
+    public function exportSelection(): StreamedResponse
     {
-        $this->q = '';
-        $this->room_id = null;
-        $this->date_from = null;
-        $this->date_to = null;
+        $selectedIds = collect($this->checkboxValues)
+            ->map(fn (mixed $id): int => (int) $id)
+            ->filter()
+            ->values();
 
-        $this->gotoPage(1, data_get($this->setUp, 'footer.pageName'));
+        $reservations = Reservation::query()
+            ->with(['room', 'user', 'editor'])
+            ->when($selectedIds->isNotEmpty(), fn (Builder $query) => $query->whereIn('id', $selectedIds))
+            ->when($selectedIds->isEmpty(), function (Builder $query): void {
+                $today = now()->toDateString();
+                $currentTime = now()->format('H:i:s');
+
+                if ($this->scope === 'history') {
+                    $query->where(function (Builder $historyQuery) use ($today, $currentTime): void {
+                        $historyQuery->whereDate('date', '<', $today)
+                            ->orWhere(function (Builder $sameDayQuery) use ($today, $currentTime): void {
+                                $sameDayQuery->whereDate('date', '=', $today)
+                                    ->where('end_time', '<=', $currentTime);
+                            });
+                    });
+
+                    return;
+                }
+
+                $query->where(function (Builder $upcomingQuery) use ($today, $currentTime): void {
+                    $upcomingQuery->whereDate('date', '>', $today)
+                        ->orWhere(function (Builder $sameDayQuery) use ($today, $currentTime): void {
+                            $sameDayQuery->whereDate('date', '=', $today)
+                                ->where('end_time', '>', $currentTime);
+                        });
+                });
+            })
+            ->orderBy('date')
+            ->orderBy('start_time')
+            ->get();
+
+        $filename = 'agendamentos-' . now()->format('Ymd-His') . '.csv';
+
+        return response()->streamDownload(function () use ($reservations): void {
+            $output = fopen('php://output', 'w');
+
+            fputcsv($output, ['Codigo', 'Sala', 'Titulo', 'Solicitante', 'Data', 'Inicio', 'Fim', 'Criado por', 'Editado por'], ';');
+
+            foreach ($reservations as $reservation) {
+                fputcsv($output, [
+                    'AG-' . str_pad((string) $reservation->id, 5, '0', STR_PAD_LEFT),
+                    $reservation->room?->name ?? '-',
+                    $reservation->title,
+                    $reservation->requester,
+                    $reservation->date_br,
+                    $reservation->start_time_br,
+                    $reservation->end_time_br,
+                    $reservation->user?->name ?? '-',
+                    $reservation->editor?->name ?? '-',
+                ], ';');
+            }
+
+            fclose($output);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
+    public function cancelSelected(): void
+    {
+        if (count($this->checkboxValues) === 0) {
+            session()->flash('warning', 'Selecione ao menos um agendamento para executar esta acao.');
+
+            return;
+        }
+
+        session()->flash('warning', 'O fluxo de cancelamento em massa ainda nao existe no dominio atual. A barra de acao foi preparada para essa evolucao.');
+    }
+
+    public function refreshDataset(): void
+    {
+        $this->checkboxAll = false;
+        $this->checkboxValues = [];
+        $this->resetPage(data_get($this->setUp, 'footer.pageName'));
     }
 
     public function rooms()
@@ -259,29 +354,22 @@ final class ReservationsTable extends PowerGridComponent
 
     public function noDataLabel(): string
     {
-        return 'Nenhum agendamento encontrado.';
+        return 'Nenhum agendamento corresponde aos filtros informados.';
     }
 
     private function resolvePerPage(mixed $value): int
     {
         $perPage = (int) $value;
 
-        return in_array($perPage, [10, 20, 50, 100], true) ? $perPage : 10;
+        return in_array($perPage, [20, 50, 100], true) ? $perPage : 20;
     }
 
-    private function userChip(?string $name): string
+    private function rowState(Reservation $reservation): string
     {
-        if (blank($name)) {
-            return '-';
+        if ($this->scope === 'history') {
+            return 'archived';
         }
 
-        $initial = strtoupper(mb_substr($name, 0, 1));
-
-        return sprintf(
-            '<div class="app-user-chip"><div class="app-avatar">%s</div><div class="app-truncate" title="%s">%s</div></div>',
-            e($initial),
-            e($name),
-            e($name)
-        );
+        return $reservation->date === now()->toDateString() ? 'confirmed' : 'reserved';
     }
 }

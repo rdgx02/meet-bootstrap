@@ -34,41 +34,48 @@
                     </button>
 
                     <div class="app-topbar-meta">
-                        <span class="app-topbar-label">Painel administrativo</span>
+                        <span class="app-topbar-label">Sistema corporativo de gestao</span>
                         <strong class="app-topbar-title">@yield('title', config('app.name', 'Meet LADETEC'))</strong>
                     </div>
                 </div>
 
-                <div class="dropdown">
-                    <button
-                        class="btn app-user-toggle dropdown-toggle d-flex align-items-center gap-2"
-                        type="button"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                    >
-                        <span class="app-avatar app-avatar-soft">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
-                        <span class="text-start d-none d-md-block">
-                            <span class="d-block fw-semibold">{{ Auth::user()->name }}</span>
-                            <small class="d-block text-body-secondary">{{ Auth::user()->email }}</small>
-                        </span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Perfil</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="dropdown-item text-danger">Sair</button>
-                            </form>
-                        </li>
-                    </ul>
+                <div class="app-topbar-end">
+                    <div class="app-topbar-context d-none d-md-flex">
+                        <span class="app-topbar-context-label">Ambiente</span>
+                        <strong class="app-topbar-context-value">Administrativo</strong>
+                    </div>
+
+                    <div class="dropdown">
+                        <button
+                            class="btn app-user-toggle dropdown-toggle d-flex align-items-center gap-2"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            <span class="app-avatar app-avatar-soft">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                            <span class="text-start d-none d-md-block">
+                                <span class="d-block fw-semibold">{{ Auth::user()->name }}</span>
+                                <small class="d-block text-body-secondary">{{ Auth::user()->email }}</small>
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Perfil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item text-danger">Sair</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </header>
 
             <div class="app-content-shell">
                 <main class="app-content">
                     @isset($header)
-                        <div class="app-slot-header app-card p-3 p-md-4 mb-3">
+                        <div class="app-slot-header">
                             {{ $header }}
                         </div>
                     @endisset
