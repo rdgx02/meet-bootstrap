@@ -6,21 +6,6 @@
     <div class="lims-page lims-page-samples">
         <section class="lims-page-header lims-page-header-plain">
             <h1 class="lims-page-title">{{ $scope === 'history' ? 'Historico' : 'Agendamentos' }}</h1>
-
-            <div class="lims-dataset-switch">
-                <a
-                    href="{{ route('reservations.index') }}"
-                    class="lims-dataset-switch-link {{ ($scope ?? 'upcoming') === 'upcoming' ? 'is-active' : '' }}"
-                >
-                    Agendamentos
-                </a>
-                <a
-                    href="{{ route('reservations.history') }}"
-                    class="lims-dataset-switch-link {{ ($scope ?? 'upcoming') === 'history' ? 'is-active' : '' }}"
-                >
-                    Historico
-                </a>
-            </div>
         </section>
 
         <section class="lims-dataset-shell lims-dataset-shell-samples">

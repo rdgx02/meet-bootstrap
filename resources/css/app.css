@@ -1120,29 +1120,6 @@ a {
     font-size: 0.8rem;
 }
 
-.lims-dataset-switch {
-    display: inline-flex;
-    border: 1px solid #d1d8e1;
-    background: #ffffff;
-}
-
-.lims-dataset-switch-link {
-    padding: 0.34rem 0.62rem;
-    color: #42556f;
-    font-size: 0.7rem;
-    font-weight: 500;
-    border-right: 1px solid #d1d8e1;
-}
-
-.lims-dataset-switch-link:last-child {
-    border-right: 0;
-}
-
-.lims-dataset-switch-link.is-active {
-    background: #eaf2ff;
-    color: var(--app-brand);
-}
-
 .lims-grid-host {
     padding: 0.65rem;
 }

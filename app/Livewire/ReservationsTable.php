@@ -265,23 +265,6 @@ final class ReservationsTable extends PowerGridComponent
         ];
     }
 
-    public function bulkEditSelected()
-    {
-        if (count($this->checkboxValues) === 0) {
-            session()->flash('warning', 'Selecione um agendamento para editar.');
-
-            return null;
-        }
-
-        if (count($this->checkboxValues) > 1) {
-            session()->flash('warning', 'A edicao em massa ainda nao esta disponivel. Selecione apenas um registro.');
-
-            return null;
-        }
-
-        return redirect()->route('reservations.edit', (int) $this->checkboxValues[0]);
-    }
-
     public function exportSelection(): StreamedResponse
     {
         $selectedIds = collect($this->checkboxValues)

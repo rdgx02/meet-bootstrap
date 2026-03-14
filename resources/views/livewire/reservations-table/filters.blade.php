@@ -19,10 +19,6 @@
                 </a>
             @endcan
 
-            <button type="button" class="btn btn-sm lims-toolbar-btn" wire:click="bulkEditSelected">
-                Editar em massa
-            </button>
-
             <button type="button" class="btn btn-sm lims-toolbar-btn lims-toolbar-btn-icon-only" wire:click="exportSelection" aria-label="Exportar">
                 <span class="lims-toolbar-btn-icon-mark" aria-hidden="true">
                     <svg viewBox="0 0 20 20" fill="none">
