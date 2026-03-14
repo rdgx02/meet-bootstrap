@@ -44,15 +44,27 @@
     <td
         class="{{ theme_style($theme, 'checkbox.th') }}"
     >
+        @php
+            $isReservationTable = in_array($tableName, ['reservations-upcoming-table', 'reservations-history-table'], true);
+        @endphp
         <div class="{{ theme_style($theme, 'checkbox.base') }}">
             <label class="{{ theme_style($theme, 'checkbox.label') }}">
                 <input
-                    x-data="{}"
                     type="checkbox"
                     {{ $inputAttributes }}
-                    x-on:click="window.Alpine.store('pgBulkActions').add($event.target.value, '{{ $tableName }}')"
                     wire:model="checkboxValues"
                     value="{{ $attribute }}"
+                    data-pg-bulk-table="{{ $tableName }}"
+                    @if ($isReservationTable)
+                        data-reservation-id="{{ $attribute }}"
+                        data-show-url="{{ route('reservations.show', $attribute) }}"
+                        data-edit-url="{{ route('reservations.edit', $attribute) }}"
+                        data-delete-url="{{ route('reservations.destroy', $attribute) }}"
+                        data-title="{{ data_get($row, 'title', '-') }}"
+                        data-date="{{ \Carbon\Carbon::parse(data_get($row, 'date'))->format('d/m/Y') }}"
+                        data-time="{{ \Carbon\Carbon::parse(data_get($row, 'start_time'))->format('H:i') }} - {{ \Carbon\Carbon::parse(data_get($row, 'end_time'))->format('H:i') }}"
+                        data-room="{{ data_get($row, 'room.name', '-') }}"
+                    @endif
                 >
             </label>
         </div>

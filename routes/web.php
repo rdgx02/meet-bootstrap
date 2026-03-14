@@ -41,6 +41,11 @@ Route::middleware('auth')->group(function () {
     Route::get('reservations/history', [ReservationController::class, 'history'])
         ->name('reservations.history');
 
+    Route::get('reservations/export-selected', [ReservationController::class, 'exportSelected'])
+        ->name('reservations.export-selected');
+    Route::delete('reservations/destroy-selected', [ReservationController::class, 'destroySelected'])
+        ->name('reservations.destroy-selected');
+
     // Agendamentos
     Route::resource('reservations', ReservationController::class);
 

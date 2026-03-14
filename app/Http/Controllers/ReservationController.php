@@ -12,7 +12,10 @@ use App\Http\Requests\StoreReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
 use App\Models\Reservation;
 use App\Models\Room;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReservationController extends Controller
 {
@@ -144,6 +147,93 @@ class ReservationController extends Controller
 
         return redirect()->route('reservations.index')
             ->with('success', 'Agendamento excluído com sucesso!');
+    }
+
+    public function destroySelected(Request $request)
+    {
+        $this->authorize('viewAny', Reservation::class);
+
+        $selectedIds = collect(explode(',', (string) $request->input('ids')))
+            ->map(fn (mixed $id): int => (int) $id)
+            ->filter()
+            ->values();
+
+        if ($selectedIds->isEmpty()) {
+            return redirect()->route('reservations.index')
+                ->with('warning', 'Selecione ao menos um agendamento para excluir.');
+        }
+
+        $reservations = Reservation::query()
+            ->whereIn('id', $selectedIds)
+            ->get();
+
+        if ($reservations->isEmpty()) {
+            return redirect()->route('reservations.index')
+                ->with('warning', 'Nenhum agendamento selecionado foi encontrado.');
+        }
+
+        foreach ($reservations as $reservation) {
+            $this->authorize('delete', $reservation);
+        }
+
+        DB::transaction(function () use ($reservations): void {
+            foreach ($reservations as $reservation) {
+                $reservation->delete();
+            }
+        });
+
+        $count = $reservations->count();
+
+        return redirect()->route('reservations.index')
+            ->with(
+                'success',
+                $count === 1
+                    ? 'Agendamento excluído com sucesso!'
+                    : sprintf('%d agendamentos excluídos com sucesso!', $count)
+            );
+    }
+
+    public function exportSelected(Request $request): StreamedResponse
+    {
+        $this->authorize('viewAny', Reservation::class);
+
+        $selectedIds = collect(explode(',', (string) $request->query('ids')))
+            ->map(fn (mixed $id): int => (int) $id)
+            ->filter()
+            ->values();
+
+        $reservations = Reservation::query()
+            ->with(['room', 'user', 'editor'])
+            ->whereIn('id', $selectedIds)
+            ->orderBy('date')
+            ->orderBy('start_time')
+            ->get();
+
+        $filename = 'agendamentos-' . now()->format('Ymd-His') . '.csv';
+
+        return response()->streamDownload(function () use ($reservations): void {
+            $output = fopen('php://output', 'w');
+
+            fputcsv($output, ['Codigo', 'Sala', 'Titulo', 'Solicitante', 'Data', 'Inicio', 'Fim', 'Criado por', 'Editado por'], ';');
+
+            foreach ($reservations as $reservation) {
+                fputcsv($output, [
+                    'AG-' . str_pad((string) $reservation->id, 5, '0', STR_PAD_LEFT),
+                    $reservation->room?->name ?? '-',
+                    $reservation->title,
+                    $reservation->requester,
+                    $reservation->date_br,
+                    $reservation->start_time_br,
+                    $reservation->end_time_br,
+                    $reservation->user?->name ?? '-',
+                    $reservation->editor?->name ?? '-',
+                ], ';');
+            }
+
+            fclose($output);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
     }
 
     private function renderList(

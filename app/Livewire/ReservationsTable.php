@@ -247,9 +247,9 @@ final class ReservationsTable extends PowerGridComponent
         ];
     }
 
-    public function exportSelection(): StreamedResponse
+    public function exportSelection(array $selectedIds = []): StreamedResponse
     {
-        $selectedIds = collect($this->checkboxValues)
+        $selectedIds = collect($selectedIds !== [] ? $selectedIds : $this->checkboxValues)
             ->map(fn (mixed $id): int => (int) $id)
             ->filter()
             ->values();
@@ -312,9 +312,9 @@ final class ReservationsTable extends PowerGridComponent
         ]);
     }
 
-    public function viewSelected()
+    public function viewSelected(array $selectedIds = [])
     {
-        $reservation = $this->selectedReservationForSingleAction('visualizar');
+        $reservation = $this->selectedReservationForSingleAction('visualizar', $selectedIds);
 
         if (! $reservation instanceof Reservation) {
             return null;
@@ -323,9 +323,9 @@ final class ReservationsTable extends PowerGridComponent
         return redirect()->route('reservations.show', $reservation);
     }
 
-    public function editSelected()
+    public function editSelected(array $selectedIds = [])
     {
-        $reservation = $this->selectedReservationForSingleAction('editar');
+        $reservation = $this->selectedReservationForSingleAction('editar', $selectedIds);
 
         if (! $reservation instanceof Reservation) {
             return null;
@@ -340,9 +340,9 @@ final class ReservationsTable extends PowerGridComponent
         return redirect()->route('reservations.edit', $reservation);
     }
 
-    public function promptDeleteSelected(): void
+    public function promptDeleteSelected(array $selectedIds = []): void
     {
-        $reservation = $this->selectedReservationForSingleAction('excluir');
+        $reservation = $this->selectedReservationForSingleAction('excluir', $selectedIds);
 
         if (! $reservation instanceof Reservation) {
             return;
@@ -399,9 +399,9 @@ final class ReservationsTable extends PowerGridComponent
         return $reservation->date === now()->toDateString() ? 'confirmed' : 'reserved';
     }
 
-    private function selectedReservationForSingleAction(string $actionLabel): ?Reservation
+    private function selectedReservationForSingleAction(string $actionLabel, array $selectedIds = []): ?Reservation
     {
-        $selectedIds = collect($this->checkboxValues)
+        $selectedIds = collect($selectedIds !== [] ? $selectedIds : $this->checkboxValues)
             ->map(fn (mixed $id): int => (int) $id)
             ->filter()
             ->values();

@@ -102,6 +102,13 @@ const initReservationDeleteModal = () => {
 
     const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
     const form = modalElement.querySelector('[data-delete-form]');
+    const idsInput = form.querySelector('input[name="ids"]');
+    const message = modalElement.querySelector('[data-delete-message]');
+    const submitLabel = modalElement.querySelector('[data-delete-submit-label]');
+    const singleSummary = modalElement.querySelector('[data-delete-single-summary]');
+    const bulkSummary = modalElement.querySelector('[data-delete-bulk-summary]');
+    const bulkCount = modalElement.querySelector('[data-delete-bulk-count]');
+    const bulkList = modalElement.querySelector('[data-delete-bulk-list]');
     const summaryFields = {
         title: modalElement.querySelector('[data-delete-summary="title"]'),
         date: modalElement.querySelector('[data-delete-summary="date"]'),
@@ -117,6 +124,13 @@ const initReservationDeleteModal = () => {
         }
 
         form.action = trigger.dataset.deleteUrl;
+        idsInput.value = '';
+        message.textContent = 'Este registro sera removido da base operacional e nao podera ser recuperado.';
+        submitLabel.textContent = 'Confirmar exclusao';
+        singleSummary.classList.remove('d-none');
+        bulkSummary.classList.add('d-none');
+        bulkCount.textContent = '0 agendamentos';
+        bulkList.innerHTML = '';
         summaryFields.title.textContent = trigger.dataset.title ?? '-';
         summaryFields.date.textContent = trigger.dataset.date ?? '-';
         summaryFields.time.textContent = trigger.dataset.time ?? '-';
@@ -141,6 +155,13 @@ const initReservationDeleteModal = () => {
 
     modalElement.addEventListener('hidden.bs.modal', () => {
         form.action = '';
+        idsInput.value = '';
+        message.textContent = 'Este registro sera removido da base operacional e nao podera ser recuperado.';
+        submitLabel.textContent = 'Confirmar exclusao';
+        singleSummary.classList.remove('d-none');
+        bulkSummary.classList.add('d-none');
+        bulkCount.textContent = '0 agendamentos';
+        bulkList.innerHTML = '';
         Object.values(summaryFields).forEach((field) => {
             field.textContent = '-';
         });
@@ -187,10 +208,173 @@ const initRoomDeleteModal = () => {
     document.body.dataset.roomDeleteModalReady = '1';
 };
 
+const initReservationBulkToolbar = () => {
+    if (document.body.dataset.reservationBulkToolbarReady === '1') {
+        return;
+    }
+
+    const getSelectedInputs = (tableName) =>
+        Array.from(
+            document.querySelectorAll(`input[data-pg-bulk-table="${tableName}"]:checked`)
+        );
+
+    const requireSingleSelection = (tableName, actionLabel) => {
+        const selectedInputs = getSelectedInputs(tableName);
+
+        if (selectedInputs.length === 0) {
+            window.alert(`Selecione um agendamento para ${actionLabel}.`);
+            return null;
+        }
+
+        if (selectedInputs.length > 1) {
+            window.alert(`Selecione apenas um agendamento para ${actionLabel}.`);
+            return null;
+        }
+
+        return selectedInputs[0];
+    };
+
+    document.addEventListener('click', (event) => {
+        const toolbar = event.target.closest('[data-reservation-toolbar]');
+
+        if (!toolbar) {
+            return;
+        }
+
+        const tableName = toolbar.dataset.tableName;
+
+        if (event.target.closest('.js-reservation-bulk-view')) {
+            event.preventDefault();
+
+            const input = requireSingleSelection(tableName, 'visualizar');
+
+            if (!input) {
+                return;
+            }
+
+            window.location.href = input.dataset.showUrl;
+            return;
+        }
+
+        if (event.target.closest('.js-reservation-bulk-edit')) {
+            event.preventDefault();
+
+            const input = requireSingleSelection(tableName, 'editar');
+
+            if (!input) {
+                return;
+            }
+
+            window.location.href = input.dataset.editUrl;
+            return;
+        }
+
+        if (event.target.closest('.js-reservation-bulk-delete')) {
+            event.preventDefault();
+
+            const selectedInputs = getSelectedInputs(tableName);
+
+            if (selectedInputs.length === 0) {
+                window.alert('Selecione ao menos um agendamento para excluir.');
+                return;
+            }
+
+            const modalElement = document.getElementById('reservationDeleteModal');
+
+            if (!modalElement) {
+                return;
+            }
+
+            const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+            const form = modalElement.querySelector('[data-delete-form]');
+            const idsInput = form.querySelector('input[name="ids"]');
+            const message = modalElement.querySelector('[data-delete-message]');
+            const submitLabel = modalElement.querySelector('[data-delete-submit-label]');
+            const singleSummary = modalElement.querySelector('[data-delete-single-summary]');
+            const bulkSummary = modalElement.querySelector('[data-delete-bulk-summary]');
+            const bulkCount = modalElement.querySelector('[data-delete-bulk-count]');
+            const bulkList = modalElement.querySelector('[data-delete-bulk-list]');
+            const summaryFields = {
+                title: modalElement.querySelector('[data-delete-summary="title"]'),
+                date: modalElement.querySelector('[data-delete-summary="date"]'),
+                time: modalElement.querySelector('[data-delete-summary="time"]'),
+                room: modalElement.querySelector('[data-delete-summary="room"]'),
+            };
+
+            if (selectedInputs.length === 1) {
+                const input = selectedInputs[0];
+
+                form.action = input.dataset.deleteUrl;
+                idsInput.value = '';
+                message.textContent = 'Este registro sera removido da base operacional e nao podera ser recuperado.';
+                submitLabel.textContent = 'Confirmar exclusao';
+                singleSummary.classList.remove('d-none');
+                bulkSummary.classList.add('d-none');
+                bulkCount.textContent = '0 agendamentos';
+                bulkList.innerHTML = '';
+                summaryFields.title.textContent = input.dataset.title ?? '-';
+                summaryFields.date.textContent = input.dataset.date ?? '-';
+                summaryFields.time.textContent = input.dataset.time ?? '-';
+                summaryFields.room.textContent = input.dataset.room ?? '-';
+            } else {
+                form.action = form.dataset.deleteSelectedUrl;
+                idsInput.value = selectedInputs.map((input) => input.dataset.reservationId).join(',');
+                message.textContent = 'Os agendamentos selecionados serao removidos da base operacional. Essa acao nao podera ser desfeita.';
+                submitLabel.textContent = 'Excluir selecionados';
+                singleSummary.classList.add('d-none');
+                bulkSummary.classList.remove('d-none');
+                bulkCount.textContent = `${selectedInputs.length} agendamentos`;
+                bulkList.innerHTML = selectedInputs
+                    .slice(0, 6)
+                    .map((input) => `
+                        <div class="lims-bulk-delete-item">
+                            <strong>${input.dataset.title ?? '-'}</strong>
+                            <small>${input.dataset.date ?? '-'} | ${input.dataset.time ?? '-'} | Sala ${input.dataset.room ?? '-'}</small>
+                        </div>
+                    `)
+                    .join('');
+
+                if (selectedInputs.length > 6) {
+                    bulkList.insertAdjacentHTML(
+                        'beforeend',
+                        `<div class="lims-bulk-delete-item"><small>Mais ${selectedInputs.length - 6} agendamentos selecionados.</small></div>`
+                    );
+                }
+            }
+
+            modal.show();
+            return;
+        }
+
+        const exportButton = event.target.closest('.js-reservation-bulk-export');
+
+        if (exportButton) {
+            event.preventDefault();
+
+            const selectedInputs = getSelectedInputs(tableName);
+
+            if (selectedInputs.length === 0) {
+                window.alert('Selecione ao menos um agendamento para exportar.');
+                return;
+            }
+
+            const ids = selectedInputs.map((input) => input.dataset.reservationId).join(',');
+            const exportUrl = new URL(exportButton.dataset.exportUrl, window.location.origin);
+
+            exportUrl.searchParams.set('ids', ids);
+            window.location.href = exportUrl.toString();
+        }
+    });
+
+    document.body.dataset.reservationBulkToolbarReady = '1';
+};
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initReservationDeleteModal);
     document.addEventListener('DOMContentLoaded', initRoomDeleteModal);
+    document.addEventListener('DOMContentLoaded', initReservationBulkToolbar);
 } else {
     initReservationDeleteModal();
     initRoomDeleteModal();
+    initReservationBulkToolbar();
 }
