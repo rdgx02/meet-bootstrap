@@ -12,32 +12,29 @@
 
 @php
     $trClasses = Arr::toCssClasses([theme_style($theme, 'table.body.tr'), theme_style($theme, 'table.body.trFilters')]);
-    $tdClasses = Arr::toCssClasses([theme_style($theme, 'table.body.td'), theme_style($theme, 'table.body.tdFilters')]);
+    $cellClasses = Arr::toCssClasses([theme_style($theme, 'table.header.th'), theme_style($theme, 'table.body.tdFilters')]);
 @endphp
 @if (config('livewire-powergrid.filter') === 'inline')
     <tr
-        class="{{ $trClasses }}"
+        class="{{ $trClasses }} app-grid-inline-filters"
     >
 
         @if (data_get($setUp, 'detail.showCollapseIcon'))
-            <td
-                class="{{ $tdClasses }}"
-            ></td>
+            <th class="{{ $cellClasses }}"></th>
         @endif
         @if ($checkbox)
-            <td
-                class="{{ $tdClasses }}"
-            ></td>
+            <th class="{{ $cellClasses }}"></th>
         @endif
 
         @foreach ($columns as $column)
             @php
                 $filterClass = str(data_get($column, 'filters.className'));
             @endphp
-            <td
+            <th
                 @class([
-                    theme_style($theme, 'table.body.td'),
+                    theme_style($theme, 'table.header.th'),
                     theme_style($theme, 'table.body.tdFilters'),
+                    'app-grid-inline-filter-cell',
                 ])
                 wire:key="column-filter-{{ data_get($column, 'field') }}"
                 @style([
@@ -97,10 +94,10 @@
                         />
                     @endif
                 </div>
-            </td>
+            </th>
         @endforeach
         @if (isset($actions) && count($actions))
-            <td colspan="{{ count($actions) }}"></td>
+            <th colspan="{{ count($actions) }}" class="{{ $cellClasses }} app-grid-inline-filter-cell"></th>
         @endif
     </tr>
 @endif

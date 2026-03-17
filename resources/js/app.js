@@ -369,12 +369,71 @@ const initReservationBulkToolbar = () => {
     document.body.dataset.reservationBulkToolbarReady = '1';
 };
 
+const initStickyGridHeaders = () => {
+    if (document.body.dataset.stickyGridHeadersReady === '1') {
+        return;
+    }
+
+    let syncScheduled = false;
+
+    const syncStickyOffsets = () => {
+        syncScheduled = false;
+
+        document.querySelectorAll('.app-grid-table-wrap').forEach((wrap) => {
+            const firstHeaderRow = wrap.querySelector('.power-grid-table thead tr');
+            const filterRow = wrap.querySelector('.power-grid-table thead tr.app-grid-inline-filters');
+
+            if (!firstHeaderRow) {
+                wrap.style.removeProperty('--app-grid-sticky-header-offset');
+                return;
+            }
+
+            const firstRowHeight = Math.ceil(firstHeaderRow.getBoundingClientRect().height);
+
+            wrap.style.setProperty('--app-grid-sticky-header-offset', `${firstRowHeight}px`);
+            wrap.classList.toggle('app-grid-has-inline-filters', Boolean(filterRow));
+        });
+    };
+
+    const queueStickyOffsetSync = () => {
+        if (syncScheduled) {
+            return;
+        }
+
+        syncScheduled = true;
+        window.requestAnimationFrame(syncStickyOffsets);
+    };
+
+    const observer = new MutationObserver(() => {
+        queueStickyOffsetSync();
+    });
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class', 'style'],
+    });
+
+    window.addEventListener('resize', queueStickyOffsetSync);
+    window.addEventListener('load', queueStickyOffsetSync);
+
+    if (document.fonts?.ready) {
+        document.fonts.ready.then(queueStickyOffsetSync);
+    }
+
+    queueStickyOffsetSync();
+    document.body.dataset.stickyGridHeadersReady = '1';
+};
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initReservationDeleteModal);
     document.addEventListener('DOMContentLoaded', initRoomDeleteModal);
     document.addEventListener('DOMContentLoaded', initReservationBulkToolbar);
+    document.addEventListener('DOMContentLoaded', initStickyGridHeaders);
 } else {
     initReservationDeleteModal();
     initRoomDeleteModal();
     initReservationBulkToolbar();
+    initStickyGridHeaders();
 }

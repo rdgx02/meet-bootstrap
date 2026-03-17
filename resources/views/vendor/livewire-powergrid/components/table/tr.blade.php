@@ -2,7 +2,7 @@
     'loading' => false,
 ])
 <tr
-    class="{{ theme_style($theme, 'table.header.tr') }}"
+    class="{{ theme_style($theme, 'table.header.tr') }} app-grid-column-head"
 >
     @if ($loading)
         <td

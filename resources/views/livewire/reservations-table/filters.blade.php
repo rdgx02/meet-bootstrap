@@ -62,9 +62,6 @@
         </div>
     </div>
 
-    <div class="lims-grid-caption">
-        Utilize os filtros abaixo do cabecalho para refinar a grade, no mesmo padrao de tabelas operacionais de laboratorio e ERP.
-    </div>
 </div>
 
 <div class="modal fade" id="reservationDeleteModal" tabindex="-1" aria-labelledby="reservationDeleteModalTitle" aria-hidden="true">

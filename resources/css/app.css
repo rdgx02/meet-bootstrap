@@ -1356,6 +1356,7 @@ a {
 }
 
 .app-grid-table-wrap {
+    --app-grid-sticky-header-offset: calc(0.42rem + 0.8rem + 0.42rem + 1px);
     max-height: calc(100vh - 11rem);
     overflow: auto;
     border: 1px solid #d7dde6;
@@ -1373,9 +1374,6 @@ a {
 
 .power-grid-table thead th,
 .power-grid-table .thead th {
-    position: sticky;
-    top: 0;
-    z-index: 5;
     padding: 0.42rem 0.5rem;
     border-bottom: 1px solid #d8dee7;
     background: #ffffff;
@@ -1385,6 +1383,13 @@ a {
     letter-spacing: 0.04em;
     text-transform: uppercase;
     white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 12;
+}
+
+.power-grid-table thead tr:first-child th {
+    z-index: 14;
 }
 
 .power-grid-table tbody td {
@@ -1435,6 +1440,9 @@ a {
     padding-top: 0.85rem;
     padding-bottom: 0.8rem;
     background: #eef2f6;
+    top: var(--app-grid-sticky-header-offset);
+    z-index: 13;
+    box-shadow: inset 0 1px 0 #d8dee7;
 }
 
 .power-grid-table .form-control:focus,

@@ -18,6 +18,7 @@
 >
     <x-slot:header>
         @include('livewire-powergrid::components.table.tr')
+        @includeWhen($this->hasColumnFilters, 'livewire-powergrid::components.inline-filters')
     </x-slot:header>
 
     <x-slot:loading>
@@ -25,8 +26,6 @@
     </x-slot:loading>
 
     <x-slot:body>
-        @includeWhen($this->hasColumnFilters, 'livewire-powergrid::components.inline-filters')
-
         @if (count($this->records) === 0)
             @include('livewire-powergrid::components.table.th-empty')
         @else
