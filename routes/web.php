@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -29,6 +30,9 @@ Route::middleware('auth')->group(function () {
 
     // Salas
     Route::resource('rooms', RoomController::class)->except(['show']);
+
+    // Usuarios
+    Route::resource('users', UserController::class)->except(['show', 'destroy']);
 
     // Historico da agenda (passadas)
     Route::get('reservations/history', [ReservationController::class, 'history'])

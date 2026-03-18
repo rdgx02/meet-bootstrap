@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'is_active',
     ];
 
     /**
@@ -46,6 +47,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'role' => UserRole::class,
+            'is_active' => 'boolean',
         ];
     }
 
@@ -65,5 +67,10 @@ class User extends Authenticatable
     public function canManageAgenda(): bool
     {
         return $this->isAdmin() || $this->isSecretary();
+    }
+
+    public function isActive(): bool
+    {
+        return $this->is_active;
     }
 }

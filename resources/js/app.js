@@ -64,27 +64,6 @@ const initDatePickers = () => {
         input.dataset.flatpickrReady = '1';
     });
 
-    const dateFrom = document.querySelector('input[name="date_from"]');
-    const dateTo = document.querySelector('input[name="date_to"]');
-
-    if (
-        dateFrom?._flatpickr &&
-        dateTo?._flatpickr &&
-        dateFrom.dataset.rangeSyncReady !== '1'
-    ) {
-        const syncRangeLimits = () => {
-            const fromDate = dateFrom._flatpickr.selectedDates[0] ?? null;
-            const toDate = dateTo._flatpickr.selectedDates[0] ?? null;
-
-            dateTo._flatpickr.set('minDate', fromDate);
-            dateFrom._flatpickr.set('maxDate', toDate);
-        };
-
-        syncRangeLimits();
-        dateFrom._flatpickr.config.onChange.push(syncRangeLimits);
-        dateTo._flatpickr.config.onChange.push(syncRangeLimits);
-        dateFrom.dataset.rangeSyncReady = '1';
-    }
 };
 
 if (document.readyState === 'loading') {
@@ -115,43 +94,6 @@ const initReservationDeleteModal = () => {
         time: modalElement.querySelector('[data-delete-summary="time"]'),
         room: modalElement.querySelector('[data-delete-summary="room"]'),
     };
-
-    document.addEventListener('click', (event) => {
-        const trigger = event.target.closest('.js-reservation-delete-trigger');
-
-        if (!trigger) {
-            return;
-        }
-
-        form.action = trigger.dataset.deleteUrl;
-        idsInput.value = '';
-        message.textContent = 'Este registro sera removido da base operacional e nao podera ser recuperado.';
-        submitLabel.textContent = 'Confirmar exclusao';
-        singleSummary.classList.remove('d-none');
-        bulkSummary.classList.add('d-none');
-        bulkCount.textContent = '0 agendamentos';
-        bulkList.innerHTML = '';
-        summaryFields.title.textContent = trigger.dataset.title ?? '-';
-        summaryFields.date.textContent = trigger.dataset.date ?? '-';
-        summaryFields.time.textContent = trigger.dataset.time ?? '-';
-        summaryFields.room.textContent = trigger.dataset.room ?? '-';
-
-        modal.show();
-    });
-
-    document.addEventListener('livewire:init', () => {
-        Livewire.on('reservation-delete-requested', (event) => {
-            const payload = Array.isArray(event) ? event[0] : event;
-
-            form.action = payload.deleteUrl ?? '';
-            summaryFields.title.textContent = payload.title ?? '-';
-            summaryFields.date.textContent = payload.date ?? '-';
-            summaryFields.time.textContent = payload.time ?? '-';
-            summaryFields.room.textContent = payload.room ?? '-';
-
-            modal.show();
-        });
-    });
 
     modalElement.addEventListener('hidden.bs.modal', () => {
         form.action = '';

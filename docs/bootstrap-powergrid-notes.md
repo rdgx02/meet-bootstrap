@@ -42,19 +42,26 @@ If PowerGrid is upgraded, review these overrides first because package updates m
 - Separate scopes:
   - `upcoming`: today/future reservations not yet ended
   - `history`: past reservations or same-day reservations already finished
-- Filters handled in Livewire:
-  - text search (`q`)
-  - room (`room_id`)
-  - date range (`date_from`, `date_to`)
-  - per-page selection
+- Filters handled directly in PowerGrid:
+  - reservation code
+  - room
+  - title
+  - requester
+  - date
+  - start/end time
+  - created by / edited by
+- Initial request filtering is currently limited to `per_page`
 - Sorting defaults:
   - upcoming by `date asc`
   - history by `date desc`
 - Row highlighting:
-  - reservations created by the logged-in user receive `row-mine`
-- Actions:
-  - `Ver` always available
-  - `Editar` and `Excluir` respect policies
+  - upcoming rows are styled as `confirmed` for today and `reserved` for future items
+  - history rows are styled as `archived`
+- Bulk actions:
+  - `Visualizar` requires exactly one selected row
+  - `Editar` requires exactly one selected row and only appears outside history
+  - `Excluir` supports one or many selected rows and respects backend policies
+  - `Exportar` exports only the selected rows through `reservations.export-selected`
 
 ## Files To Check Before Any Future UI Change
 
@@ -78,22 +85,5 @@ When we touch this area again, append a dated entry here with:
 ## Pending Follow-Up Worth Tracking
 
 - Add or adjust automated tests for the Livewire reservations table behavior.
-- Review whether the date filter inputs should reuse `flatpickr` in the Livewire filter view for visual consistency.
 - Confirm if the published PowerGrid bootstrap views need more project-specific styling or can be reduced to avoid maintenance on upgrades.
 - Decide whether this same PowerGrid pattern should also replace the rooms list in the future.
-
-## Local State Seen During Review
-
-At review time, the working tree already contained local changes related to this migration:
-
-- modified: `app/Http/Controllers/ReservationController.php`
-- modified: `composer.json`
-- modified: `composer.lock`
-- modified: `resources/css/app.css`
-- modified: `resources/views/layouts/app.blade.php`
-- modified: `resources/views/layouts/guest.blade.php`
-- modified: `resources/views/reservations/index.blade.php`
-- untracked: `app/Livewire/`
-- untracked: `config/livewire-powergrid.php`
-- untracked: `resources/views/livewire/`
-- untracked: `resources/views/vendor/`
