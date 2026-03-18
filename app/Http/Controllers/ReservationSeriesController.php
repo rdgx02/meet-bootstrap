@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Reservations\CancelReservationSeriesAction;
+use App\Actions\Reservations\UpdateReservationSeriesAction;
+use App\Exceptions\RecurringReservationConflictException;
+use App\Http\Requests\UpdateReservationSeriesRequest;
 use App\Models\ReservationSeries;
-use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -40,6 +42,51 @@ class ReservationSeriesController extends Controller
             'series' => $reservationSeries,
             'now' => now(),
         ]);
+    }
+
+    public function edit(ReservationSeries $reservationSeries): View
+    {
+        $this->authorize('update', $reservationSeries);
+
+        $reservationSeries->load('room');
+
+        return view('reservation-series.edit', [
+            'series' => $reservationSeries,
+            'rooms' => \App\Models\Room::active()->orderBy('name')->get(),
+        ]);
+    }
+
+    public function update(
+        UpdateReservationSeriesRequest $request,
+        ReservationSeries $reservationSeries,
+        UpdateReservationSeriesAction $updateReservationSeries
+    ): RedirectResponse {
+        if ($reservationSeries->status === 'cancelled') {
+            return redirect()
+                ->route('reservation-series.show', $reservationSeries)
+                ->with('warning', 'Series canceladas nao podem ser editadas.');
+        }
+
+        try {
+            $result = $updateReservationSeries->execute($reservationSeries, $request->validated());
+        } catch (RecurringReservationConflictException $exception) {
+            return back()
+                ->withInput()
+                ->with('recurring_conflicts', $exception->conflicts())
+                ->withErrors([
+                    'recurrence_ends_on' => $exception->getMessage(),
+                ]);
+        }
+
+        return redirect()
+            ->route('reservation-series.show', $reservationSeries)
+            ->with(
+                'success',
+                sprintf(
+                    'Serie atualizada com sucesso. %d ocorrencias futuras foram recriadas.',
+                    $result['updated_count']
+                )
+            );
     }
 
     public function cancel(

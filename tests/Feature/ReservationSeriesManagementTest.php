@@ -139,4 +139,106 @@ class ReservationSeriesManagementTest extends TestCase
             Carbon::setTestNow();
         }
     }
+
+    public function test_secretary_can_edit_series_and_recreate_future_occurrences(): void
+    {
+        Carbon::setTestNow(Carbon::create(2026, 3, 18, 10, 0, 0, 'America/Sao_Paulo'));
+
+        try {
+            $secretary = User::factory()->create(['role' => UserRole::Secretary]);
+            $roomA = Room::create(['name' => 'Sala A', 'is_active' => true]);
+            $roomB = Room::create(['name' => 'Sala B', 'is_active' => true]);
+            $series = ReservationSeries::create([
+                'room_id' => $roomA->id,
+                'user_id' => $secretary->id,
+                'starts_on' => now()->subDay()->toDateString(),
+                'ends_on' => now()->addDays(7)->toDateString(),
+                'start_time' => '09:00',
+                'end_time' => '10:00',
+                'title' => 'Serie Original',
+                'requester' => 'Secretaria',
+                'contact' => null,
+                'frequency' => 'daily',
+                'interval' => 1,
+                'weekdays' => null,
+                'conflict_mode' => 'strict',
+                'status' => 'active',
+            ]);
+
+            $pastOccurrence = Reservation::create([
+                'room_id' => $roomA->id,
+                'series_id' => $series->id,
+                'user_id' => $secretary->id,
+                'date' => now()->subDay()->toDateString(),
+                'original_date' => now()->subDay()->toDateString(),
+                'is_exception' => false,
+                'start_time' => '09:00',
+                'end_time' => '10:00',
+                'title' => 'Serie Original',
+                'requester' => 'Secretaria',
+                'contact' => null,
+            ]);
+
+            $futureOccurrence = Reservation::create([
+                'room_id' => $roomA->id,
+                'series_id' => $series->id,
+                'user_id' => $secretary->id,
+                'date' => now()->addDay()->toDateString(),
+                'original_date' => now()->addDay()->toDateString(),
+                'is_exception' => false,
+                'start_time' => '09:00',
+                'end_time' => '10:00',
+                'title' => 'Serie Original',
+                'requester' => 'Secretaria',
+                'contact' => null,
+            ]);
+
+            $response = $this->actingAs($secretary)
+                ->put(route('reservation-series.update', $series), [
+                    'room_id' => $roomB->id,
+                    'title' => 'Serie Atualizada',
+                    'requester' => 'Equipe Operacional',
+                    'contact' => 'contato@example.com',
+                    'start_time' => '14:00',
+                    'end_time' => '15:00',
+                    'recurrence_starts_on' => now()->subDay()->toDateString(),
+                    'recurrence_ends_on' => now()->addDays(3)->toDateString(),
+                    'recurrence_frequency' => 'daily',
+                ]);
+
+            $response->assertRedirect(route('reservation-series.show', $series));
+
+            $this->assertDatabaseHas('reservation_series', [
+                'id' => $series->id,
+                'room_id' => $roomB->id,
+                'title' => 'Serie Atualizada',
+                'requester' => 'Equipe Operacional',
+                'contact' => 'contato@example.com',
+                'start_time' => '14:00',
+                'end_time' => '15:00',
+            ]);
+
+            $this->assertDatabaseHas('reservations', [
+                'id' => $pastOccurrence->id,
+                'room_id' => $roomA->id,
+                'title' => 'Serie Original',
+            ]);
+
+            $this->assertDatabaseMissing('reservations', [
+                'id' => $futureOccurrence->id,
+            ]);
+
+            $this->assertDatabaseHas('reservations', [
+                'series_id' => $series->id,
+                'room_id' => $roomB->id,
+                'title' => 'Serie Atualizada',
+                'requester' => 'Equipe Operacional',
+                'date' => now()->addDay()->toDateString(),
+                'start_time' => '14:00',
+                'end_time' => '15:00',
+            ]);
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
 }

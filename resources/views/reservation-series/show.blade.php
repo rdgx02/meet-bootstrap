@@ -27,6 +27,14 @@
                     Voltar
                 </a>
 
+                @can('update', $series)
+                    @if ($series->status === 'active')
+                        <a href="{{ route('reservation-series.edit', $series) }}" class="btn btn-outline-secondary app-section-btn app-section-btn-light">
+                            Editar serie
+                        </a>
+                    @endif
+                @endcan
+
                 @can('cancel', $series)
                     @if ($series->status === 'active')
                         <form method="POST" action="{{ route('reservation-series.cancel', $series) }}">

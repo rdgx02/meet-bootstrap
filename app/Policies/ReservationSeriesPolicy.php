@@ -26,4 +26,9 @@ class ReservationSeriesPolicy
     {
         return $this->canManageAgenda($user);
     }
+
+    public function update(User $user, ReservationSeries $series): bool
+    {
+        return $this->canManageAgenda($user);
+    }
 }

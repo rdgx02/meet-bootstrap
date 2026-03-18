@@ -43,6 +43,10 @@ Route::middleware('auth')->group(function () {
         ->name('reservation-series.index');
     Route::get('reservation-series/{reservationSeries}', [ReservationSeriesController::class, 'show'])
         ->name('reservation-series.show');
+    Route::get('reservation-series/{reservationSeries}/edit', [ReservationSeriesController::class, 'edit'])
+        ->name('reservation-series.edit');
+    Route::put('reservation-series/{reservationSeries}', [ReservationSeriesController::class, 'update'])
+        ->name('reservation-series.update');
     Route::patch('reservation-series/{reservationSeries}/cancel', [ReservationSeriesController::class, 'cancel'])
         ->name('reservation-series.cancel');
 
