@@ -54,4 +54,14 @@ class ReservationSeries extends Model
     {
         return Carbon::parse($this->ends_on)->format('d/m/Y');
     }
+
+    public function getFrequencyLabelAttribute(): string
+    {
+        return match ($this->frequency) {
+            'daily' => 'Diaria',
+            'weekly' => 'Semanal',
+            'monthly' => 'Mensal',
+            default => ucfirst((string) $this->frequency),
+        };
+    }
 }

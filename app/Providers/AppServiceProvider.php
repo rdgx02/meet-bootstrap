@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Models\Reservation;
+use App\Models\ReservationSeries;
 use App\Models\Room;
 use App\Models\User;
 use App\Policies\ReservationPolicy;
+use App\Policies\ReservationSeriesPolicy;
 use App\Policies\RoomPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Pagination\Paginator;
@@ -28,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(Reservation::class, ReservationPolicy::class);
+        Gate::policy(ReservationSeries::class, ReservationSeriesPolicy::class);
         Gate::policy(Room::class, RoomPolicy::class);
         Gate::policy(User::class, UserPolicy::class);
         Paginator::useBootstrapFive();

@@ -1,6 +1,7 @@
 @php
     $usersRoute = \Illuminate\Support\Facades\Route::has('users.index') ? route('users.index') : null;
     $canViewRooms = auth()->user()?->can('viewAny', \App\Models\Room::class) ?? false;
+    $canViewReservationSeries = auth()->user()?->can('viewAny', \App\Models\ReservationSeries::class) ?? false;
     $reservationsActive = request()->routeIs('reservations.index')
         || request()->routeIs('reservations.create')
         || request()->routeIs('reservations.show')
@@ -49,6 +50,20 @@
                     <span class="app-side-link-label">Historico</span>
                 </span>
             </a>
+
+            @if ($canViewReservationSeries)
+                <a class="app-side-link {{ request()->routeIs('reservation-series.*') ? 'is-active' : '' }}" href="{{ route('reservation-series.index') }}">
+                    <span class="app-side-link-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M7 4h10M7 12h10M7 20h10M4 4h.01M4 12h.01M4 20h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    <span class="app-side-link-copy">
+                        <span class="app-side-link-label">Series</span>
+                    </span>
+                </a>
+            @endif
+
             <a
                 class="app-side-link {{ request()->routeIs('rooms.*') ? 'is-active' : '' }} {{ $canViewRooms ? '' : 'is-disabled' }}"
                 href="{{ $canViewRooms ? route('rooms.index') : '#' }}"

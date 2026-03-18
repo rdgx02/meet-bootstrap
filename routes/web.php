@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\ReservationSeriesController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +38,13 @@ Route::middleware('auth')->group(function () {
     // Historico da agenda (passadas)
     Route::get('reservations/history', [ReservationController::class, 'history'])
         ->name('reservations.history');
+
+    Route::get('reservation-series', [ReservationSeriesController::class, 'index'])
+        ->name('reservation-series.index');
+    Route::get('reservation-series/{reservationSeries}', [ReservationSeriesController::class, 'show'])
+        ->name('reservation-series.show');
+    Route::patch('reservation-series/{reservationSeries}/cancel', [ReservationSeriesController::class, 'cancel'])
+        ->name('reservation-series.cancel');
 
     Route::get('reservations/export-selected', [ReservationController::class, 'exportSelected'])
         ->name('reservations.export-selected');
