@@ -64,42 +64,21 @@
                 </span>
             </a>
 
-            <a
-                class="app-side-link {{ request()->routeIs('users.*') ? 'is-active' : '' }} {{ $usersRoute ? '' : 'is-disabled' }}"
-                href="{{ $usersRoute ?? '#' }}"
-                @if (! $usersRoute) aria-disabled="true" tabindex="-1" @endif
-            >
-                <span class="app-side-link-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M16 19a4 4 0 0 0-8 0M12 12a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM5 19a7 7 0 0 1 14 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </span>
-                <span class="app-side-link-copy">
-                    <span class="app-side-link-label">Usuarios</span>
-                </span>
-            </a>
-
-            <a class="app-side-link app-side-link-muted" href="#">
-                <span class="app-side-link-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M6 4h12M6 10h12M6 16h12M6 20h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                    </svg>
-                </span>
-                <span class="app-side-link-copy">
-                    <span class="app-side-link-label">Relatorios</span>
-                </span>
-            </a>
-
-            <a class="app-side-link app-side-link-muted" href="#">
-                <span class="app-side-link-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                    </svg>
-                </span>
-                <span class="app-side-link-copy">
-                    <span class="app-side-link-label">Configuracoes</span>
-                </span>
-            </a>
+            @if ($usersRoute)
+                <a
+                    class="app-side-link {{ request()->routeIs('users.*') ? 'is-active' : '' }}"
+                    href="{{ $usersRoute }}"
+                >
+                    <span class="app-side-link-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M16 19a4 4 0 0 0-8 0M12 12a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM5 19a7 7 0 0 1 14 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    <span class="app-side-link-copy">
+                        <span class="app-side-link-label">Usuarios</span>
+                    </span>
+                </a>
+            @endif
         </nav>
 
         <div class="app-sidebar-account mt-auto">

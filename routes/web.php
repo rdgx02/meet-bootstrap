@@ -23,13 +23,6 @@ Route::get('/dashboard', function () {
 })->middleware(['auth'])->name('dashboard');
 
 /**
- * 🔐 Área ADMIN (teste do middleware)
- */
-Route::get('/admin-teste', function () {
-    return 'Área administrativa ✅';
-})->middleware('admin');
-
-/**
  * Tudo abaixo exige login.
  */
 Route::middleware('auth')->group(function () {

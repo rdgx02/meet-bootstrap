@@ -7,6 +7,15 @@ use Illuminate\Validation\Rule;
 
 abstract class ReservationRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        if (! $this->has('booking_mode') || $this->input('booking_mode') === null || $this->input('booking_mode') === '') {
+            $this->merge([
+                'booking_mode' => 'single',
+            ]);
+        }
+    }
+
     protected function baseReservationRules(): array
     {
         return [
