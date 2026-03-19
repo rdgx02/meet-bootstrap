@@ -467,14 +467,300 @@ class ReservationSeriesManagementTest extends TestCase
                     'date' => $futureOccurrence->date,
                     'start_time' => '10:00',
                     'end_time' => '11:00',
-                    'title' => 'Ocorrencia Ajustada',
-                    'requester' => 'Secretaria',
-                    'contact' => null,
-                    'from' => 'series',
-                    'series' => $series->id,
-                ]);
+                'title' => 'Ocorrencia Ajustada',
+                'requester' => 'Secretaria',
+                'contact' => null,
+                'series_scope' => 'occurrence',
+                'from' => 'series',
+                'series' => $series->id,
+            ]);
 
             $updateResponse->assertRedirect(route('reservation-series.show', $series));
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+    public function test_occurrence_update_with_following_scope_splits_series(): void
+    {
+        Carbon::setTestNow(Carbon::create(2026, 3, 18, 10, 0, 0, 'America/Sao_Paulo'));
+
+        try {
+            $secretary = User::factory()->create(['role' => UserRole::Secretary]);
+            $room = Room::create(['name' => 'Sala Split', 'is_active' => true]);
+            $series = ReservationSeries::create([
+                'room_id' => $room->id,
+                'user_id' => $secretary->id,
+                'starts_on' => '2026-03-17',
+                'ends_on' => '2026-03-25',
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Serie Split',
+                'requester' => 'Secretaria',
+                'contact' => null,
+                'frequency' => 'daily',
+                'interval' => 1,
+                'weekdays' => null,
+                'conflict_mode' => 'strict',
+                'status' => 'active',
+            ]);
+
+            Reservation::create([
+                'room_id' => $room->id,
+                'series_id' => $series->id,
+                'user_id' => $secretary->id,
+                'date' => '2026-03-17',
+                'original_date' => '2026-03-17',
+                'is_exception' => false,
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Serie Split',
+                'requester' => 'Secretaria',
+                'contact' => null,
+            ]);
+
+            $target = Reservation::create([
+                'room_id' => $room->id,
+                'series_id' => $series->id,
+                'user_id' => $secretary->id,
+                'date' => '2026-03-19',
+                'original_date' => '2026-03-19',
+                'is_exception' => false,
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Serie Split',
+                'requester' => 'Secretaria',
+                'contact' => null,
+            ]);
+
+            Reservation::create([
+                'room_id' => $room->id,
+                'series_id' => $series->id,
+                'user_id' => $secretary->id,
+                'date' => '2026-03-20',
+                'original_date' => '2026-03-20',
+                'is_exception' => false,
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Serie Split',
+                'requester' => 'Secretaria',
+                'contact' => null,
+            ]);
+
+            $response = $this->actingAs($secretary)->put(route('reservations.update', $target), [
+                'room_id' => $room->id,
+                'date' => '2026-03-19',
+                'start_time' => '10:00',
+                'end_time' => '11:00',
+                'title' => 'Serie Split Nova',
+                'requester' => 'Equipe',
+                'contact' => 'time@example.com',
+                'series_scope' => 'following',
+                'from' => 'series',
+                'series' => $series->id,
+            ]);
+
+            $newSeries = ReservationSeries::query()->where('title', 'Serie Split Nova')->latest('id')->first();
+
+            $response->assertRedirect(route('reservation-series.show', $series));
+            $this->assertNotNull($newSeries);
+            $this->assertDatabaseHas('reservation_series', [
+                'id' => $series->id,
+                'ends_on' => '2026-03-18',
+            ]);
+            $this->assertDatabaseHas('reservation_series', [
+                'id' => $newSeries->id,
+                'starts_on' => '2026-03-19',
+                'ends_on' => '2026-03-25',
+                'start_time' => '10:00',
+            ]);
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+    public function test_occurrence_update_with_all_scope_updates_series_future(): void
+    {
+        Carbon::setTestNow(Carbon::create(2026, 3, 18, 10, 0, 0, 'America/Sao_Paulo'));
+
+        try {
+            $secretary = User::factory()->create(['role' => UserRole::Secretary]);
+            $room = Room::create(['name' => 'Sala All', 'is_active' => true]);
+            $series = ReservationSeries::create([
+                'room_id' => $room->id,
+                'user_id' => $secretary->id,
+                'starts_on' => '2026-03-17',
+                'ends_on' => '2026-03-25',
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Serie All',
+                'requester' => 'Secretaria',
+                'contact' => null,
+                'frequency' => 'daily',
+                'interval' => 1,
+                'weekdays' => null,
+                'conflict_mode' => 'strict',
+                'status' => 'active',
+            ]);
+
+            $target = Reservation::create([
+                'room_id' => $room->id,
+                'series_id' => $series->id,
+                'user_id' => $secretary->id,
+                'date' => '2026-03-19',
+                'original_date' => '2026-03-19',
+                'is_exception' => false,
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Serie All',
+                'requester' => 'Secretaria',
+                'contact' => null,
+            ]);
+
+            $response = $this->actingAs($secretary)->put(route('reservations.update', $target), [
+                'room_id' => $room->id,
+                'date' => '2026-03-19',
+                'start_time' => '12:00',
+                'end_time' => '13:00',
+                'title' => 'Serie All Atualizada',
+                'requester' => 'Equipe Toda',
+                'contact' => 'all@example.com',
+                'series_scope' => 'all',
+                'from' => 'series',
+                'series' => $series->id,
+            ]);
+
+            $response->assertRedirect(route('reservation-series.show', $series));
+            $this->assertDatabaseHas('reservation_series', [
+                'id' => $series->id,
+                'title' => 'Serie All Atualizada',
+                'start_time' => '12:00',
+                'end_time' => '13:00',
+            ]);
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+    public function test_occurrence_delete_with_following_scope_truncates_series(): void
+    {
+        Carbon::setTestNow(Carbon::create(2026, 3, 18, 10, 0, 0, 'America/Sao_Paulo'));
+
+        try {
+            $secretary = User::factory()->create(['role' => UserRole::Secretary]);
+            $room = Room::create(['name' => 'Sala Delete Following', 'is_active' => true]);
+            $series = ReservationSeries::create([
+                'room_id' => $room->id,
+                'user_id' => $secretary->id,
+                'starts_on' => '2026-03-17',
+                'ends_on' => '2026-03-25',
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Serie Delete Following',
+                'requester' => 'Secretaria',
+                'contact' => null,
+                'frequency' => 'daily',
+                'interval' => 1,
+                'weekdays' => null,
+                'conflict_mode' => 'strict',
+                'status' => 'active',
+            ]);
+
+            $target = Reservation::create([
+                'room_id' => $room->id,
+                'series_id' => $series->id,
+                'user_id' => $secretary->id,
+                'date' => '2026-03-19',
+                'original_date' => '2026-03-19',
+                'is_exception' => false,
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Serie Delete Following',
+                'requester' => 'Secretaria',
+                'contact' => null,
+            ]);
+
+            $future = Reservation::create([
+                'room_id' => $room->id,
+                'series_id' => $series->id,
+                'user_id' => $secretary->id,
+                'date' => '2026-03-20',
+                'original_date' => '2026-03-20',
+                'is_exception' => false,
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Serie Delete Following',
+                'requester' => 'Secretaria',
+                'contact' => null,
+            ]);
+
+            $response = $this->actingAs($secretary)->delete(route('reservations.destroy', $target), [
+                'series_scope' => 'following',
+                'from' => 'series',
+                'series' => $series->id,
+            ]);
+
+            $response->assertRedirect(route('reservation-series.show', $series));
+            $this->assertDatabaseMissing('reservations', ['id' => $target->id]);
+            $this->assertDatabaseMissing('reservations', ['id' => $future->id]);
+            $this->assertDatabaseHas('reservation_series', [
+                'id' => $series->id,
+                'ends_on' => '2026-03-18',
+            ]);
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+    public function test_occurrence_delete_with_all_scope_cancels_series(): void
+    {
+        Carbon::setTestNow(Carbon::create(2026, 3, 18, 10, 0, 0, 'America/Sao_Paulo'));
+
+        try {
+            $secretary = User::factory()->create(['role' => UserRole::Secretary]);
+            $room = Room::create(['name' => 'Sala Delete All', 'is_active' => true]);
+            $series = ReservationSeries::create([
+                'room_id' => $room->id,
+                'user_id' => $secretary->id,
+                'starts_on' => '2026-03-17',
+                'ends_on' => '2026-03-25',
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Serie Delete All',
+                'requester' => 'Secretaria',
+                'contact' => null,
+                'frequency' => 'daily',
+                'interval' => 1,
+                'weekdays' => null,
+                'conflict_mode' => 'strict',
+                'status' => 'active',
+            ]);
+
+            $target = Reservation::create([
+                'room_id' => $room->id,
+                'series_id' => $series->id,
+                'user_id' => $secretary->id,
+                'date' => '2026-03-19',
+                'original_date' => '2026-03-19',
+                'is_exception' => false,
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Serie Delete All',
+                'requester' => 'Secretaria',
+                'contact' => null,
+            ]);
+
+            $response = $this->actingAs($secretary)->delete(route('reservations.destroy', $target), [
+                'series_scope' => 'all',
+                'from' => 'series',
+                'series' => $series->id,
+            ]);
+
+            $response->assertRedirect(route('reservation-series.show', $series));
+            $this->assertDatabaseHas('reservation_series', [
+                'id' => $series->id,
+                'status' => 'cancelled',
+            ]);
         } finally {
             Carbon::setTestNow();
         }

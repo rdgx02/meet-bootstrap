@@ -6,6 +6,7 @@
     $startValue = old('start_time', $isEdit ? $reservation->start_time : '08:00');
     $endValue = old('end_time', $isEdit ? $reservation->end_time : '09:00');
     $bookingMode = old('booking_mode', 'single');
+    $seriesScope = old('series_scope', 'occurrence');
     $recurrenceStartsOn = old('recurrence_starts_on', now()->toDateString());
     $recurrenceEndsOn = old('recurrence_ends_on', now()->addMonthsNoOverflow(6)->toDateString());
     $recurrenceFrequency = old('recurrence_frequency', 'weekly');
@@ -138,6 +139,37 @@
         </div>
 
         <div class="app-form-grid-compact app-form-grid-2">
+            @if ($isEdit && isset($reservation) && $reservation->series_id)
+                <div class="app-form-field app-form-field-full">
+                    <label class="app-form-label">Escopo da alteracao</label>
+                    <div class="app-choice-grid app-choice-grid-compact">
+                        <label class="app-choice-card app-choice-card-compact {{ $seriesScope === 'occurrence' ? 'is-active' : '' }}">
+                            <input type="radio" name="series_scope" value="occurrence" {{ $seriesScope === 'occurrence' ? 'checked' : '' }}>
+                            <span class="app-choice-card-body">
+                                <strong>So esta ocorrencia</strong>
+                                <small>Transforma apenas este item em excecao da serie.</small>
+                            </span>
+                        </label>
+
+                        <label class="app-choice-card app-choice-card-compact {{ $seriesScope === 'following' ? 'is-active' : '' }}">
+                            <input type="radio" name="series_scope" value="following" {{ $seriesScope === 'following' ? 'checked' : '' }}>
+                            <span class="app-choice-card-body">
+                                <strong>Esta e proximas</strong>
+                                <small>Cria uma nova continuidade da serie a partir desta data.</small>
+                            </span>
+                        </label>
+
+                        <label class="app-choice-card app-choice-card-compact {{ $seriesScope === 'all' ? 'is-active' : '' }}">
+                            <input type="radio" name="series_scope" value="all" {{ $seriesScope === 'all' ? 'checked' : '' }}>
+                            <span class="app-choice-card-body">
+                                <strong>Toda a serie</strong>
+                                <small>Aplica sala, horario e dados comuns em toda a recorrencia futura.</small>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            @endif
+
             @if (! $isEdit)
                 <div class="app-form-field app-form-field-full">
                     <label class="app-form-label">Tipo de agendamento</label>
@@ -388,7 +420,11 @@
                     <span x-show="bookingMode === 'single'" x-cloak>Revise os dados antes de confirmar a operacao.</span>
                     <span x-show="bookingMode === 'recurring'" x-cloak>O sistema verificara conflito em cada ocorrencia da serie antes de salvar.</span>
                 @else
-                    Revise os dados antes de confirmar a operacao.
+                    @if (isset($reservation) && $reservation->series_id)
+                        O escopo escolhido define se a alteracao vale para uma ocorrencia, a continuidade da serie ou toda a recorrencia futura.
+                    @else
+                        Revise os dados antes de confirmar a operacao.
+                    @endif
                 @endif
             </p>
 

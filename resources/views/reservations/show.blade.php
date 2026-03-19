@@ -93,6 +93,37 @@
                                     Essa exclusao remove o agendamento da agenda e do historico administrativo.
                                 </div>
 
+                                @if ($reservation->series_id)
+                                    <div class="mb-3">
+                                        <label class="app-form-label">Escopo da exclusao</label>
+                                        <div class="app-choice-grid app-choice-grid-compact">
+                                            <label class="app-choice-card app-choice-card-compact is-active">
+                                                <input type="radio" name="series_scope" value="occurrence" checked form="reservation-delete-form">
+                                                <span class="app-choice-card-body">
+                                                    <strong>So esta ocorrencia</strong>
+                                                    <small>Remove apenas este registro da recorrencia.</small>
+                                                </span>
+                                            </label>
+
+                                            <label class="app-choice-card app-choice-card-compact">
+                                                <input type="radio" name="series_scope" value="following" form="reservation-delete-form">
+                                                <span class="app-choice-card-body">
+                                                    <strong>Esta e proximas</strong>
+                                                    <small>Remove esta ocorrencia e encerra a continuidade da serie a partir daqui.</small>
+                                                </span>
+                                            </label>
+
+                                            <label class="app-choice-card app-choice-card-compact">
+                                                <input type="radio" name="series_scope" value="all" form="reservation-delete-form">
+                                                <span class="app-choice-card-body">
+                                                    <strong>Toda a serie</strong>
+                                                    <small>Cancela a serie e remove todas as ocorrencias futuras.</small>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                @endif
+
                                 <p class="app-modal-text">
                                     Essa acao remove o agendamento da agenda e nao pode ser desfeita.
                                 </p>
@@ -110,7 +141,7 @@
                                     Cancelar
                                 </button>
 
-                                <form method="POST" action="{{ route('reservations.destroy', $reservation) }}">
+                                <form id="reservation-delete-form" method="POST" action="{{ route('reservations.destroy', $reservation) }}">
                                     @csrf
                                     @method('DELETE')
                                     @if ($returnToSeries)

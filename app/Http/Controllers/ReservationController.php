@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Actions\Reservations\CreateReservationAction;
 use App\Actions\Reservations\CreateRecurringReservationSeriesAction;
+use App\Actions\Reservations\DeleteReservationFollowingAction;
+use App\Actions\Reservations\UpdateReservationFollowingAction;
 use App\Actions\Reservations\UpdateReservationAction;
 use App\Exceptions\RecurringReservationConflictException;
 use App\Exceptions\ReservationConflictException;
@@ -12,6 +14,7 @@ use App\Http\Requests\StoreReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
 use App\Models\Reservation;
 use App\Models\Room;
+use App\Models\ReservationSeries;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -129,10 +132,19 @@ class ReservationController extends Controller
     public function update(
         UpdateReservationRequest $request,
         Reservation $reservation,
-        UpdateReservationAction $updateReservation
+        UpdateReservationAction $updateReservation,
+        UpdateReservationFollowingAction $updateReservationFollowing
     ) {
+        $scope = $request->validated('series_scope') ?? 'occurrence';
+
         try {
-            $updateReservation->execute($reservation, $request->validated());
+            if ($reservation->series_id !== null && $scope === 'following') {
+                $updateReservationFollowing->execute($reservation, $request->validated());
+            } elseif ($reservation->series_id !== null && $scope === 'all') {
+                $this->updateEntireSeriesFromReservation($reservation, $request->validated());
+            } else {
+                $updateReservation->execute($reservation, $request->validated());
+            }
         } catch (ReservationConflictException $exception) {
             return back()
                 ->withInput()
@@ -140,17 +152,42 @@ class ReservationController extends Controller
                 ->withErrors([
                     'start_time' => $exception->getMessage(),
                 ]);
+        } catch (RecurringReservationConflictException $exception) {
+            return back()
+                ->withInput()
+                ->with('recurring_conflicts', $exception->conflicts())
+                ->withErrors([
+                    'date' => $exception->getMessage(),
+                ]);
         }
 
         return $this->redirectAfterReservationAction($request, $reservation)
             ->with('success', 'Agendamento atualizado com sucesso!');
     }
 
-    public function destroy(Request $request, Reservation $reservation)
+    public function destroy(
+        Request $request,
+        Reservation $reservation,
+        DeleteReservationFollowingAction $deleteReservationFollowing
+    )
     {
         $this->authorize('delete', $reservation);
 
-        $reservation->delete();
+        $scope = $request->input('series_scope', 'occurrence');
+
+        if ($reservation->series_id !== null && $scope === 'following') {
+            $deleteReservationFollowing->execute($reservation);
+        } elseif ($reservation->series_id !== null && $scope === 'all') {
+            $series = $reservation->series;
+
+            if ($series instanceof ReservationSeries) {
+                app(\App\Actions\Reservations\CancelReservationSeriesAction::class)->execute($series);
+            } else {
+                $reservation->delete();
+            }
+        } else {
+            $reservation->delete();
+        }
 
         return $this->redirectAfterReservationAction($request, $reservation)
             ->with('success', 'Agendamento excluído com sucesso!');
@@ -283,5 +320,27 @@ class ReservationController extends Controller
         }
 
         return redirect()->route('reservations.index');
+    }
+
+    private function updateEntireSeriesFromReservation(Reservation $reservation, array $data): void
+    {
+        $series = $reservation->series;
+
+        if (! $series instanceof ReservationSeries) {
+            throw new \InvalidArgumentException('A reserva informada nao pertence a uma serie.');
+        }
+
+        app(\App\Actions\Reservations\UpdateReservationSeriesAction::class)->execute($series, [
+            'room_id' => $data['room_id'],
+            'title' => $data['title'],
+            'requester' => $data['requester'],
+            'contact' => $data['contact'] ?? null,
+            'start_time' => $data['start_time'],
+            'end_time' => $data['end_time'],
+            'recurrence_starts_on' => $series->starts_on,
+            'recurrence_ends_on' => $series->ends_on,
+            'recurrence_frequency' => $series->frequency,
+            'recurrence_weekdays' => $series->weekdays ?? [],
+        ]);
     }
 }

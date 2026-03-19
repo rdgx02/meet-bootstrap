@@ -4,13 +4,22 @@ namespace App\Http\Requests;
 
 use App\Models\Reservation;
 use Carbon\Carbon;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 class UpdateReservationRequest extends ReservationRequest
 {
     public function rules(): array
     {
-        return $this->singleReservationRules();
+        return [
+            ...$this->singleReservationRules(),
+            'series_scope' => [
+                Rule::requiredIf(fn (): bool => ($this->route('reservation') instanceof Reservation)
+                    && $this->route('reservation')->series_id !== null),
+                'nullable',
+                Rule::in(['occurrence', 'following', 'all']),
+            ],
+        ];
     }
 
     public function authorize(): bool
