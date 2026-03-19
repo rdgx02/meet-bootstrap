@@ -105,7 +105,10 @@ class ReservationController extends Controller
 
         $reservation->load(['room', 'user', 'editor']);
 
-        return view('reservations.show', compact('reservation'));
+        return view('reservations.show', [
+            'reservation' => $reservation,
+            'returnToSeries' => $this->returnToSeries($reservation),
+        ]);
     }
 
     public function edit(Reservation $reservation)
@@ -116,7 +119,11 @@ class ReservationController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('reservations.edit', compact('reservation', 'rooms'));
+        return view('reservations.edit', [
+            'reservation' => $reservation,
+            'rooms' => $rooms,
+            'returnToSeries' => $this->returnToSeries($reservation),
+        ]);
     }
 
     public function update(
@@ -135,17 +142,17 @@ class ReservationController extends Controller
                 ]);
         }
 
-        return redirect()->route('reservations.index')
+        return $this->redirectAfterReservationAction($request, $reservation)
             ->with('success', 'Agendamento atualizado com sucesso!');
     }
 
-    public function destroy(Reservation $reservation)
+    public function destroy(Request $request, Reservation $reservation)
     {
         $this->authorize('delete', $reservation);
 
         $reservation->delete();
 
-        return redirect()->route('reservations.index')
+        return $this->redirectAfterReservationAction($request, $reservation)
             ->with('success', 'Agendamento excluído com sucesso!');
     }
 
@@ -249,5 +256,32 @@ class ReservationController extends Controller
         $filters = $request->validated();
 
         return view('reservations.index', compact('scope', 'title', 'subtitle', 'filters'));
+    }
+
+    private function returnToSeries(Reservation $reservation): ?string
+    {
+        if (request()->query('from') !== 'series') {
+            return null;
+        }
+
+        $seriesId = (int) request()->query('series');
+
+        if ($seriesId <= 0 || $reservation->series_id !== $seriesId) {
+            return null;
+        }
+
+        return route('reservation-series.show', $seriesId);
+    }
+
+    private function redirectAfterReservationAction(Request $request, Reservation $reservation)
+    {
+        $seriesId = (int) $request->input('series');
+        $fromSeries = $request->input('from') === 'series';
+
+        if ($fromSeries && $seriesId > 0 && $reservation->series_id === $seriesId) {
+            return redirect()->route('reservation-series.show', $seriesId);
+        }
+
+        return redirect()->route('reservations.index');
     }
 }

@@ -241,4 +241,242 @@ class ReservationSeriesManagementTest extends TestCase
             Carbon::setTestNow();
         }
     }
+
+    public function test_series_detail_shows_edit_occurrence_only_for_future_items(): void
+    {
+        Carbon::setTestNow(Carbon::create(2026, 3, 18, 10, 0, 0, 'America/Sao_Paulo'));
+
+        try {
+            $secretary = User::factory()->create(['role' => UserRole::Secretary]);
+            $room = Room::create(['name' => 'Sala UX Serie', 'is_active' => true]);
+            $series = ReservationSeries::create([
+                'room_id' => $room->id,
+                'user_id' => $secretary->id,
+                'starts_on' => now()->subDay()->toDateString(),
+                'ends_on' => now()->addDays(2)->toDateString(),
+                'start_time' => '09:00',
+                'end_time' => '10:00',
+                'title' => 'Serie UX',
+                'requester' => 'Secretaria',
+                'contact' => null,
+                'frequency' => 'daily',
+                'interval' => 1,
+                'weekdays' => null,
+                'conflict_mode' => 'strict',
+                'status' => 'active',
+            ]);
+
+            $pastOccurrence = Reservation::create([
+                'room_id' => $room->id,
+                'series_id' => $series->id,
+                'user_id' => $secretary->id,
+                'date' => now()->toDateString(),
+                'original_date' => now()->toDateString(),
+                'is_exception' => false,
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Serie UX',
+                'requester' => 'Secretaria',
+                'contact' => null,
+            ]);
+
+            $futureOccurrence = Reservation::create([
+                'room_id' => $room->id,
+                'series_id' => $series->id,
+                'user_id' => $secretary->id,
+                'date' => now()->addDay()->toDateString(),
+                'original_date' => now()->addDay()->toDateString(),
+                'is_exception' => false,
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Serie UX',
+                'requester' => 'Secretaria',
+                'contact' => null,
+            ]);
+
+            $response = $this->actingAs($secretary)
+                ->get(route('reservation-series.show', $series));
+
+            $response->assertOk();
+            $response->assertSee(route('reservations.edit', $futureOccurrence), false);
+            $response->assertDontSee(route('reservations.edit', $pastOccurrence), false);
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+    public function test_series_detail_buttons_point_to_series_routes(): void
+    {
+        $secretary = User::factory()->create(['role' => UserRole::Secretary]);
+        $room = Room::create(['name' => 'Sala Botoes Serie', 'is_active' => true]);
+        $series = ReservationSeries::create([
+            'room_id' => $room->id,
+            'user_id' => $secretary->id,
+            'starts_on' => now()->addDay()->toDateString(),
+            'ends_on' => now()->addDays(10)->toDateString(),
+            'start_time' => '09:00',
+            'end_time' => '10:00',
+            'title' => 'Serie Botoes',
+            'requester' => 'Secretaria',
+            'contact' => null,
+            'frequency' => 'weekly',
+            'interval' => 1,
+            'weekdays' => [1, 3],
+            'conflict_mode' => 'strict',
+            'status' => 'active',
+        ]);
+
+        $response = $this->actingAs($secretary)
+            ->get(route('reservation-series.show', $series));
+
+        $response->assertOk();
+        $response->assertSee(route('reservation-series.index'), false);
+        $response->assertSee(route('reservation-series.edit', $series), false);
+        $response->assertSee(route('reservation-series.cancel', $series), false);
+    }
+
+    public function test_series_edit_buttons_point_to_series_routes(): void
+    {
+        $secretary = User::factory()->create(['role' => UserRole::Secretary]);
+        $room = Room::create(['name' => 'Sala Edicao Serie', 'is_active' => true]);
+        $series = ReservationSeries::create([
+            'room_id' => $room->id,
+            'user_id' => $secretary->id,
+            'starts_on' => now()->addDay()->toDateString(),
+            'ends_on' => now()->addDays(10)->toDateString(),
+            'start_time' => '09:00',
+            'end_time' => '10:00',
+            'title' => 'Serie Edicao',
+            'requester' => 'Secretaria',
+            'contact' => null,
+            'frequency' => 'weekly',
+            'interval' => 1,
+            'weekdays' => [1, 3],
+            'conflict_mode' => 'strict',
+            'status' => 'active',
+        ]);
+
+        $response = $this->actingAs($secretary)
+            ->get(route('reservation-series.edit', $series));
+
+        $response->assertOk();
+        $response->assertSee(route('reservation-series.show', $series), false);
+        $response->assertSee(route('reservation-series.update', $series), false);
+    }
+
+    public function test_series_edit_from_index_preserves_return_to_index(): void
+    {
+        $secretary = User::factory()->create(['role' => UserRole::Secretary]);
+        $room = Room::create(['name' => 'Sala Retorno Index', 'is_active' => true]);
+        $series = ReservationSeries::create([
+            'room_id' => $room->id,
+            'user_id' => $secretary->id,
+            'starts_on' => now()->addDay()->toDateString(),
+            'ends_on' => now()->addDays(10)->toDateString(),
+            'start_time' => '09:00',
+            'end_time' => '10:00',
+            'title' => 'Serie Retorno',
+            'requester' => 'Secretaria',
+            'contact' => null,
+            'frequency' => 'weekly',
+            'interval' => 1,
+            'weekdays' => [1, 3],
+            'conflict_mode' => 'strict',
+            'status' => 'active',
+        ]);
+
+        $response = $this->actingAs($secretary)
+            ->get(route('reservation-series.edit', $series, false) . '?from=index');
+
+        $response->assertOk();
+        $response->assertSee(route('reservation-series.index'), false);
+        $response->assertSee('name="from" value="index"', false);
+
+        $updateResponse = $this->actingAs($secretary)
+            ->put(route('reservation-series.update', $series), [
+                'room_id' => $room->id,
+                'title' => 'Serie Retorno Atualizada',
+                'requester' => 'Secretaria',
+                'contact' => null,
+                'start_time' => '09:00',
+                'end_time' => '10:00',
+                'recurrence_starts_on' => $series->starts_on,
+                'recurrence_ends_on' => $series->ends_on,
+                'recurrence_frequency' => 'weekly',
+                'recurrence_weekdays' => [1, 3],
+                'from' => 'index',
+            ]);
+
+        $updateResponse->assertRedirect(route('reservation-series.index'));
+    }
+
+    public function test_occurrence_links_from_series_preserve_series_context(): void
+    {
+        Carbon::setTestNow(Carbon::create(2026, 3, 18, 10, 0, 0, 'America/Sao_Paulo'));
+
+        try {
+            $secretary = User::factory()->create(['role' => UserRole::Secretary]);
+            $room = Room::create(['name' => 'Sala Contexto Serie', 'is_active' => true]);
+            $series = ReservationSeries::create([
+                'room_id' => $room->id,
+                'user_id' => $secretary->id,
+                'starts_on' => now()->subDay()->toDateString(),
+                'ends_on' => now()->addDays(3)->toDateString(),
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Serie Contexto',
+                'requester' => 'Secretaria',
+                'contact' => null,
+                'frequency' => 'daily',
+                'interval' => 1,
+                'weekdays' => null,
+                'conflict_mode' => 'strict',
+                'status' => 'active',
+            ]);
+
+            $futureOccurrence = Reservation::create([
+                'room_id' => $room->id,
+                'series_id' => $series->id,
+                'user_id' => $secretary->id,
+                'date' => now()->addDay()->toDateString(),
+                'original_date' => now()->addDay()->toDateString(),
+                'is_exception' => false,
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Serie Contexto',
+                'requester' => 'Secretaria',
+                'contact' => null,
+            ]);
+
+            $showResponse = $this->actingAs($secretary)
+                ->get(route('reservations.show', $futureOccurrence, false) . '?from=series&series=' . $series->id);
+
+            $showResponse->assertOk();
+            $showResponse->assertSee(route('reservation-series.show', $series), false);
+            $showResponse->assertSee(route('reservations.edit', $futureOccurrence, false) . '?from=series&series=' . $series->id, false);
+
+            $editResponse = $this->actingAs($secretary)
+                ->get(route('reservations.edit', $futureOccurrence, false) . '?from=series&series=' . $series->id);
+
+            $editResponse->assertOk();
+            $editResponse->assertSee(route('reservation-series.show', $series), false);
+
+            $updateResponse = $this->actingAs($secretary)
+                ->put(route('reservations.update', $futureOccurrence), [
+                    'room_id' => $room->id,
+                    'date' => $futureOccurrence->date,
+                    'start_time' => '10:00',
+                    'end_time' => '11:00',
+                    'title' => 'Ocorrencia Ajustada',
+                    'requester' => 'Secretaria',
+                    'contact' => null,
+                    'from' => 'series',
+                    'series' => $series->id,
+                ]);
+
+            $updateResponse->assertRedirect(route('reservation-series.show', $series));
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
 }

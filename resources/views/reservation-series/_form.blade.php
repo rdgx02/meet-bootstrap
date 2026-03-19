@@ -1,5 +1,6 @@
 @php
     $action = route('reservation-series.update', $series);
+    $backUrl = $returnTo ?? route('reservation-series.show', $series);
     $recurrenceFrequency = old('recurrence_frequency', $series->frequency);
     $recurrenceWeekdays = collect(old('recurrence_weekdays', $series->weekdays ?? []))
         ->map(fn (mixed $value): string => (string) $value)
@@ -68,6 +69,9 @@
     >
         @csrf
         @method('PUT')
+        @if (($returnTo ?? null) === route('reservation-series.index'))
+            <input type="hidden" name="from" value="index">
+        @endif
 
         <div class="app-subpanel-head">
             <div>
@@ -250,7 +254,7 @@
             </p>
 
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('reservation-series.show', $series) }}" class="btn btn-outline-secondary app-section-btn app-section-btn-light">
+                <a href="{{ $backUrl }}" class="btn btn-outline-secondary app-section-btn app-section-btn-light">
                     Cancelar
                 </a>
                 <button type="submit" class="btn app-btn-primary app-section-btn">

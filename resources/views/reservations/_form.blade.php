@@ -1,6 +1,7 @@
 @php
     $isEdit = isset($reservation);
     $formAction = $isEdit ? route('reservations.update', $reservation) : route('reservations.store');
+    $backUrl = $returnToSeries ?? route('reservations.index');
     $dateValue = old('date', $isEdit ? $reservation->date : now()->toDateString());
     $startValue = old('start_time', $isEdit ? $reservation->start_time : '08:00');
     $endValue = old('end_time', $isEdit ? $reservation->end_time : '09:00');
@@ -123,6 +124,10 @@
         @csrf
         @if ($isEdit)
             @method('PUT')
+            @if (! empty($returnToSeries) && isset($reservation) && $reservation->series_id)
+                <input type="hidden" name="from" value="series">
+                <input type="hidden" name="series" value="{{ $reservation->series_id }}">
+            @endif
         @endif
 
         <div class="app-subpanel-head">
@@ -388,7 +393,7 @@
             </p>
 
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('reservations.index') }}" class="btn btn-outline-secondary app-section-btn app-section-btn-light">
+                <a href="{{ $backUrl }}" class="btn btn-outline-secondary app-section-btn app-section-btn-light">
                     Cancelar
                 </a>
                 <button type="submit" class="btn app-btn-primary app-section-btn">

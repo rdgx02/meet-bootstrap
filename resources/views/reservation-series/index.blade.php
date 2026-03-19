@@ -83,7 +83,7 @@
                                                 Detalhes
                                             </a>
                                             @if ($series->status === 'active')
-                                                <a href="{{ route('reservation-series.edit', $series) }}" class="btn btn-sm app-ghost-btn">
+                                                <a href="{{ route('reservation-series.edit', $series) }}?from=index" class="btn btn-sm app-ghost-btn">
                                                     Editar
                                                 </a>
                                             @endif

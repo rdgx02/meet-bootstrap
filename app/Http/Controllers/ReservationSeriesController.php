@@ -53,6 +53,7 @@ class ReservationSeriesController extends Controller
         return view('reservation-series.edit', [
             'series' => $reservationSeries,
             'rooms' => \App\Models\Room::active()->orderBy('name')->get(),
+            'returnTo' => $this->seriesReturnTo($reservationSeries),
         ]);
     }
 
@@ -79,7 +80,7 @@ class ReservationSeriesController extends Controller
         }
 
         return redirect()
-            ->route('reservation-series.show', $reservationSeries)
+            ->to($this->seriesRedirectTarget($request, $reservationSeries))
             ->with(
                 'success',
                 sprintf(
@@ -111,5 +112,19 @@ class ReservationSeriesController extends Controller
                     ? 'Serie cancelada. 1 ocorrencia futura foi removida.'
                     : sprintf('Serie cancelada. %d ocorrencias futuras foram removidas.', $result['deleted_count'])
             );
+    }
+
+    private function seriesReturnTo(ReservationSeries $reservationSeries): string
+    {
+        return request()->query('from') === 'index'
+            ? route('reservation-series.index')
+            : route('reservation-series.show', $reservationSeries);
+    }
+
+    private function seriesRedirectTarget(\Illuminate\Http\Request $request, ReservationSeries $reservationSeries): string
+    {
+        return $request->input('from') === 'index'
+            ? route('reservation-series.index')
+            : route('reservation-series.show', $reservationSeries);
     }
 }

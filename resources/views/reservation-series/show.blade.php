@@ -111,6 +111,7 @@
                                 <th>Horario</th>
                                 <th>Status</th>
                                 <th>Observacao</th>
+                                <th class="text-end">Acoes</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -129,10 +130,25 @@
                                     <td>
                                         {{ $reservation->is_exception ? 'Editada como excecao da serie' : 'Sem alteracoes manuais' }}
                                     </td>
+                                    <td>
+                                        <div class="app-inline-actions justify-content-end">
+                                            <a href="{{ route('reservations.show', $reservation) }}?from=series&series={{ $series->id }}" class="btn btn-sm app-ghost-btn">
+                                                Ver
+                                            </a>
+
+                                            @can('update', $reservation)
+                                                @if (! $hasStarted)
+                                                    <a href="{{ route('reservations.edit', $reservation) }}?from=series&series={{ $series->id }}" class="btn btn-sm app-ghost-btn">
+                                                        Editar ocorrencia
+                                                    </a>
+                                                @endif
+                                            @endcan
+                                        </div>
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center text-body-secondary py-5">
+                                    <td colspan="5" class="text-center text-body-secondary py-5">
                                         Nenhuma ocorrencia encontrada para esta serie.
                                     </td>
                                 </tr>

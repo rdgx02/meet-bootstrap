@@ -12,11 +12,14 @@
             </div>
 
             <div class="app-inline-actions">
-                <a href="{{ route('reservations.index') }}" class="btn app-section-btn app-section-btn-light">
+                <a href="{{ $returnToSeries ?? route('reservations.index') }}" class="btn app-section-btn app-section-btn-light">
                     Voltar
                 </a>
                 @can('update', $reservation)
-                    <a href="{{ route('reservations.edit', $reservation) }}" class="btn app-btn-primary app-section-btn">
+                    <a
+                        href="{{ route('reservations.edit', $reservation) }}@if($returnToSeries)?from=series&series={{ $reservation->series_id }}@endif"
+                        class="btn app-btn-primary app-section-btn"
+                    >
                         Editar
                     </a>
                 @endcan
@@ -110,6 +113,10 @@
                                 <form method="POST" action="{{ route('reservations.destroy', $reservation) }}">
                                     @csrf
                                     @method('DELETE')
+                                    @if ($returnToSeries)
+                                        <input type="hidden" name="from" value="series">
+                                        <input type="hidden" name="series" value="{{ $reservation->series_id }}">
+                                    @endif
 
                                     <button type="submit" class="btn btn-danger app-delete-confirm-btn">
                                         Excluir agendamento
