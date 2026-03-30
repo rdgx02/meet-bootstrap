@@ -160,6 +160,50 @@ const initReservationBulkToolbar = () => {
             document.querySelectorAll(`input[data-pg-bulk-table="${tableName}"]:checked`)
         );
 
+    const setButtonDisabledState = (button, disabled) => {
+        if (!button) {
+            return;
+        }
+
+        button.disabled = disabled;
+        button.classList.toggle('is-disabled', disabled);
+        button.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+    };
+
+    const syncToolbarState = (toolbar) => {
+        if (!toolbar) {
+            return;
+        }
+
+        const tableName = toolbar.dataset.tableName;
+        const selectedCount = getSelectedInputs(tableName).length;
+        const isSingleSelection = selectedCount === 1;
+        const hasSelection = selectedCount > 0;
+
+        setButtonDisabledState(
+            toolbar.querySelector('[data-bulk-action="view"]'),
+            !isSingleSelection
+        );
+        setButtonDisabledState(
+            toolbar.querySelector('[data-bulk-action="edit"]'),
+            !isSingleSelection
+        );
+        setButtonDisabledState(
+            toolbar.querySelector('[data-bulk-action="delete"]'),
+            !hasSelection
+        );
+        setButtonDisabledState(
+            toolbar.querySelector('[data-bulk-action="export"]'),
+            !hasSelection
+        );
+    };
+
+    const syncAllToolbarsState = () => {
+        document
+            .querySelectorAll('[data-reservation-toolbar]')
+            .forEach((toolbar) => syncToolbarState(toolbar));
+    };
+
     const requireSingleSelection = (tableName, actionLabel) => {
         const selectedInputs = getSelectedInputs(tableName);
 
@@ -307,6 +351,20 @@ const initReservationBulkToolbar = () => {
             window.location.href = exportUrl.toString();
         }
     });
+
+    document.addEventListener('change', (event) => {
+        if (event.target.matches('input[data-pg-bulk-table]')) {
+            syncAllToolbarsState();
+        }
+    });
+
+    document.addEventListener('click', (event) => {
+        if (event.target.closest('input[data-pg-bulk-table]')) {
+            window.requestAnimationFrame(syncAllToolbarsState);
+        }
+    });
+
+    syncAllToolbarsState();
 
     document.body.dataset.reservationBulkToolbarReady = '1';
 };

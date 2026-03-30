@@ -198,6 +198,95 @@ class ReservationManagementTest extends TestCase
         ]);
     }
 
+    public function test_secretary_can_delete_selected_future_reservations(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::Secretary]);
+        $room = Room::create(['name' => 'Sala Lote', 'is_active' => true]);
+
+        $firstReservation = Reservation::create([
+            'room_id' => $room->id,
+            'user_id' => $user->id,
+            'date' => now()->addDay()->toDateString(),
+            'start_time' => '09:00',
+            'end_time' => '10:00',
+            'title' => 'Reserva Lote 1',
+            'requester' => 'Secretaria',
+            'contact' => null,
+        ]);
+
+        $secondReservation = Reservation::create([
+            'room_id' => $room->id,
+            'user_id' => $user->id,
+            'date' => now()->addDays(2)->toDateString(),
+            'start_time' => '10:00',
+            'end_time' => '11:00',
+            'title' => 'Reserva Lote 2',
+            'requester' => 'Secretaria',
+            'contact' => null,
+        ]);
+
+        $response = $this->actingAs($user)->delete(route('reservations.destroy-selected'), [
+            'ids' => implode(',', [$firstReservation->id, $secondReservation->id]),
+        ]);
+
+        $response->assertRedirect(route('reservations.index'));
+        $response->assertSessionHas('success', '2 agendamentos excluídos com sucesso!');
+        $this->assertDatabaseMissing('reservations', ['id' => $firstReservation->id]);
+        $this->assertDatabaseMissing('reservations', ['id' => $secondReservation->id]);
+    }
+
+    public function test_destroy_selected_requires_at_least_one_valid_selection(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::Secretary]);
+
+        $response = $this->actingAs($user)->delete(route('reservations.destroy-selected'), [
+            'ids' => '',
+        ]);
+
+        $response->assertRedirect(route('reservations.index'));
+        $response->assertSessionHas('warning', 'Selecione ao menos um agendamento para excluir.');
+    }
+
+    public function test_secretary_can_export_selected_reservations_to_csv(): void
+    {
+        $user = User::factory()->create([
+            'role' => UserRole::Secretary,
+            'name' => 'Ana Secretaria',
+        ]);
+        $editor = User::factory()->create([
+            'role' => UserRole::Admin,
+            'name' => 'Carlos Editor',
+        ]);
+        $room = Room::create(['name' => 'Sala Exportacao', 'is_active' => true]);
+
+        $reservation = Reservation::create([
+            'room_id' => $room->id,
+            'user_id' => $user->id,
+            'date' => '2026-03-26',
+            'start_time' => '14:00',
+            'end_time' => '15:30',
+            'title' => 'Exportar Agenda',
+            'requester' => 'Equipe Operacional',
+            'contact' => null,
+        ]);
+        $reservation->updated_by = $editor->id;
+        $reservation->save();
+
+        $response = $this->actingAs($user)->get(route('reservations.export-selected', [
+            'ids' => (string) $reservation->id,
+        ]));
+
+        $response->assertOk();
+        $response->assertHeader('content-type', 'text/csv; charset=UTF-8');
+        $response->assertHeader('content-disposition');
+
+        $content = $response->streamedContent();
+
+        $this->assertStringContainsString('Codigo;Sala;Titulo;Solicitante;Data;Inicio;Fim;"Criado por";"Editado por"', $content);
+        $this->assertStringContainsString('AG-0000' . $reservation->id, $content);
+        $this->assertStringContainsString('"Sala Exportacao";"Exportar Agenda";"Equipe Operacional";26/03/2026;14:00;15:30;"Ana Secretaria";"Carlos Editor"', $content);
+    }
+
     public function test_index_shows_only_upcoming_reservations_including_today_active_ones(): void
     {
         Carbon::setTestNow(Carbon::create(2026, 3, 10, 10, 54, 0, 'America/Sao_Paulo'));

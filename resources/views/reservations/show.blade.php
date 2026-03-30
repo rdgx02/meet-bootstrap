@@ -3,7 +3,40 @@
 @section('title', 'Detalhes do Agendamento')
 
 @section('content')
-    <div class="app-module-shell" x-data="{ showDeleteModal: false }">
+    @php
+        $followingOccurrenceCount = $reservation->series_id
+            ? \App\Models\Reservation::query()
+                ->where('series_id', $reservation->series_id)
+                ->whereDate('date', '>=', $reservation->date)
+                ->count()
+            : 1;
+        $seriesFutureCount = $reservation->series_id
+            ? \App\Models\Reservation::query()
+                ->where('series_id', $reservation->series_id)
+                ->get()
+                ->filter(fn ($item) => \Carbon\Carbon::parse(sprintf('%s %s', $item->date, $item->start_time))->greaterThan(now()))
+                ->count()
+            : 1;
+    @endphp
+
+    <div
+        class="app-module-shell"
+        x-data="{
+            showDeleteModal: false,
+            deleteScope: 'occurrence',
+            deleteSummary() {
+                if (this.deleteScope === 'following') {
+                    return 'Esta acao removera {{ $followingOccurrenceCount }} ocorrencia(s) a partir desta data.';
+                }
+
+                if (this.deleteScope === 'all') {
+                    return 'Esta acao cancelara a serie e removera {{ $seriesFutureCount }} ocorrencia(s) futura(s).';
+                }
+
+                return 'Esta acao removera apenas este agendamento.';
+            }
+        }"
+    >
         <section class="app-module-header">
             <div>
                 <div class="app-module-kicker">Consulta</div>
@@ -97,24 +130,24 @@
                                     <div class="mb-3">
                                         <label class="app-form-label">Escopo da exclusao</label>
                                         <div class="app-choice-grid app-choice-grid-compact">
-                                            <label class="app-choice-card app-choice-card-compact is-active">
-                                                <input type="radio" name="series_scope" value="occurrence" checked form="reservation-delete-form">
+                                            <label class="app-choice-card app-choice-card-compact" :class="{ 'is-active': deleteScope === 'occurrence' }">
+                                                <input type="radio" name="series_scope" value="occurrence" x-model="deleteScope" checked form="reservation-delete-form">
                                                 <span class="app-choice-card-body">
                                                     <strong>So esta ocorrencia</strong>
                                                     <small>Remove apenas este registro da recorrencia.</small>
                                                 </span>
                                             </label>
 
-                                            <label class="app-choice-card app-choice-card-compact">
-                                                <input type="radio" name="series_scope" value="following" form="reservation-delete-form">
+                                            <label class="app-choice-card app-choice-card-compact" :class="{ 'is-active': deleteScope === 'following' }">
+                                                <input type="radio" name="series_scope" value="following" x-model="deleteScope" form="reservation-delete-form">
                                                 <span class="app-choice-card-body">
                                                     <strong>Esta e proximas</strong>
                                                     <small>Remove esta ocorrencia e encerra a continuidade da serie a partir daqui.</small>
                                                 </span>
                                             </label>
 
-                                            <label class="app-choice-card app-choice-card-compact">
-                                                <input type="radio" name="series_scope" value="all" form="reservation-delete-form">
+                                            <label class="app-choice-card app-choice-card-compact" :class="{ 'is-active': deleteScope === 'all' }">
+                                                <input type="radio" name="series_scope" value="all" x-model="deleteScope" form="reservation-delete-form">
                                                 <span class="app-choice-card-body">
                                                     <strong>Toda a serie</strong>
                                                     <small>Cancela a serie e remove todas as ocorrencias futuras.</small>
@@ -124,7 +157,7 @@
                                     </div>
                                 @endif
 
-                                <p class="app-modal-text">
+                                <p class="app-modal-text" x-text="deleteSummary()">
                                     Essa acao remove o agendamento da agenda e nao pode ser desfeita.
                                 </p>
 
@@ -133,6 +166,10 @@
                                     <div><span>Data</span><strong>{{ $reservation->date_br }}</strong></div>
                                     <div><span>Horario</span><strong>{{ $reservation->start_time_br }} - {{ $reservation->end_time_br }}</strong></div>
                                     <div><span>Sala</span><strong>{{ $reservation->room?->name ?? '-' }}</strong></div>
+                                    @if ($reservation->series_id)
+                                        <div><span>Impacto esta e proximas</span><strong>{{ $followingOccurrenceCount }} ocorrencia(s)</strong></div>
+                                        <div><span>Impacto toda a serie</span><strong>{{ $seriesFutureCount }} futura(s)</strong></div>
+                                    @endif
                                 </div>
                             </div>
 

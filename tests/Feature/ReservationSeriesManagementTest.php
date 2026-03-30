@@ -333,6 +333,7 @@ class ReservationSeriesManagementTest extends TestCase
         $response->assertSee(route('reservation-series.index'), false);
         $response->assertSee(route('reservation-series.edit', $series), false);
         $response->assertSee(route('reservation-series.cancel', $series), false);
+        $response->assertSeeText('Ocorrencias futuras');
     }
 
     public function test_series_edit_buttons_point_to_series_routes(): void
@@ -454,6 +455,8 @@ class ReservationSeriesManagementTest extends TestCase
             $showResponse->assertOk();
             $showResponse->assertSee(route('reservation-series.show', $series), false);
             $showResponse->assertSee(route('reservations.edit', $futureOccurrence, false) . '?from=series&series=' . $series->id, false);
+            $showResponse->assertSeeText('Impacto esta e proximas');
+            $showResponse->assertSeeText('Impacto toda a serie');
 
             $editResponse = $this->actingAs($secretary)
                 ->get(route('reservations.edit', $futureOccurrence, false) . '?from=series&series=' . $series->id);
@@ -467,13 +470,13 @@ class ReservationSeriesManagementTest extends TestCase
                     'date' => $futureOccurrence->date,
                     'start_time' => '10:00',
                     'end_time' => '11:00',
-                'title' => 'Ocorrencia Ajustada',
-                'requester' => 'Secretaria',
-                'contact' => null,
-                'series_scope' => 'occurrence',
-                'from' => 'series',
-                'series' => $series->id,
-            ]);
+                    'title' => 'Ocorrencia Ajustada',
+                    'requester' => 'Secretaria',
+                    'contact' => null,
+                    'series_scope' => 'occurrence',
+                    'from' => 'series',
+                    'series' => $series->id,
+                ]);
 
             $updateResponse->assertRedirect(route('reservation-series.show', $series));
         } finally {

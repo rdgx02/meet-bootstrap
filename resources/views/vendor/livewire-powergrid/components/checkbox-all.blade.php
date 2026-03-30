@@ -5,6 +5,8 @@
     $isCheckboxFixedOnResponsive =
         isset($this->setUp['responsive']) &&
         in_array($responsiveCheckboxColumnName, data_get($this->setUp, 'responsive.fixedColumns'));
+
+    $isReservationTable = in_array($tableName, ['reservations-upcoming-table', 'reservations-history-table'], true);
 @endphp
 <th
     @if ($isCheckboxFixedOnResponsive) fixed @endif
@@ -13,13 +15,24 @@
     wire:key="checkbox-all-{{ $tableName }}"
 >
     <div class="{{ theme_style($theme, 'checkbox.base') }}">
-        <label class="{{ theme_style($theme, 'checkbox.label') }}">
-            <input
-                class="{{ theme_style($theme, 'checkbox.input') }}"
-                type="checkbox"
-                wire:click="selectCheckboxAll"
-                wire:model="checkboxAll"
+        @if ($isReservationTable)
+            <span
+                class="d-inline-block"
+                title="Selecao individual por linha para evitar marcacao em massa acidental."
+                aria-hidden="true"
+                style="width: 1rem;"
             >
-        </label>
+                &nbsp;
+            </span>
+        @else
+            <label class="{{ theme_style($theme, 'checkbox.label') }}">
+                <input
+                    class="{{ theme_style($theme, 'checkbox.input') }}"
+                    type="checkbox"
+                    wire:click="selectCheckboxAll"
+                    wire:model="checkboxAll"
+                >
+            </label>
+        @endif
     </div>
 </th>

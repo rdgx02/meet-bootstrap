@@ -14,7 +14,7 @@
         $exceptionCount = $series->reservations->where('is_exception', true)->count();
     @endphp
 
-    <div class="app-module-shell">
+    <div class="app-module-shell" x-data="{ showCancelSeriesModal: false }">
         <section class="app-module-header">
             <div>
                 <div class="app-module-kicker">Recorrencia</div>
@@ -37,14 +37,9 @@
 
                 @can('cancel', $series)
                     @if ($series->status === 'active')
-                        <form method="POST" action="{{ route('reservation-series.cancel', $series) }}">
-                            @csrf
-                            @method('PATCH')
-
-                            <button type="submit" class="btn app-btn-primary app-section-btn">
-                                Cancelar serie
-                            </button>
-                        </form>
+                        <button type="button" class="btn app-btn-primary app-section-btn" x-on:click="showCancelSeriesModal = true">
+                            Cancelar serie
+                        </button>
                     @endif
                 @endcan
             </div>
@@ -158,5 +153,60 @@
                 </div>
             </div>
         </section>
+
+        @can('cancel', $series)
+            @if ($series->status === 'active')
+                <template x-if="showCancelSeriesModal">
+                    <div>
+                        <div class="app-modal-backdrop" x-on:click="showCancelSeriesModal = false"></div>
+
+                        <div class="app-modal-shell" role="dialog" aria-modal="true" aria-labelledby="cancelSeriesTitle">
+                            <div class="app-modal-card">
+                                <div class="app-modal-header">
+                                    <div>
+                                        <span class="app-modal-kicker">Confirmar cancelamento</span>
+                                        <h2 id="cancelSeriesTitle" class="app-modal-title">Cancelar serie recorrente?</h2>
+                                    </div>
+
+                                    <button type="button" class="btn-close" aria-label="Fechar" x-on:click="showCancelSeriesModal = false"></button>
+                                </div>
+
+                                <div class="app-modal-body">
+                                    <div class="app-delete-alert">
+                                        Essa acao encerrara a recorrencia e removera as ocorrencias futuras ainda nao iniciadas.
+                                    </div>
+
+                                    <p class="app-modal-text">
+                                        O cancelamento afetara {{ $futureOccurrences->count() }} ocorrencia(s) futura(s) desta serie.
+                                    </p>
+
+                                    <div class="app-modal-summary">
+                                        <div><span>Serie</span><strong>{{ $series->title }}</strong></div>
+                                        <div><span>Sala</span><strong>{{ $series->room?->name ?? '-' }}</strong></div>
+                                        <div><span>Periodo</span><strong>{{ $series->starts_on_br }} ate {{ $series->ends_on_br }}</strong></div>
+                                        <div><span>Ocorrencias futuras</span><strong>{{ $futureOccurrences->count() }}</strong></div>
+                                    </div>
+                                </div>
+
+                                <div class="app-modal-footer">
+                                    <button type="button" class="btn btn-outline-secondary app-section-btn app-section-btn-light" x-on:click="showCancelSeriesModal = false">
+                                        Voltar
+                                    </button>
+
+                                    <form method="POST" action="{{ route('reservation-series.cancel', $series) }}">
+                                        @csrf
+                                        @method('PATCH')
+
+                                        <button type="submit" class="btn btn-danger app-delete-confirm-btn">
+                                            Confirmar cancelamento
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            @endif
+        @endcan
     </div>
 @endsection

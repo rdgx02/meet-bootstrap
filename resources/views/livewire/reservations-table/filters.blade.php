@@ -27,24 +27,37 @@
                 </a>
             @endcan
 
-            <button type="button" class="btn btn-sm lims-toolbar-btn js-reservation-bulk-view">
+            <button
+                type="button"
+                class="btn btn-sm lims-toolbar-btn js-reservation-bulk-view"
+                data-bulk-action="view"
+            >
                 Visualizar
             </button>
 
             @if ($canManageReservations && $scope !== 'history')
-                <button type="button" class="btn btn-sm lims-toolbar-btn js-reservation-bulk-edit">
+                <button
+                    type="button"
+                    class="btn btn-sm lims-toolbar-btn js-reservation-bulk-edit"
+                    data-bulk-action="edit"
+                >
                     Editar
                 </button>
 
-                <button type="button" class="btn btn-sm lims-toolbar-btn lims-toolbar-btn-danger js-reservation-bulk-delete">
+                <button
+                    type="button"
+                    class="btn btn-sm lims-toolbar-btn lims-toolbar-btn-danger js-reservation-bulk-delete"
+                    data-bulk-action="delete"
+                >
                     Excluir
                 </button>
             @endif
 
-            <a
-                href="#"
+            <button
+                type="button"
                 class="btn btn-sm lims-toolbar-btn lims-toolbar-btn-icon-only js-reservation-bulk-export"
                 aria-label="Exportar"
+                data-bulk-action="export"
                 data-export-url="{{ route('reservations.export-selected') }}"
             >
                 <span class="lims-toolbar-btn-icon-mark" aria-hidden="true">
@@ -52,7 +65,7 @@
                         <path d="M10 3v8M6.5 7.5 10 11l3.5-3.5M4 13.5v1A1.5 1.5 0 0 0 5.5 16h9a1.5 1.5 0 0 0 1.5-1.5v-1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </span>
-            </a>
+            </button>
         </div>
 
         <div class="lims-grid-toolbar-stats">

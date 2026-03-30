@@ -1284,6 +1284,17 @@ a {
     color: #18283f;
 }
 
+.lims-toolbar-btn.is-disabled,
+.lims-toolbar-btn:disabled {
+    opacity: 0.48;
+    cursor: not-allowed;
+    pointer-events: none;
+    border-color: #d9dee6;
+    background: #f4f6f8;
+    color: #8a95a5;
+    box-shadow: none;
+}
+
 .lims-toolbar-btn-primary {
     background: #f7f9fc;
     border-color: #d1d7df;

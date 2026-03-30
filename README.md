@@ -88,7 +88,19 @@ php artisan user:role <user_id> user
 - `app/Policies`: regras de permissao por perfil.
 - `resources/views/reservations`: telas da agenda.
 
-## Roadmap
-- Painel de salas com CRUD completo para admin.
-- QR Code para auto-reserva de usuarios (fase futura).
-- Melhorias de relatorios e exportacao.
+## Estado atual
+- Autenticacao com Breeze e redirecionamento principal para a agenda.
+- CRUD de salas para `admin`.
+- CRUD de usuarios para `admin`, com controle de status ativo/inativo e papel.
+- Agenda com listagem separada entre `Agendamentos` e `Historico`.
+- Listagem principal usando Livewire PowerGrid com filtros, ordenacao, selecao e exportacao dos itens selecionados.
+- Criacao, edicao e exclusao de reservas avulsas com validacao de conflito.
+- Bloqueio de alteracao/exclusao de reservas que ja terminaram.
+- Reservas recorrentes com serie, edicao da ocorrencia, edicao desta e proximas, edicao da serie inteira e cancelamento da serie.
+- Auditoria basica de criacao e ultima edicao do agendamento.
+
+## Proximos passos sugeridos
+- Reforcar testes de exportacao, exclusao em lote e comportamento fino da listagem PowerGrid.
+- Revisar a UX das telas de detalhes e confirmacoes de exclusao/cancelamento.
+- Melhorar relatorios e formatos de exportacao.
+- Avaliar QR Code para auto-reserva de usuarios como fase futura.
