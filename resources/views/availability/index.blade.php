@@ -3,58 +3,177 @@
 @section('title', 'Disponibilidade')
 
 @section('content')
-    <div class="app-module-shell">
-        <section class="app-module-header">
-            <div>
-                <div class="app-module-kicker">Consulta</div>
-                <h1 class="app-module-title">Disponibilidade</h1>
-                <p class="app-module-note">Consulte a agenda do dia e veja quais salas estao livres por faixa de horario.</p>
-            </div>
+    <div class="lims-page">
+        <section class="lims-page-header lims-page-header-plain">
+            <h1 class="lims-page-title">Disponibilidade</h1>
         </section>
 
         <section class="app-subpanel app-availability-panel">
             <div class="app-subpanel-head app-availability-head">
                 <div>
-                    <h2 class="app-subpanel-title">Consulta por data</h2>
-                    <p class="app-subpanel-note">Janela consultiva padrao de {{ $openTime }} as {{ $closeTime }} para leitura rapida da ocupacao.</p>
+                    <h2 class="app-subpanel-title app-availability-title">Consulta por data e sala</h2>
+                    <p class="app-subpanel-note">Janela consultiva padrao de {{ $openTime }} as {{ $closeTime }} para leitura operacional da ocupacao.</p>
                 </div>
                 <div class="app-subpanel-meta">
-                    <span class="app-mini-stat">Data <strong>{{ $selectedDateLabel }}</strong></span>
-                    <span class="app-mini-stat">Salas livres <strong>{{ $freeRoomsCount }}</strong></span>
-                    <span class="app-mini-stat">Salas ocupadas <strong>{{ $occupiedRoomsCount }}</strong></span>
+                    <span class="lims-toolbar-stat">Data <strong>{{ $selectedDateLabel }}</strong></span>
+                    <span class="lims-toolbar-stat">Salas livres <strong>{{ $freeRoomsCount }}</strong></span>
+                    <span class="lims-toolbar-stat">Salas ocupadas <strong>{{ $occupiedRoomsCount }}</strong></span>
                 </div>
             </div>
 
             <form method="GET" action="{{ route('availability.index') }}" class="app-availability-form">
-                <div class="app-availability-form-grid">
+                <div class="app-availability-form-fields">
                     <div class="app-availability-field">
-                        <label for="availability-date" class="app-form-label">Data</label>
+                        <label for="availability-date" class="form-label fw-semibold mb-1">Data</label>
                         <input
                             id="availability-date"
                             name="date"
-                            type="date"
+                            type="text"
                             value="{{ $selectedDate->toDateString() }}"
-                            class="form-control"
+                            class="form-control js-date-picker app-availability-date-input"
+                            data-calendar-position="below left"
+                            data-calendar-append="closest"
                         >
+                    </div>
+
+                    <div class="app-availability-field">
+                        <label for="availability-room" class="form-label fw-semibold mb-1">Sala</label>
+                        <select id="availability-room" name="room_id" class="form-select">
+                            <option value="">Todas</option>
+                            @foreach ($rooms as $room)
+                                <option value="{{ $room->id }}" @selected($selectedRoom?->id === $room->id)>
+                                    {{ $room->name }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
 
                 <div class="app-availability-actions">
-                    <button type="submit" class="btn app-btn-primary app-section-btn">Consultar dia</button>
-                    <a href="{{ route('availability.index') }}" class="btn btn-outline-secondary app-section-btn app-section-btn-light">Hoje</a>
+                    <button type="submit" class="btn btn-sm lims-toolbar-btn lims-toolbar-btn-primary app-availability-action-btn">Consultar disponibilidade</button>
+                    <a href="{{ route('availability.index') }}" class="btn btn-sm lims-toolbar-btn">Hoje</a>
                 </div>
             </form>
         </section>
+
+        @if ($selectedRoom && $primaryAvailability)
+            <section class="app-subpanel app-availability-primary-panel">
+                <div class="app-subpanel-head">
+                    <div>
+                        <h2 class="app-subpanel-title app-availability-title">Sala {{ $primaryAvailability['room']->name }}</h2>
+                        <p class="app-subpanel-note">Resposta principal da consulta para o dia {{ $selectedDateLabel }}.</p>
+                    </div>
+                    <div class="app-subpanel-meta">
+                        <span class="lims-toolbar-stat">Status <strong>{{ $primaryAvailability['status_label'] }}</strong></span>
+                    </div>
+                </div>
+
+                <div class="app-availability-primary-card">
+                    <div class="app-availability-primary-status">
+                        <span class="app-status-pill {{ $primaryAvailability['status'] === 'free' ? 'is-active' : ($primaryAvailability['status'] === 'busy' ? 'is-inactive' : 'is-neutral') }}">
+                            {{ $primaryAvailability['status_label'] }}
+                        </span>
+                    </div>
+
+                    <div class="app-availability-primary-sections">
+                        <section class="app-availability-summary-block">
+                            <h3>Horarios disponiveis</h3>
+                            @if ($primaryAvailability['free_ranges'] !== [])
+                                <ul class="app-availability-summary-list is-free">
+                                    @foreach ($primaryAvailability['free_ranges'] as $range)
+                                        <li>{{ $range['label'] }}</li>
+                                    @endforeach
+                                </ul>
+                            @else
+                                <p class="app-availability-summary-empty">Nao ha faixa livre dentro da janela consultiva.</p>
+                            @endif
+                        </section>
+
+                        <section class="app-availability-summary-block">
+                            <h3>Horarios ocupados</h3>
+                            @if ($primaryAvailability['occupied_ranges'] !== [])
+                                <ul class="app-availability-summary-list is-busy">
+                                    @foreach ($primaryAvailability['occupied_ranges'] as $range)
+                                        <li>{{ $range['label'] }} - {{ $range['title'] }}</li>
+                                    @endforeach
+                                </ul>
+                            @else
+                                <p class="app-availability-summary-empty">Nenhuma reserva registrada para esta sala no dia.</p>
+                            @endif
+                        </section>
+                    </div>
+                </div>
+            </section>
+        @else
+            <section class="app-subpanel app-availability-list-panel">
+                <div class="app-subpanel-head">
+                    <div>
+                        <h2 class="app-subpanel-title app-availability-title">Disponibilidade por sala</h2>
+                        <p class="app-subpanel-note">Leitura rapida por sala, priorizando primeiro as faixas disponiveis.</p>
+                    </div>
+                </div>
+
+                <div class="app-availability-room-list">
+                    @foreach ($roomAvailability as $entry)
+                        <article
+                            class="app-availability-room-card"
+                            data-availability-room="{{ $entry['room']->name }}"
+                            data-availability-status="{{ $entry['status'] }}"
+                        >
+                            <div class="app-availability-room-card-head">
+                                <div>
+                                    <h3>{{ $entry['room']->name }}</h3>
+                                    <p>{{ $entry['status_label'] }}</p>
+                                </div>
+                                <span class="app-status-pill {{ $entry['status'] === 'free' ? 'is-active' : ($entry['status'] === 'busy' ? 'is-inactive' : 'is-neutral') }}">
+                                    {{ $entry['status_label'] }}
+                                </span>
+                            </div>
+
+                            <section class="app-availability-summary-block">
+                                <h4>Horarios disponiveis</h4>
+                                @if ($entry['free_ranges'] !== [])
+                                    @if ($entry['is_free_all_day'])
+                                        <p class="app-availability-summary-empty">Livre durante todo o periodo consultivo.</p>
+                                    @endif
+                                    <ul class="app-availability-summary-list is-free">
+                                        @foreach ($entry['free_ranges'] as $range)
+                                            <li>{{ $range['label'] }}</li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <p class="app-availability-summary-empty">Sem disponibilidade dentro da janela consultiva.</p>
+                                @endif
+                            </section>
+
+                            @if ($entry['occupied_ranges'] !== [])
+                                <section class="app-availability-summary-block app-availability-summary-block-secondary">
+                                    <h4>Horarios ocupados</h4>
+                                    <ul class="app-availability-summary-list is-busy">
+                                        @foreach ($entry['occupied_ranges'] as $range)
+                                            <li>{{ $range['label'] }} - {{ $range['title'] }}</li>
+                                        @endforeach
+                                    </ul>
+                                </section>
+                            @endif
+                        </article>
+                    @endforeach
+                </div>
+            </section>
+        @endif
 
         <div class="app-availability-grid">
             <section class="app-subpanel app-availability-day-panel">
                 <div class="app-subpanel-head">
                     <div>
-                        <h2 class="app-subpanel-title">Agendamentos do dia</h2>
+                        <h2 class="app-subpanel-title app-availability-title">Agendamentos do dia</h2>
                         <p class="app-subpanel-note">Lista consolidada das reservas encontradas para {{ $selectedDateLabel }}.</p>
                     </div>
                     <div class="app-subpanel-meta">
-                        <span class="app-mini-stat">Reservas <strong>{{ $dayReservations->count() }}</strong></span>
+                        @if ($selectedRoom)
+                            <span class="lims-toolbar-stat">Sala <strong>{{ $selectedRoom->name }}</strong></span>
+                        @endif
+                        <span class="lims-toolbar-stat">Reservas <strong>{{ $dayReservations->count() }}</strong></span>
                     </div>
                 </div>
 
@@ -89,56 +208,6 @@
                             </table>
                         </div>
                     @endif
-                </div>
-            </section>
-
-            <section class="app-subpanel">
-                <div class="app-subpanel-head">
-                    <div>
-                        <h2 class="app-subpanel-title">Salas livres por horario</h2>
-                        <p class="app-subpanel-note">Resumo por sala com faixas livres e, quando existir, ocupacao parcial no mesmo dia.</p>
-                    </div>
-                </div>
-
-                <div class="app-availability-cards">
-                    @foreach ($roomAvailability as $entry)
-                        <article class="app-availability-card">
-                            <div class="app-availability-card-head">
-                                <div>
-                                    <h3 class="app-availability-card-title">{{ $entry['room']->name }}</h3>
-                                    <p class="app-availability-card-note">
-                                        @if ($entry['is_free_all_day'])
-                                            Livre durante todo o periodo consultivo.
-                                        @else
-                                            {{ $entry['reservations']->count() }} agendamento(s) neste dia.
-                                        @endif
-                                    </p>
-                                </div>
-                                <span class="app-status-pill {{ $entry['is_free_all_day'] ? 'is-active' : 'is-neutral' }}">
-                                    {{ $entry['is_free_all_day'] ? 'Livre' : 'Parcial' }}
-                                </span>
-                            </div>
-
-                            <div class="app-availability-ranges">
-                                @forelse ($entry['free_ranges'] as $range)
-                                    <span class="app-availability-range">{{ $range['label'] }}</span>
-                                @empty
-                                    <span class="app-availability-range is-busy">Sem faixa livre no periodo consultivo</span>
-                                @endforelse
-                            </div>
-
-                            @if ($entry['reservations']->isNotEmpty())
-                                <div class="app-availability-bookings">
-                                    @foreach ($entry['reservations'] as $reservation)
-                                        <div class="app-availability-booking">
-                                            <strong>{{ $reservation->start_time_br }} as {{ $reservation->end_time_br }}</strong>
-                                            <span>{{ $reservation->title }} - {{ $reservation->requester }}</span>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endif
-                        </article>
-                    @endforeach
                 </div>
             </section>
         </div>

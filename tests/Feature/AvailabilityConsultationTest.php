@@ -23,7 +23,9 @@ class AvailabilityConsultationTest extends TestCase
 
         $response->assertOk();
         $response->assertSeeText('Disponibilidade');
-        $response->assertSeeText('Consultar dia');
+        $response->assertSeeText('Consultar disponibilidade');
+        $response->assertSeeText('Disponibilidade por sala');
+        $response->assertSeeText('Todas');
     }
 
     public function test_availability_page_shows_day_reservations_and_free_ranges_per_room(): void
@@ -84,6 +86,92 @@ class AvailabilityConsultationTest extends TestCase
         $response->assertSeeText('Livre durante todo o periodo consultivo.');
     }
 
+    public function test_availability_can_focus_on_single_room_summary(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::User]);
+        $room203 = Room::create(['name' => '203', 'is_active' => true]);
+        $room305 = Room::create(['name' => '305', 'is_active' => true]);
+
+        Reservation::create([
+            'room_id' => $room305->id,
+            'user_id' => $user->id,
+            'date' => '2026-04-12',
+            'start_time' => '16:00',
+            'end_time' => '17:00',
+            'title' => 'TI',
+            'requester' => 'Equipe TI',
+            'contact' => null,
+        ]);
+
+        Reservation::create([
+            'room_id' => $room203->id,
+            'user_id' => $user->id,
+            'date' => '2026-04-12',
+            'start_time' => '09:00',
+            'end_time' => '10:00',
+            'title' => 'Reuniao 203',
+            'requester' => 'Equipe A',
+            'contact' => null,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('availability.index', [
+            'date' => '2026-04-12',
+            'room_id' => $room305->id,
+        ]));
+
+        $response->assertOk();
+        $response->assertSeeText('Sala 305');
+        $response->assertSeeText('Parcialmente ocupada');
+        $response->assertSeeText('08:00 as 16:00');
+        $response->assertSeeText('17:00 as 18:00');
+        $response->assertSeeText('16:00 as 17:00 - TI');
+        $response->assertDontSeeText('Reuniao 203');
+    }
+
+    public function test_availability_lists_rooms_ordered_by_status_when_all_rooms_are_selected(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::User]);
+        $roomFree = Room::create(['name' => '207', 'is_active' => true]);
+        $roomPartial = Room::create(['name' => '203', 'is_active' => true]);
+        $roomBusy = Room::create(['name' => '305', 'is_active' => true]);
+
+        Reservation::create([
+            'room_id' => $roomPartial->id,
+            'user_id' => $user->id,
+            'date' => '2026-04-12',
+            'start_time' => '08:00',
+            'end_time' => '09:00',
+            'title' => 'Parcial',
+            'requester' => 'Equipe Parcial',
+            'contact' => null,
+        ]);
+
+        Reservation::create([
+            'room_id' => $roomBusy->id,
+            'user_id' => $user->id,
+            'date' => '2026-04-12',
+            'start_time' => '08:00',
+            'end_time' => '18:00',
+            'title' => 'Dia inteiro',
+            'requester' => 'Equipe Busy',
+            'contact' => null,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('availability.index', [
+            'date' => '2026-04-12',
+        ]));
+
+        $response->assertOk();
+        $response->assertSeeTextInOrder([
+            '207',
+            'Livre',
+            '203',
+            'Parcialmente ocupada',
+            '305',
+            'Ocupada',
+        ]);
+    }
+
     public function test_availability_defaults_to_today_when_date_is_not_informed(): void
     {
         Carbon::setTestNow(Carbon::create(2026, 4, 12, 9, 0, 0, 'America/Sao_Paulo'));
@@ -111,5 +199,69 @@ class AvailabilityConsultationTest extends TestCase
         } finally {
             Carbon::setTestNow();
         }
+    }
+
+    public function test_availability_page_keeps_day_agenda_as_operational_support(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::User]);
+        $room = Room::create(['name' => '305', 'is_active' => true]);
+
+        Reservation::create([
+            'room_id' => $room->id,
+            'user_id' => $user->id,
+            'date' => '2026-04-12',
+            'start_time' => '14:00',
+            'end_time' => '15:30',
+            'title' => 'Conselho',
+            'requester' => 'Diretoria',
+            'contact' => null,
+        ]);
+
+        Reservation::create([
+            'room_id' => $room->id,
+            'user_id' => $user->id,
+            'date' => '2026-04-13',
+            'start_time' => '09:00',
+            'end_time' => '10:00',
+            'title' => 'Outro dia',
+            'requester' => 'Equipe',
+            'contact' => null,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('availability.index', [
+            'date' => '2026-04-12',
+        ]));
+
+        $response->assertOk();
+        $response->assertSeeText('Agendamentos do dia');
+        $response->assertSeeText('Conselho');
+        $response->assertSeeText('14:00 as 15:30');
+        $response->assertDontSeeText('Painel visual por sala');
+    }
+
+    public function test_day_agenda_metadata_shows_selected_room_when_filtering_by_room(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::User]);
+        $room = Room::create(['name' => '219', 'is_active' => true]);
+
+        Reservation::create([
+            'room_id' => $room->id,
+            'user_id' => $user->id,
+            'date' => '2026-04-12',
+            'start_time' => '10:00',
+            'end_time' => '11:00',
+            'title' => 'Reuniao 219',
+            'requester' => 'Equipe 219',
+            'contact' => null,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('availability.index', [
+            'date' => '2026-04-12',
+            'room_id' => $room->id,
+        ]));
+
+        $response->assertOk();
+        $response->assertSeeText('Sala 219');
+        $response->assertSeeText('Reservas 1');
     }
 }

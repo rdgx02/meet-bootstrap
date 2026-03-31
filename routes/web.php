@@ -29,7 +29,6 @@ Route::get('/dashboard', function () {
  * Tudo abaixo exige login.
  */
 Route::middleware('auth')->group(function () {
-
     Route::get('availability', [AvailabilityController::class, 'index'])
         ->name('availability.index');
 
