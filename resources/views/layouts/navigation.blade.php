@@ -6,6 +6,7 @@
         || request()->routeIs('reservations.create')
         || request()->routeIs('reservations.show')
         || request()->routeIs('reservations.edit');
+    $availabilityActive = request()->routeIs('availability.*');
 @endphp
 
 <aside
@@ -48,6 +49,17 @@
                 </span>
                 <span class="app-side-link-copy">
                     <span class="app-side-link-label">Historico</span>
+                </span>
+            </a>
+
+            <a class="app-side-link {{ $availabilityActive ? 'is-active' : '' }}" href="{{ route('availability.index') }}">
+                <span class="app-side-link-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5v-11ZM8 2.75V5M16 2.75V5M4 9h16M8 13h3M8 17h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                <span class="app-side-link-copy">
+                    <span class="app-side-link-label">Disponibilidade</span>
                 </span>
             </a>
 

@@ -260,6 +260,172 @@ a {
     border-radius: 0.75rem;
 }
 
+.app-availability-panel {
+    margin-bottom: 1rem;
+}
+
+.app-availability-head {
+    gap: 0.85rem;
+}
+
+.app-availability-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding-top: 0.55rem;
+    padding-left: 0.35rem;
+}
+
+.app-availability-form-grid {
+    flex: 0 1 15rem;
+    max-width: 15rem;
+}
+
+.app-availability-field {
+    display: grid;
+    gap: 0.08rem;
+    padding-left: 0.15rem;
+}
+
+.app-availability-field .app-form-label {
+    margin-bottom: 0.38rem;
+}
+
+.app-availability-field .form-control {
+    width: 100%;
+}
+
+.app-availability-field .form-control {
+    min-height: 2.4rem;
+    border-radius: 0.55rem;
+    padding-inline: 0.8rem;
+}
+
+.app-availability-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+
+.app-availability-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.app-availability-day-panel .app-data-sheet {
+    min-height: 10.5rem;
+}
+
+.app-empty-state {
+    padding: 2.25rem 1.25rem;
+    text-align: center;
+    color: var(--app-text-soft);
+}
+
+.app-empty-state-compact {
+    min-height: 7.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 1rem;
+}
+
+.app-availability-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: 0.9rem;
+}
+
+.app-availability-card {
+    display: grid;
+    gap: 0.8rem;
+    padding: 1rem 1.05rem;
+    border: 1px solid var(--app-border);
+    border-radius: 0.85rem;
+    background: linear-gradient(180deg, #fff 0%, #fbfcfe 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.app-availability-card-head {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.app-availability-card-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1b2a40;
+}
+
+.app-availability-card-note {
+    margin: 0.25rem 0 0;
+    font-size: 0.82rem;
+    color: var(--app-text-soft);
+    line-height: 1.45;
+}
+
+.app-availability-ranges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.app-availability-range {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.62rem;
+    border-radius: 999px;
+    background: #eaf4ea;
+    color: #1e6a34;
+    font-size: 0.76rem;
+    font-weight: 600;
+}
+
+.app-availability-range.is-busy {
+    background: #fff0e8;
+    color: #a64b24;
+}
+
+.app-availability-bookings {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.app-availability-booking {
+    display: grid;
+    gap: 0.12rem;
+    padding-top: 0.65rem;
+    border-top: 1px dashed var(--app-border);
+    font-size: 0.82rem;
+    color: var(--app-text-soft);
+    line-height: 1.4;
+}
+
+.app-availability-booking strong {
+    color: var(--app-text);
+}
+
+.app-status-pill.is-neutral {
+    background: #eef4fb;
+    color: #35597f;
+}
+
+@media (max-width: 991.98px) {
+    .app-availability-form-grid {
+        max-width: none;
+    }
+
+    .app-availability-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
 .app-table {
     font-size: 0.86rem;
 }
@@ -291,6 +457,7 @@ a {
 .app-btn-primary {
     background: var(--app-brand);
     border-color: var(--app-brand);
+    color: #ffffff;
 }
 
 .app-btn-primary:hover,
@@ -298,6 +465,7 @@ a {
 .app-btn-primary:active {
     background: var(--app-brand-strong) !important;
     border-color: var(--app-brand-strong) !important;
+    color: #ffffff !important;
 }
 
 .app-form-shell {

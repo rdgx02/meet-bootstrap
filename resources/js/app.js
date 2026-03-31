@@ -34,6 +34,18 @@ const initDatePickers = () => {
                 '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"/></svg>',
         };
 
+        if (input.dataset.calendarPosition) {
+            options.position = input.dataset.calendarPosition;
+        }
+
+        if (input.dataset.calendarAppend === 'closest') {
+            const container = input.parentElement;
+
+            if (container) {
+                options.appendTo = container;
+            }
+        }
+
         if (input.dataset.minDate) {
             options.minDate = input.dataset.minDate;
         }

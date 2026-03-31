@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReservationSeriesController;
 use App\Http\Controllers\RoomController;
@@ -28,6 +29,9 @@ Route::get('/dashboard', function () {
  * Tudo abaixo exige login.
  */
 Route::middleware('auth')->group(function () {
+
+    Route::get('availability', [AvailabilityController::class, 'index'])
+        ->name('availability.index');
 
     // Salas
     Route::resource('rooms', RoomController::class)->except(['show']);
