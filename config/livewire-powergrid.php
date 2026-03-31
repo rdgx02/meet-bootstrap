@@ -109,10 +109,10 @@ return [
     */
 
     'filter_attributes' => [
-        'input_text' => \PowerComponents\LivewirePowerGrid\FilterAttributes\InputText::class,
+        'input_text' => \App\PowerGrid\FilterAttributes\InputText::class,
         'boolean' => \PowerComponents\LivewirePowerGrid\FilterAttributes\Boolean::class,
         'number' => \PowerComponents\LivewirePowerGrid\FilterAttributes\Number::class,
-        'select' => \PowerComponents\LivewirePowerGrid\FilterAttributes\Select::class,
+        'select' => \App\PowerGrid\FilterAttributes\Select::class,
     ],
 
     /*

@@ -82,6 +82,19 @@ When we touch this area again, append a dated entry here with:
 4. Any behavior change in filters, sorting, pagination, or permissions.
 5. Whether tests were updated.
 
+## 2026-03-30
+
+1. Goal of the change.
+   Reinforce safety around the reservations table before new UI changes.
+2. Files edited.
+   `tests/Feature/ReservationManagementTest.php`
+3. Any new PowerGrid publish/override.
+   None.
+4. Any behavior change in filters, sorting, pagination, or permissions.
+   None in production behavior. Coverage was added for upcoming/history datasource rules and active-room sourcing.
+5. Whether tests were updated.
+   Yes. New automated checks now cover the `ReservationsTable` contract more directly.
+
 ## Pending Follow-Up Worth Tracking
 
 - Add or adjust automated tests for the Livewire reservations table behavior.

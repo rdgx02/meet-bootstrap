@@ -23,6 +23,10 @@ final class ReservationsTable extends PowerGridComponent
 
     public int $initialPerPage = 20;
 
+    public array $manualFilters = [];
+
+    public array $toolbarRooms = [];
+
     public function mount(string $scope = 'upcoming', array $filters = []): void
     {
         $this->scope = $scope;
@@ -30,7 +34,22 @@ final class ReservationsTable extends PowerGridComponent
             ? 'reservations-history-table'
             : 'reservations-upcoming-table';
 
+        $this->filters = [
+            'select' => [],
+            'input_text' => [],
+            'input_text_options' => [],
+            'date' => [],
+            'boolean' => [],
+            'number' => [],
+        ];
+        $this->manualFilters = $filters;
         $this->initialPerPage = $this->resolvePerPage($filters['per_page'] ?? 20);
+        $this->toolbarRooms = $this->rooms()
+            ->map(fn (Room $room): array => [
+                'id' => $room->id,
+                'name' => $room->name,
+            ])
+            ->all();
         $this->sortField = 'date';
         $this->sortDirection = $scope === 'history' ? 'desc' : 'asc';
 
@@ -77,6 +96,8 @@ final class ReservationsTable extends PowerGridComponent
                     });
             });
         }
+
+        $this->applyManualFilters($query);
 
         return $query;
     }
@@ -271,5 +292,50 @@ final class ReservationsTable extends PowerGridComponent
         }
 
         return $reservation->date === now()->toDateString() ? 'confirmed' : 'reserved';
+    }
+
+    private function applyManualFilters(Builder $query): void
+    {
+        $code = preg_replace('/\D+/', '', (string) ($this->manualFilters['code'] ?? ''));
+
+        if ($code !== null && $code !== '') {
+            $query->where('id', 'like', '%' . $code . '%');
+        }
+
+        if (filled($this->manualFilters['room_id'] ?? null)) {
+            $query->where('room_id', (int) $this->manualFilters['room_id']);
+        }
+
+        if (filled($this->manualFilters['title'] ?? null)) {
+            $query->where('title', 'like', '%' . trim((string) $this->manualFilters['title']) . '%');
+        }
+
+        if (filled($this->manualFilters['requester'] ?? null)) {
+            $query->where('requester', 'like', '%' . trim((string) $this->manualFilters['requester']) . '%');
+        }
+
+        if (filled($this->manualFilters['date'] ?? null)) {
+            $query->whereDate('date', (string) $this->manualFilters['date']);
+        }
+
+        if (filled($this->manualFilters['start_time'] ?? null)) {
+            $query->where('start_time', 'like', trim((string) $this->manualFilters['start_time']) . '%');
+        }
+
+        if (filled($this->manualFilters['end_time'] ?? null)) {
+            $query->where('end_time', 'like', trim((string) $this->manualFilters['end_time']) . '%');
+        }
+
+        if (filled($this->manualFilters['user_name'] ?? null)) {
+            $query->whereHas('user', function (Builder $userQuery): void {
+                $userQuery->where('name', 'like', '%' . trim((string) $this->manualFilters['user_name']) . '%');
+            });
+        }
+
+        if (filled($this->manualFilters['editor_name'] ?? null)) {
+            $query->whereHas('editor', function (Builder $editorQuery): void {
+                $editorQuery->where('name', 'like', '%' . trim((string) $this->manualFilters['editor_name']) . '%');
+            });
+        }
     }
 }

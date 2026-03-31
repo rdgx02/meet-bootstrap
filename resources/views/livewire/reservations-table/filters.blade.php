@@ -15,6 +15,132 @@
         </div>
     @endif
 
+    <form
+        method="GET"
+        action="{{ $scope === 'history' ? route('reservations.history') : route('reservations.index') }}"
+        class="lims-manual-filters"
+    >
+        <div class="lims-manual-filters-grid">
+            <input type="hidden" name="per_page" value="{{ $manualFilters['per_page'] ?? $initialPerPage }}">
+
+            <div>
+                <label for="toolbar_code" class="form-label fw-semibold mb-1">Codigo</label>
+                <input
+                    id="toolbar_code"
+                    type="text"
+                    name="code"
+                    value="{{ $manualFilters['code'] ?? '' }}"
+                    class="form-control form-control-sm"
+                    placeholder="AG-00001"
+                >
+            </div>
+
+            <div>
+                <label for="toolbar_room" class="form-label fw-semibold mb-1">Sala</label>
+                <select id="toolbar_room" name="room_id" class="form-select form-select-sm">
+                    <option value="">Todas</option>
+                    @foreach ($toolbarRooms as $room)
+                        <option value="{{ $room['id'] }}" @selected((string) ($manualFilters['room_id'] ?? '') === (string) $room['id'])>
+                            {{ $room['name'] }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label for="toolbar_title" class="form-label fw-semibold mb-1">Titulo</label>
+                <input
+                    id="toolbar_title"
+                    type="text"
+                    name="title"
+                    value="{{ $manualFilters['title'] ?? '' }}"
+                    class="form-control form-control-sm"
+                    placeholder="Titulo"
+                >
+            </div>
+
+            <div>
+                <label for="toolbar_requester" class="form-label fw-semibold mb-1">Solicitante</label>
+                <input
+                    id="toolbar_requester"
+                    type="text"
+                    name="requester"
+                    value="{{ $manualFilters['requester'] ?? '' }}"
+                    class="form-control form-control-sm"
+                    placeholder="Solicitante"
+                >
+            </div>
+
+            <div>
+                <label for="toolbar_date" class="form-label fw-semibold mb-1">Data</label>
+                <input
+                    id="toolbar_date"
+                    type="text"
+                    name="date"
+                    value="{{ $manualFilters['date'] ?? '' }}"
+                    class="js-date-picker form-control form-control-sm"
+                    data-min-date=""
+                    placeholder="AAAA-MM-DD"
+                >
+            </div>
+
+            <div>
+                <label for="toolbar_start_time" class="form-label fw-semibold mb-1">Inicio</label>
+                <input
+                    id="toolbar_start_time"
+                    type="text"
+                    name="start_time"
+                    value="{{ $manualFilters['start_time'] ?? '' }}"
+                    class="js-time-picker form-control form-control-sm"
+                    placeholder="HH:MM"
+                >
+            </div>
+
+            <div>
+                <label for="toolbar_end_time" class="form-label fw-semibold mb-1">Fim</label>
+                <input
+                    id="toolbar_end_time"
+                    type="text"
+                    name="end_time"
+                    value="{{ $manualFilters['end_time'] ?? '' }}"
+                    class="js-time-picker form-control form-control-sm"
+                    placeholder="HH:MM"
+                >
+            </div>
+
+            <div>
+                <label for="toolbar_user_name" class="form-label fw-semibold mb-1">Criado por</label>
+                <input
+                    id="toolbar_user_name"
+                    type="text"
+                    name="user_name"
+                    value="{{ $manualFilters['user_name'] ?? '' }}"
+                    class="form-control form-control-sm"
+                    placeholder="Criado por"
+                >
+            </div>
+
+            <div>
+                <label for="toolbar_editor_name" class="form-label fw-semibold mb-1">Editado por</label>
+                <input
+                    id="toolbar_editor_name"
+                    type="text"
+                    name="editor_name"
+                    value="{{ $manualFilters['editor_name'] ?? '' }}"
+                    class="form-control form-control-sm"
+                    placeholder="Editado por"
+                >
+            </div>
+        </div>
+
+        <div class="lims-manual-filters-actions">
+            <button type="submit" class="btn btn-sm lims-toolbar-btn">Aplicar filtros</button>
+            <a href="{{ $scope === 'history' ? route('reservations.history') : route('reservations.index') }}" class="btn btn-sm lims-toolbar-btn">
+                Limpar filtros
+            </a>
+        </div>
+    </form>
+
     <div class="lims-grid-toolbar" data-reservation-toolbar data-table-name="{{ $tableName }}">
         <div class="lims-grid-toolbar-actions">
             @php
@@ -74,6 +200,13 @@
             <span class="lims-toolbar-stat">Tela <strong>{{ $scope === 'history' ? 'Historico' : 'Agendamentos' }}</strong></span>
         </div>
     </div>
+
+    <p class="lims-grid-caption mb-0">
+        Selecione 1 agendamento para visualizar ou editar. Para excluir ou exportar, voce pode selecionar um ou varios.
+    </p>
+    <p class="lims-grid-caption mb-0">
+        Use os campos acima e clique em Aplicar filtros para atualizar a listagem.
+    </p>
 
 </div>
 

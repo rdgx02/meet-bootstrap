@@ -9,7 +9,6 @@ use App\Models\Room;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
-use Livewire\Livewire;
 use Tests\TestCase;
 
 class ReservationManagementTest extends TestCase
@@ -334,9 +333,50 @@ class ReservationManagementTest extends TestCase
             $response->assertSeeText('Em Andamento Hoje');
             $response->assertSeeText('Reserva Futura');
             $response->assertDontSeeText('Encerrada Hoje');
+            $response->assertSeeText('Selecione 1 agendamento para visualizar ou editar. Para excluir ou exportar, voce pode selecionar um ou varios.');
+            $response->assertSeeText('Use os campos acima e clique em Aplicar filtros para atualizar a listagem.');
+            $response->assertSeeText('Aplicar filtros');
         } finally {
             Carbon::setTestNow();
         }
+    }
+
+    public function test_index_applies_manual_filters_from_query_string(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::User]);
+        $roomA = Room::create(['name' => 'Sala 203', 'is_active' => true]);
+        $roomB = Room::create(['name' => 'Sala 305', 'is_active' => true]);
+
+        Reservation::create([
+            'room_id' => $roomA->id,
+            'user_id' => $user->id,
+            'date' => now()->addDay()->toDateString(),
+            'start_time' => '08:00',
+            'end_time' => '09:00',
+            'title' => 'LAGOA',
+            'requester' => 'Equipe A',
+            'contact' => null,
+        ]);
+
+        Reservation::create([
+            'room_id' => $roomB->id,
+            'user_id' => $user->id,
+            'date' => now()->addDay()->toDateString(),
+            'start_time' => '10:00',
+            'end_time' => '11:00',
+            'title' => 'TI',
+            'requester' => 'Equipe B',
+            'contact' => null,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('reservations.index', [
+            'room_id' => $roomA->id,
+            'title' => 'LAGOA',
+        ]));
+
+        $response->assertOk();
+        $response->assertSeeText('LAGOA');
+        $response->assertDontSeeText('Equipe B');
     }
 
     public function test_history_shows_only_past_reservations_including_ended_today(): void
@@ -389,5 +429,151 @@ class ReservationManagementTest extends TestCase
         } finally {
             Carbon::setTestNow();
         }
+    }
+
+    public function test_reservations_table_exposes_expected_empty_state_message(): void
+    {
+        $component = new ReservationsTable();
+
+        $this->assertSame(
+            'Nenhum agendamento corresponde aos filtros informados.',
+            $component->noDataLabel()
+        );
+    }
+
+    public function test_reservations_table_datasource_filters_upcoming_scope(): void
+    {
+        Carbon::setTestNow(Carbon::create(2026, 3, 10, 10, 54, 0, 'America/Sao_Paulo'));
+
+        try {
+            $user = User::factory()->create(['role' => UserRole::User]);
+            $room = Room::create(['name' => 'Sala Datasource', 'is_active' => true]);
+
+            Reservation::create([
+                'room_id' => $room->id,
+                'user_id' => $user->id,
+                'date' => '2026-03-09',
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Passada',
+                'requester' => 'Equipe',
+                'contact' => null,
+            ]);
+
+            Reservation::create([
+                'room_id' => $room->id,
+                'user_id' => $user->id,
+                'date' => '2026-03-10',
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Encerrada Hoje',
+                'requester' => 'Equipe',
+                'contact' => null,
+            ]);
+
+            Reservation::create([
+                'room_id' => $room->id,
+                'user_id' => $user->id,
+                'date' => '2026-03-10',
+                'start_time' => '10:30',
+                'end_time' => '11:30',
+                'title' => 'Ativa Hoje',
+                'requester' => 'Equipe',
+                'contact' => null,
+            ]);
+
+            Reservation::create([
+                'room_id' => $room->id,
+                'user_id' => $user->id,
+                'date' => '2026-03-11',
+                'start_time' => '09:00',
+                'end_time' => '10:00',
+                'title' => 'Futura',
+                'requester' => 'Equipe',
+                'contact' => null,
+            ]);
+
+            $component = new ReservationsTable();
+            $component->scope = 'upcoming';
+
+            $titles = $component->datasource()
+                ->orderBy('date')
+                ->orderBy('start_time')
+                ->pluck('title')
+                ->all();
+
+            $this->assertSame(['Ativa Hoje', 'Futura'], $titles);
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+    public function test_reservations_table_datasource_filters_history_scope(): void
+    {
+        Carbon::setTestNow(Carbon::create(2026, 3, 10, 10, 54, 0, 'America/Sao_Paulo'));
+
+        try {
+            $user = User::factory()->create(['role' => UserRole::User]);
+            $room = Room::create(['name' => 'Sala Historico Datasource', 'is_active' => true]);
+
+            Reservation::create([
+                'room_id' => $room->id,
+                'user_id' => $user->id,
+                'date' => '2026-03-09',
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Passada',
+                'requester' => 'Equipe',
+                'contact' => null,
+            ]);
+
+            Reservation::create([
+                'room_id' => $room->id,
+                'user_id' => $user->id,
+                'date' => '2026-03-10',
+                'start_time' => '08:00',
+                'end_time' => '09:00',
+                'title' => 'Encerrada Hoje',
+                'requester' => 'Equipe',
+                'contact' => null,
+            ]);
+
+            Reservation::create([
+                'room_id' => $room->id,
+                'user_id' => $user->id,
+                'date' => '2026-03-10',
+                'start_time' => '10:30',
+                'end_time' => '11:30',
+                'title' => 'Ativa Hoje',
+                'requester' => 'Equipe',
+                'contact' => null,
+            ]);
+
+            $component = new ReservationsTable();
+            $component->scope = 'history';
+
+            $titles = $component->datasource()
+                ->orderBy('date')
+                ->orderBy('start_time')
+                ->pluck('title')
+                ->all();
+
+            $this->assertSame(['Passada', 'Encerrada Hoje'], $titles);
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+    public function test_reservations_table_lists_only_active_rooms_sorted_by_name(): void
+    {
+        Room::create(['name' => 'Zulu', 'is_active' => true]);
+        Room::create(['name' => 'Beta', 'is_active' => false]);
+        Room::create(['name' => 'Alfa', 'is_active' => true]);
+
+        $component = new ReservationsTable();
+
+        $rooms = $component->rooms()->pluck('name')->all();
+
+        $this->assertSame(['Alfa', 'Zulu'], $rooms);
     }
 }
