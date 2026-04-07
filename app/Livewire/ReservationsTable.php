@@ -133,7 +133,7 @@ final class ReservationsTable extends PowerGridComponent
     public function columns(): array
     {
         return [
-            Column::make('Codigo', 'code', 'id')
+            Column::make('Código', 'code', 'id')
                 ->sortable()
                 ->headerAttribute('app-col-code-head', 'min-width: 8.75rem;')
                 ->bodyAttribute('app-col-code'),
@@ -144,7 +144,7 @@ final class ReservationsTable extends PowerGridComponent
                 ->headerAttribute('app-col-room-head', 'min-width: 6rem;')
                 ->bodyAttribute('app-col-room'),
 
-            Column::make('Titulo', 'title', 'title')
+            Column::make('Título', 'title', 'title')
                 ->sortable()
                 ->searchable()
                 ->headerAttribute('app-col-title-head', 'min-width: 13rem;')
@@ -161,7 +161,7 @@ final class ReservationsTable extends PowerGridComponent
                 ->headerAttribute('app-col-date-head', 'min-width: 8.5rem;')
                 ->bodyAttribute('app-col-date'),
 
-            Column::make('Inicio', 'start_time_br', 'start_time')
+            Column::make('Início', 'start_time_br', 'start_time')
                 ->sortable()
                 ->headerAttribute('app-col-time-head', 'min-width: 6.5rem;')
                 ->bodyAttribute('app-col-time'),
@@ -186,7 +186,7 @@ final class ReservationsTable extends PowerGridComponent
         return [
             Filter::inputText('code', 'id')
                 ->operators(['contains', 'is'])
-                ->placeholder('Codigo')
+                ->placeholder('Código')
                 ->builder(function (Builder $query, array $values): void {
                     $value = preg_replace('/\D+/', '', (string) ($values['value'] ?? ''));
 
@@ -213,7 +213,7 @@ final class ReservationsTable extends PowerGridComponent
 
             Filter::inputText('title', 'title')
                 ->operators(['contains'])
-                ->placeholder('Titulo'),
+                ->placeholder('Título'),
 
             Filter::inputText('requester', 'requester')
                 ->operators(['contains'])

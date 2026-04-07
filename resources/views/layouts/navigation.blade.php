@@ -48,7 +48,7 @@
                     </svg>
                 </span>
                 <span class="app-side-link-copy">
-                    <span class="app-side-link-label">Historico</span>
+                    <span class="app-side-link-label">Histórico</span>
                 </span>
             </a>
 
@@ -71,7 +71,7 @@
                         </svg>
                     </span>
                     <span class="app-side-link-copy">
-                        <span class="app-side-link-label">Series</span>
+                        <span class="app-side-link-label">Séries</span>
                     </span>
                 </a>
             @endif
@@ -102,7 +102,7 @@
                         </svg>
                     </span>
                     <span class="app-side-link-copy">
-                        <span class="app-side-link-label">Usuarios</span>
+                        <span class="app-side-link-label">Usuários</span>
                     </span>
                 </a>
             @endif
@@ -117,7 +117,7 @@
                         </svg>
                     </span>
                     <span class="app-side-link-copy">
-                        <span class="app-side-link-label">Usuario</span>
+                        <span class="app-side-link-label">Usuário</span>
                     </span>
                 </a>
 

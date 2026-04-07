@@ -95,6 +95,24 @@ When we touch this area again, append a dated entry here with:
 5. Whether tests were updated.
    Yes. New automated checks now cover the `ReservationsTable` contract more directly.
 
+## 2026-04-07
+
+1. Goal of the change.
+   Consolidate the new `Disponibilidade` experience as a textual consultation flow for secretaria/users, while keeping the reservations table stable.
+2. Files edited.
+   `app/Http/Controllers/AvailabilityController.php`
+   `app/Services/AvailabilityOverviewService.php`
+   `resources/views/availability/index.blade.php`
+   `resources/css/app.css`
+   `tests/Feature/AvailabilityConsultationTest.php`
+   `README.md`
+3. Any new PowerGrid publish/override.
+   None.
+4. Any behavior change in filters, sorting, pagination, or permissions.
+   No change in PowerGrid behavior. Availability now supports date + optional room filtering, prioritizes textual availability, and orders rooms by status in the `Todas` view.
+5. Whether tests were updated.
+   Yes. Availability coverage now includes room filtering, full-day occupancy, room ordering by status, and the no-active-rooms scenario.
+
 ## Pending Follow-Up Worth Tracking
 
 - Add or adjust automated tests for the Livewire reservations table behavior.

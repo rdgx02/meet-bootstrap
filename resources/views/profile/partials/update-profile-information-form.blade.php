@@ -30,15 +30,15 @@
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <div class="mt-3">
                     <p class="small text-body-secondary mb-2">
-                        Seu e-mail ainda nao foi verificado.
+                        Seu e-mail ainda não foi verificado.
                         <button form="send-verification" class="btn btn-link app-link-button p-0 align-baseline">
-                            Clique aqui para reenviar o e-mail de verificacao.
+                            Clique aqui para reenviar o e-mail de verificação.
                         </button>
                     </p>
 
                     @if (session('status') === 'verification-link-sent')
                         <p class="small text-success mb-0">
-                            Um novo link de verificacao foi enviado para o seu e-mail.
+                            Um novo link de verificação foi enviado para o seu e-mail.
                         </p>
                     @endif
                 </div>

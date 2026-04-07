@@ -6,9 +6,9 @@
     <div class="app-page app-form-shell">
         <section class="app-page-header-panel">
             <div class="app-page-header-copy">
-                <div class="app-page-eyebrow">Inicio</div>
+                <div class="app-page-eyebrow">Início</div>
                 <h1 class="app-page-title">Sistema de agendamento</h1>
-                <p class="app-page-note">Acesse agendamentos, salas e administracao em um unico painel.</p>
+                <p class="app-page-note">Acesse agendamentos, salas e administração em um único painel.</p>
             </div>
         </section>
     </div>

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Editar Serie')
+@section('title', 'Editar Série')
 
 @section('content')
     @include('reservation-series._form', ['series' => $series, 'rooms' => $rooms])

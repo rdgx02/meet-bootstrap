@@ -14,7 +14,7 @@ class DeleteReservationFollowingAction
         $series = $reservation->series;
 
         if (! $series instanceof ReservationSeries) {
-            throw new \InvalidArgumentException('A reserva informada nao pertence a uma serie.');
+            throw new \InvalidArgumentException('A reserva informada não pertence a uma série.');
         }
 
         DB::transaction(function () use ($reservation, $series): void {

@@ -50,13 +50,13 @@
         <div class="alert alert-warning app-warning-alert" role="alert">
             <div class="app-alert-stack">
                 <div>
-                    <p class="fw-semibold mb-1">Horario indisponivel para essa sala</p>
+                    <p class="fw-semibold mb-1">Horário indisponível para essa sala</p>
                     <p class="small mb-0">{{ $conflictMessage }}</p>
                 </div>
 
                 <div class="app-alert-grid">
                     <div class="app-card-soft p-3">
-                        <span class="app-alert-label">Horario ocupado</span>
+                        <span class="app-alert-label">Horário ocupado</span>
                         <strong>{{ $conflictStart }} - {{ $conflictEnd }}</strong>
                         <small>{{ $conflictDate }} | Sala {{ $conflictRoomName }}</small>
                     </div>
@@ -74,14 +74,14 @@
         <div class="alert alert-warning app-warning-alert" role="alert">
             <div class="app-alert-stack">
                 <div>
-                    <p class="fw-semibold mb-1">Nao foi possivel criar a serie recorrente</p>
+                    <p class="fw-semibold mb-1">Não foi possível criar a série recorrente</p>
                     <p class="small mb-0">{{ $recurringConflictMessage }}</p>
                 </div>
 
                 <div class="app-recurring-conflict-list">
                     @foreach ($recurringConflictItems->take(8) as $conflict)
                         <div class="app-card-soft p-3">
-                            <span class="app-alert-label">Ocorrencia com conflito</span>
+                            <span class="app-alert-label">Ocorrência com conflito</span>
                             <strong>{{ $conflict['attempted_date'] ?? '-' }} | {{ $conflict['attempted_start_time'] ?? '--:--' }} - {{ $conflict['attempted_end_time'] ?? '--:--' }}</strong>
                             <small>
                                 Sala {{ $conflict['room_name'] ?? '-' }} ocupada por {{ $conflict['existing_title'] ?? '-' }}
@@ -93,7 +93,7 @@
 
                 @if ($recurringConflictItems->count() > 8)
                     <p class="small mb-0 text-body-secondary">
-                        Mais {{ $recurringConflictItems->count() - 8 }} ocorrencias com conflito nao foram exibidas nesta lista.
+                        Mais {{ $recurringConflictItems->count() - 8 }} ocorrências com conflito não foram exibidas nesta lista.
                     </p>
                 @endif
             </div>
@@ -102,7 +102,7 @@
 
     @if ($otherErrors->isNotEmpty())
         <div class="alert alert-danger app-danger-alert" role="alert">
-            <p class="fw-semibold mb-2">Nao foi possivel salvar:</p>
+            <p class="fw-semibold mb-2">Não foi possível salvar:</p>
             <ul class="mb-0 ps-3">
                 @foreach ($otherErrors as $error)
                     <li>{{ $error }}</li>
@@ -134,36 +134,36 @@
         <div class="app-subpanel-head">
             <div>
                 <h2 class="app-subpanel-title">Dados do agendamento</h2>
-                <p class="app-subpanel-note">Formulario operacional para controle de reservas de sala.</p>
+                <p class="app-subpanel-note">Formulário operacional para controle de reservas de sala.</p>
             </div>
         </div>
 
         <div class="app-form-grid-compact app-form-grid-2">
             @if ($isEdit && isset($reservation) && $reservation->series_id)
                 <div class="app-form-field app-form-field-full">
-                    <label class="app-form-label">Escopo da alteracao</label>
+                    <label class="app-form-label">Escopo da alteração</label>
                     <div class="app-choice-grid app-choice-grid-compact">
                         <label class="app-choice-card app-choice-card-compact {{ $seriesScope === 'occurrence' ? 'is-active' : '' }}">
                             <input type="radio" name="series_scope" value="occurrence" {{ $seriesScope === 'occurrence' ? 'checked' : '' }}>
                             <span class="app-choice-card-body">
-                                <strong>So esta ocorrencia</strong>
-                                <small>Transforma apenas este item em excecao da serie.</small>
+                                <strong>Só esta ocorrência</strong>
+                                <small>Transforma apenas este item em exceção da série.</small>
                             </span>
                         </label>
 
                         <label class="app-choice-card app-choice-card-compact {{ $seriesScope === 'following' ? 'is-active' : '' }}">
                             <input type="radio" name="series_scope" value="following" {{ $seriesScope === 'following' ? 'checked' : '' }}>
                             <span class="app-choice-card-body">
-                                <strong>Esta e proximas</strong>
-                                <small>Cria uma nova continuidade da serie a partir desta data.</small>
+                                <strong>Esta e próximas</strong>
+                                <small>Cria uma nova continuidade da série a partir desta data.</small>
                             </span>
                         </label>
 
                         <label class="app-choice-card app-choice-card-compact {{ $seriesScope === 'all' ? 'is-active' : '' }}">
                             <input type="radio" name="series_scope" value="all" {{ $seriesScope === 'all' ? 'checked' : '' }}>
                             <span class="app-choice-card-body">
-                                <strong>Toda a serie</strong>
-                                <small>Aplica sala, horario e dados comuns em toda a recorrencia futura.</small>
+                                <strong>Toda a série</strong>
+                                <small>Aplica sala, horário e dados comuns em toda a recorrência futura.</small>
                             </span>
                         </label>
                     </div>
@@ -183,8 +183,8 @@
                                 {{ $bookingMode === 'single' ? 'checked' : '' }}
                             >
                             <span class="app-choice-card-body">
-                                <strong>Agendamento unico</strong>
-                                <small>Cria uma unica reserva para a data escolhida.</small>
+                                <strong>Agendamento único</strong>
+                                <small>Cria uma única reserva para a data escolhida.</small>
                             </span>
                         </label>
 
@@ -198,7 +198,7 @@
                             >
                             <span class="app-choice-card-body">
                                 <strong>Agendamento recorrente</strong>
-                                <small>Gera automaticamente uma serie de reservas no periodo informado.</small>
+                                <small>Gera automaticamente uma série de reservas no período informado.</small>
                             </span>
                         </label>
                     </div>
@@ -246,7 +246,7 @@
 
             @if (! $isEdit)
                 <div class="app-form-field" x-show="bookingMode === 'recurring'" x-cloak>
-                    <label for="recurrence_starts_on" class="app-form-label">Data de inicio</label>
+                    <label for="recurrence_starts_on" class="app-form-label">Data de início</label>
                     <input
                         id="recurrence_starts_on"
                         type="text"
@@ -296,7 +296,7 @@
             </div>
 
             <div class="app-form-field">
-                <label for="title" class="app-form-label">Titulo</label>
+                <label for="title" class="app-form-label">Título</label>
                 <input
                     id="title"
                     type="text"
@@ -305,7 +305,7 @@
                     maxlength="255"
                     required
                     class="form-control @error('title') is-invalid @enderror"
-                    placeholder="Ex.: Reuniao de equipe"
+                    placeholder="Ex.: Reunião de equipe"
                 >
                 @error('title')
                     <div class="invalid-feedback">{{ $message }}</div>
@@ -314,14 +314,14 @@
 
             @if (! $isEdit)
                 <div class="app-form-field" x-show="bookingMode === 'recurring'" x-cloak>
-                    <label for="recurrence_frequency" class="app-form-label">Frequencia</label>
+                    <label for="recurrence_frequency" class="app-form-label">Frequência</label>
                     <select
                         id="recurrence_frequency"
                         name="recurrence_frequency"
                         class="form-select @error('recurrence_frequency') is-invalid @enderror"
                         x-model="recurrenceFrequency"
                     >
-                        <option value="daily" @selected($recurrenceFrequency === 'daily')>Diaria</option>
+                        <option value="daily" @selected($recurrenceFrequency === 'daily')>Diária</option>
                         <option value="weekly" @selected($recurrenceFrequency === 'weekly')>Semanal</option>
                         <option value="monthly" @selected($recurrenceFrequency === 'monthly')>Mensal</option>
                     </select>
@@ -332,7 +332,7 @@
             @endif
 
             <div class="app-form-field">
-                <label for="start_time" class="app-form-label">Hora inicio</label>
+                <label for="start_time" class="app-form-label">Hora início</label>
                 <input
                     id="start_time"
                     type="text"
@@ -417,13 +417,13 @@
         <div class="app-form-actions app-form-actions-compact">
             <p class="small text-body-secondary mb-0">
                 @if (! $isEdit)
-                    <span x-show="bookingMode === 'single'" x-cloak>Revise os dados antes de confirmar a operacao.</span>
-                    <span x-show="bookingMode === 'recurring'" x-cloak>O sistema verificara conflito em cada ocorrencia da serie antes de salvar.</span>
+                    <span x-show="bookingMode === 'single'" x-cloak>Revise os dados antes de confirmar a operação.</span>
+                    <span x-show="bookingMode === 'recurring'" x-cloak>O sistema verificará conflito em cada ocorrência da série antes de salvar.</span>
                 @else
                     @if (isset($reservation) && $reservation->series_id)
-                        O escopo escolhido define se a alteracao vale para uma ocorrencia, a continuidade da serie ou toda a recorrencia futura.
+                        O escopo escolhido define se a alteração vale para uma ocorrência, a continuidade da série ou toda a recorrência futura.
                     @else
-                        Revise os dados antes de confirmar a operacao.
+                        Revise os dados antes de confirmar a operação.
                     @endif
                 @endif
             </p>
@@ -434,10 +434,10 @@
                 </a>
                 <button type="submit" class="btn app-btn-primary app-section-btn">
                     @if ($isEdit)
-                        Salvar alteracoes
+                        Salvar alterações
                     @else
                         <span x-show="bookingMode === 'single'" x-cloak>Criar agendamento</span>
-                        <span x-show="bookingMode === 'recurring'" x-cloak>Criar serie recorrente</span>
+                        <span x-show="bookingMode === 'recurring'" x-cloak>Criar série recorrente</span>
                     @endif
                 </button>
             </div>

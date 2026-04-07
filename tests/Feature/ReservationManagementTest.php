@@ -281,7 +281,7 @@ class ReservationManagementTest extends TestCase
 
         $content = $response->streamedContent();
 
-        $this->assertStringContainsString('Codigo;Sala;Titulo;Solicitante;Data;Inicio;Fim;"Criado por";"Editado por"', $content);
+        $this->assertStringContainsString('Código;Sala;Título;Solicitante;Data;Início;Fim;"Criado por";"Editado por"', $content);
         $this->assertStringContainsString('AG-0000' . $reservation->id, $content);
         $this->assertStringContainsString('"Sala Exportacao";"Exportar Agenda";"Equipe Operacional";26/03/2026;14:00;15:30;"Ana Secretaria";"Carlos Editor"', $content);
     }
@@ -333,7 +333,7 @@ class ReservationManagementTest extends TestCase
             $response->assertSeeText('Em Andamento Hoje');
             $response->assertSeeText('Reserva Futura');
             $response->assertDontSeeText('Encerrada Hoje');
-            $response->assertSeeText('Selecione 1 agendamento para visualizar ou editar. Para excluir ou exportar, voce pode selecionar um ou varios.');
+            $response->assertSeeText('Selecione 1 agendamento para visualizar ou editar. Para excluir ou exportar, você pode selecionar um ou vários.');
             $response->assertSeeText('Use os campos acima e clique em Aplicar filtros para atualizar a listagem.');
             $response->assertSeeText('Aplicar filtros');
         } finally {

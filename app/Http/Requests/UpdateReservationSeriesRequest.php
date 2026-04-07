@@ -53,7 +53,7 @@ class UpdateReservationSeriesRequest extends FormRequest
             }
 
             if (\Carbon\Carbon::parse($startsOn)->diffInDays(\Carbon\Carbon::parse($endsOn)) > 370) {
-                $validator->errors()->add('recurrence_ends_on', 'O periodo da recorrencia deve ter no maximo 12 meses.');
+                $validator->errors()->add('recurrence_ends_on', 'O período da recorrência deve ter no máximo 12 meses.');
             }
         });
     }

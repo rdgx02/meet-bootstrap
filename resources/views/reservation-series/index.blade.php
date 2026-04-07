@@ -4,19 +4,19 @@
 
 @extends('layouts.app')
 
-@section('title', 'Series Recorrentes')
+@section('title', 'Séries Recorrentes')
 
 @section('content')
     <div class="app-module-shell">
         <section class="app-module-header">
             <div>
-                <div class="app-module-kicker">Recorrencia</div>
-                <h1 class="app-module-title">Series recorrentes</h1>
-                <p class="app-module-note">Acompanhe series ativas e canceladas criadas para a agenda institucional.</p>
+                <div class="app-module-kicker">Recorrência</div>
+                <h1 class="app-module-title">Séries recorrentes</h1>
+                <p class="app-module-note">Acompanhe séries ativas e canceladas criadas para a agenda institucional.</p>
             </div>
 
             <a href="{{ route('reservations.create') }}" class="btn app-btn-primary app-section-btn">
-                Nova recorrencia
+                Nova recorrência
             </a>
         </section>
 
@@ -35,8 +35,8 @@
         <section class="app-subpanel">
             <div class="app-subpanel-head">
                 <div>
-                    <h2 class="app-subpanel-title">Lista de series</h2>
-                    <p class="app-subpanel-note">Visao operacional das recorrencias configuradas no sistema.</p>
+                    <h2 class="app-subpanel-title">Lista de séries</h2>
+                    <p class="app-subpanel-note">Visão operacional das recorrências configuradas no sistema.</p>
                 </div>
                 <div class="app-subpanel-meta">
                     <span class="app-mini-stat">Total <strong>{{ $seriesCollection->count() }}</strong></span>
@@ -48,12 +48,12 @@
                     <table class="table align-middle mb-0 app-record-table">
                         <thead>
                             <tr>
-                                <th>Titulo</th>
+                                <th>Título</th>
                                 <th>Sala</th>
-                                <th>Periodo</th>
-                                <th>Frequencia</th>
+                                <th>Período</th>
+                                <th>Frequência</th>
                                 <th>Status</th>
-                                <th class="text-end">Acoes</th>
+                                <th class="text-end">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -69,7 +69,7 @@
                                         <div class="small text-body-secondary">{{ $series->requester }}</div>
                                     </td>
                                     <td>{{ $series->room?->name ?? '-' }}</td>
-                                    <td>{{ $series->starts_on_br }} ate {{ $series->ends_on_br }}</td>
+                                    <td>{{ $series->starts_on_br }} até {{ $series->ends_on_br }}</td>
                                     <td>{{ $series->frequency_label }}</td>
                                     <td>
                                         <span class="app-status-pill {{ $series->status === 'active' ? 'is-active' : 'is-inactive' }}">
@@ -93,7 +93,7 @@
                             @empty
                                 <tr>
                                     <td colspan="6" class="text-center text-body-secondary py-5">
-                                        Nenhuma serie recorrente cadastrada.
+                                        Nenhuma série recorrente cadastrada.
                                     </td>
                                 </tr>
                             @endforelse

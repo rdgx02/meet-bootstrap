@@ -24,7 +24,7 @@
             <input type="hidden" name="per_page" value="{{ $manualFilters['per_page'] ?? $initialPerPage }}">
 
             <div>
-                <label for="toolbar_code" class="form-label fw-semibold mb-1">Codigo</label>
+                <label for="toolbar_code" class="form-label fw-semibold mb-1">Código</label>
                 <input
                     id="toolbar_code"
                     type="text"
@@ -48,14 +48,14 @@
             </div>
 
             <div>
-                <label for="toolbar_title" class="form-label fw-semibold mb-1">Titulo</label>
+                <label for="toolbar_title" class="form-label fw-semibold mb-1">Título</label>
                 <input
                     id="toolbar_title"
                     type="text"
                     name="title"
                     value="{{ $manualFilters['title'] ?? '' }}"
                     class="form-control form-control-sm"
-                    placeholder="Titulo"
+                    placeholder="Título"
                 >
             </div>
 
@@ -85,7 +85,7 @@
             </div>
 
             <div>
-                <label for="toolbar_start_time" class="form-label fw-semibold mb-1">Inicio</label>
+                <label for="toolbar_start_time" class="form-label fw-semibold mb-1">Início</label>
                 <input
                     id="toolbar_start_time"
                     type="text"
@@ -197,12 +197,12 @@
         <div class="lims-grid-toolbar-stats">
             <span class="lims-toolbar-stat">Registros <strong>{{ $this->total }}</strong></span>
             <span class="lims-toolbar-stat">Selecionados <strong>{{ count($checkboxValues) }}</strong></span>
-            <span class="lims-toolbar-stat">Tela <strong>{{ $scope === 'history' ? 'Historico' : 'Agendamentos' }}</strong></span>
+            <span class="lims-toolbar-stat">Tela <strong>{{ $scope === 'history' ? 'Histórico' : 'Agendamentos' }}</strong></span>
         </div>
     </div>
 
     <p class="lims-grid-caption mb-0">
-        Selecione 1 agendamento para visualizar ou editar. Para excluir ou exportar, voce pode selecionar um ou varios.
+        Selecione 1 agendamento para visualizar ou editar. Para excluir ou exportar, você pode selecionar um ou vários.
     </p>
     <p class="lims-grid-caption mb-0">
         Use os campos acima e clique em Aplicar filtros para atualizar a listagem.
@@ -215,7 +215,7 @@
         <div class="modal-content lims-delete-modal">
             <div class="modal-header">
                 <div>
-                    <span class="lims-modal-kicker">Confirmacao</span>
+                    <span class="lims-modal-kicker">Confirmação</span>
                     <h2 id="reservationDeleteModalTitle" class="lims-modal-title">Excluir agendamento</h2>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
@@ -223,17 +223,17 @@
 
             <div class="modal-body">
                 <div class="app-delete-alert">
-                    Essa exclusao remove o agendamento da agenda operacional e do historico consultivo.
+                    Essa exclusão remove o agendamento da agenda operacional e do histórico consultivo.
                 </div>
 
                 <p class="lims-modal-text" data-delete-message>
-                    Este registro sera removido da base operacional e nao podera ser recuperado.
+                    Este registro será removido da base operacional e não poderá ser recuperado.
                 </p>
 
                 <div class="lims-modal-summary" data-delete-single-summary>
-                    <div><span>Titulo</span><strong data-delete-summary="title">-</strong></div>
+                    <div><span>Título</span><strong data-delete-summary="title">-</strong></div>
                     <div><span>Data</span><strong data-delete-summary="date">-</strong></div>
-                    <div><span>Horario</span><strong data-delete-summary="time">-</strong></div>
+                    <div><span>Horário</span><strong data-delete-summary="time">-</strong></div>
                     <div><span>Sala</span><strong data-delete-summary="room">-</strong></div>
                 </div>
 
@@ -258,7 +258,7 @@
                     <input type="hidden" name="ids" value="">
 
                     <button type="submit" class="btn btn-danger btn-sm app-delete-confirm-btn">
-                        <span data-delete-submit-label>Confirmar exclusao</span>
+                        <span data-delete-submit-label>Confirmar exclusão</span>
                     </button>
                 </form>
             </div>

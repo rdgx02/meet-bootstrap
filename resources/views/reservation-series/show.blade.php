@@ -4,7 +4,7 @@
 
 @extends('layouts.app')
 
-@section('title', 'Detalhe da Serie')
+@section('title', 'Detalhe da Série')
 
 @section('content')
     @php
@@ -17,9 +17,9 @@
     <div class="app-module-shell" x-data="{ showCancelSeriesModal: false }">
         <section class="app-module-header">
             <div>
-                <div class="app-module-kicker">Recorrencia</div>
+                <div class="app-module-kicker">Recorrência</div>
                 <h1 class="app-module-title">{{ $series->title }}</h1>
-                <p class="app-module-note">Detalhes da serie recorrente e das ocorrencias geradas.</p>
+                <p class="app-module-note">Detalhes da série recorrente e das ocorrências geradas.</p>
             </div>
 
             <div class="d-flex align-items-center gap-2">
@@ -30,7 +30,7 @@
                 @can('update', $series)
                     @if ($series->status === 'active')
                         <a href="{{ route('reservation-series.edit', $series) }}" class="btn btn-outline-secondary app-section-btn app-section-btn-light">
-                            Editar serie
+                            Editar série
                         </a>
                     @endif
                 @endcan
@@ -38,7 +38,7 @@
                 @can('cancel', $series)
                     @if ($series->status === 'active')
                         <button type="button" class="btn app-btn-primary app-section-btn" x-on:click="showCancelSeriesModal = true">
-                            Cancelar serie
+                            Cancelar série
                         </button>
                     @endif
                 @endcan
@@ -60,8 +60,8 @@
         <section class="app-subpanel">
             <div class="app-subpanel-head">
                 <div>
-                    <h2 class="app-subpanel-title">Resumo da serie</h2>
-                    <p class="app-subpanel-note">Informacoes principais e impacto atual na agenda.</p>
+                    <h2 class="app-subpanel-title">Resumo da série</h2>
+                    <p class="app-subpanel-note">Informações principais e impacto atual na agenda.</p>
                 </div>
             </div>
 
@@ -69,20 +69,20 @@
                 <div class="app-card-soft p-3">
                     <span class="app-alert-label">Sala</span>
                     <strong>{{ $series->room?->name ?? '-' }}</strong>
-                    <small>{{ $series->starts_on_br }} ate {{ $series->ends_on_br }}</small>
+                    <small>{{ $series->starts_on_br }} até {{ $series->ends_on_br }}</small>
                 </div>
                 <div class="app-card-soft p-3">
-                    <span class="app-alert-label">Frequencia</span>
+                    <span class="app-alert-label">Frequência</span>
                     <strong>{{ $series->frequency_label }}</strong>
                     <small>{{ $series->start_time }} - {{ $series->end_time }}</small>
                 </div>
                 <div class="app-card-soft p-3">
                     <span class="app-alert-label">Status</span>
                     <strong>{{ $series->status === 'active' ? 'Ativa' : 'Cancelada' }}</strong>
-                    <small>{{ $futureOccurrences->count() }} ocorrencias futuras</small>
+                    <small>{{ $futureOccurrences->count() }} ocorrências futuras</small>
                 </div>
                 <div class="app-card-soft p-3">
-                    <span class="app-alert-label">Excecoes</span>
+                    <span class="app-alert-label">Exceções</span>
                     <strong>{{ $exceptionCount }}</strong>
                     <small>{{ $series->user?->name ?? '-' }}</small>
                 </div>
@@ -92,8 +92,8 @@
         <section class="app-subpanel mt-4">
             <div class="app-subpanel-head">
                 <div>
-                    <h2 class="app-subpanel-title">Ocorrencias da serie</h2>
-                    <p class="app-subpanel-note">Itens gerados para essa recorrencia, incluindo excecoes.</p>
+                    <h2 class="app-subpanel-title">Ocorrências da série</h2>
+                    <p class="app-subpanel-note">Itens gerados para essa recorrência, incluindo exceções.</p>
                 </div>
             </div>
 
@@ -103,10 +103,10 @@
                         <thead>
                             <tr>
                                 <th>Data</th>
-                                <th>Horario</th>
+                                <th>Horário</th>
                                 <th>Status</th>
-                                <th>Observacao</th>
-                                <th class="text-end">Acoes</th>
+                                <th>Observação</th>
+                                <th class="text-end">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -119,11 +119,11 @@
                                     <td>{{ $reservation->start_time_br }} - {{ $reservation->end_time_br }}</td>
                                     <td>
                                         <span class="app-status-pill {{ $hasStarted ? 'is-inactive' : 'is-active' }}">
-                                            {{ $hasStarted ? 'Ocorrencia passada/ativa' : 'Ocorrencia futura' }}
+                                            {{ $hasStarted ? 'Ocorrência passada/ativa' : 'Ocorrência futura' }}
                                         </span>
                                     </td>
                                     <td>
-                                        {{ $reservation->is_exception ? 'Editada como excecao da serie' : 'Sem alteracoes manuais' }}
+                                        {{ $reservation->is_exception ? 'Editada como exceção da série' : 'Sem alterações manuais' }}
                                     </td>
                                     <td>
                                         <div class="app-inline-actions justify-content-end">
@@ -134,7 +134,7 @@
                                             @can('update', $reservation)
                                                 @if (! $hasStarted)
                                                     <a href="{{ route('reservations.edit', $reservation) }}?from=series&series={{ $series->id }}" class="btn btn-sm app-ghost-btn">
-                                                        Editar ocorrencia
+                                                        Editar ocorrência
                                                     </a>
                                                 @endif
                                             @endcan
@@ -144,7 +144,7 @@
                             @empty
                                 <tr>
                                     <td colspan="5" class="text-center text-body-secondary py-5">
-                                        Nenhuma ocorrencia encontrada para esta serie.
+                                        Nenhuma ocorrência encontrada para esta série.
                                     </td>
                                 </tr>
                             @endforelse
@@ -165,7 +165,7 @@
                                 <div class="app-modal-header">
                                     <div>
                                         <span class="app-modal-kicker">Confirmar cancelamento</span>
-                                        <h2 id="cancelSeriesTitle" class="app-modal-title">Cancelar serie recorrente?</h2>
+                                        <h2 id="cancelSeriesTitle" class="app-modal-title">Cancelar série recorrente?</h2>
                                     </div>
 
                                     <button type="button" class="btn-close" aria-label="Fechar" x-on:click="showCancelSeriesModal = false"></button>
@@ -173,18 +173,18 @@
 
                                 <div class="app-modal-body">
                                     <div class="app-delete-alert">
-                                        Essa acao encerrara a recorrencia e removera as ocorrencias futuras ainda nao iniciadas.
+                                        Essa ação encerrará a recorrência e removerá as ocorrências futuras ainda não iniciadas.
                                     </div>
 
                                     <p class="app-modal-text">
-                                        O cancelamento afetara {{ $futureOccurrences->count() }} ocorrencia(s) futura(s) desta serie.
+                                        O cancelamento afetará {{ $futureOccurrences->count() }} ocorrência(s) futura(s) desta série.
                                     </p>
 
                                     <div class="app-modal-summary">
-                                        <div><span>Serie</span><strong>{{ $series->title }}</strong></div>
+                                        <div><span>Série</span><strong>{{ $series->title }}</strong></div>
                                         <div><span>Sala</span><strong>{{ $series->room?->name ?? '-' }}</strong></div>
-                                        <div><span>Periodo</span><strong>{{ $series->starts_on_br }} ate {{ $series->ends_on_br }}</strong></div>
-                                        <div><span>Ocorrencias futuras</span><strong>{{ $futureOccurrences->count() }}</strong></div>
+                                        <div><span>Período</span><strong>{{ $series->starts_on_br }} até {{ $series->ends_on_br }}</strong></div>
+                                        <div><span>Ocorrências futuras</span><strong>{{ $futureOccurrences->count() }}</strong></div>
                                     </div>
                                 </div>
 

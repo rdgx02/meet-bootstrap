@@ -67,15 +67,15 @@ class ReservationController extends Controller
                 ->with(
                     'success',
                     $result['created_count'] === 1
-                        ? 'Serie recorrente criada com 1 ocorrencia.'
-                        : sprintf('Serie recorrente criada com %d ocorrencias.', $result['created_count'])
+                        ? 'Série recorrente criada com 1 ocorrência.'
+                        : sprintf('Série recorrente criada com %d ocorrências.', $result['created_count'])
                 );
 
             if ($result['conflicts'] !== []) {
                 $redirect->with(
                     'warning',
                     sprintf(
-                        '%d ocorrencias nao foram criadas por conflito de horario.',
+                        '%d ocorrências não foram criadas por conflito de horário.',
                         count($result['conflicts'])
                     )
                 );
@@ -258,7 +258,7 @@ class ReservationController extends Controller
         return response()->streamDownload(function () use ($reservations): void {
             $output = fopen('php://output', 'w');
 
-            fputcsv($output, ['Codigo', 'Sala', 'Titulo', 'Solicitante', 'Data', 'Inicio', 'Fim', 'Criado por', 'Editado por'], ';');
+            fputcsv($output, ['Código', 'Sala', 'Título', 'Solicitante', 'Data', 'Início', 'Fim', 'Criado por', 'Editado por'], ';');
 
             foreach ($reservations as $reservation) {
                 fputcsv($output, [
@@ -286,9 +286,9 @@ class ReservationController extends Controller
     ): View {
         $this->authorize('viewAny', Reservation::class);
 
-        $title = $scope === 'history' ? 'Historico de Agendamentos' : 'Agendamentos';
+        $title = $scope === 'history' ? 'Histórico de Agendamentos' : 'Agendamentos';
         $subtitle = $scope === 'history'
-            ? 'Consulte reservas que ja aconteceram (somente leitura).'
+            ? 'Consulte reservas que já aconteceram (somente leitura).'
             : 'Consulte e gerencie os agendamentos de hoje e futuros.';
         $filters = $request->validated();
 
@@ -327,7 +327,7 @@ class ReservationController extends Controller
         $series = $reservation->series;
 
         if (! $series instanceof ReservationSeries) {
-            throw new \InvalidArgumentException('A reserva informada nao pertence a uma serie.');
+            throw new \InvalidArgumentException('A reserva informada não pertence a uma série.');
         }
 
         app(\App\Actions\Reservations\UpdateReservationSeriesAction::class)->execute($series, [

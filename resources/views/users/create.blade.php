@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Novo Usuario')
+@section('title', 'Novo Usuário')
 
 @section('content')
     @include('users._form')

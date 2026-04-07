@@ -22,7 +22,7 @@ class UpdateReservationFollowingAction
         $series = $reservation->series;
 
         if (! $series instanceof ReservationSeries) {
-            throw new \InvalidArgumentException('A reserva informada nao pertence a uma serie.');
+            throw new \InvalidArgumentException('A reserva informada não pertence a uma série.');
         }
 
         $originalSeriesEndsOn = (string) $series->ends_on;

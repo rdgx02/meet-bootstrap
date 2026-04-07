@@ -1,6 +1,6 @@
 <x-guest-layout>
     <div class="mb-4 app-auth-intro">
-        <span class="app-page-eyebrow">Recuperacao</span>
+        <span class="app-page-eyebrow">Recuperação</span>
         <h2 class="h4 mb-1">Redefinir senha</h2>
         <p class="text-body-secondary mb-0">Cadastre uma nova senha para voltar ao sistema.</p>
     </div>

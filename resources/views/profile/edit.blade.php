@@ -8,7 +8,7 @@
             <div class="app-page-header-copy">
                 <div class="app-page-eyebrow">Conta</div>
                 <h1 class="app-page-title">Perfil</h1>
-                <p class="app-page-note">Atualize seus dados de acesso e configuracoes de seguranca.</p>
+                <p class="app-page-note">Atualize seus dados de acesso e configurações de segurança.</p>
             </div>
         </section>
 

@@ -28,7 +28,7 @@ class UpdateReservationSeriesAction
         if ($generatedOccurrences->isEmpty()) {
             throw new RecurringReservationConflictException(
                 [],
-                'A configuracao informada nao gera ocorrencias futuras editaveis para esta serie.'
+                'A configuração informada não gera ocorrências futuras editáveis para esta série.'
             );
         }
 

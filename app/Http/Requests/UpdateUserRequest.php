@@ -52,11 +52,11 @@ class UpdateUserRequest extends FormRequest
             $isSelf = $managedUser->is($currentUser);
 
             if ($isSelf && ! $willBeActive) {
-                $validator->errors()->add('is_active', 'Voce nao pode desativar a propria conta.');
+                $validator->errors()->add('is_active', 'Você não pode desativar a própria conta.');
             }
 
             if ($isSelf && $newRole !== UserRole::Admin) {
-                $validator->errors()->add('role', 'Voce nao pode remover o proprio acesso administrativo.');
+                $validator->errors()->add('role', 'Você não pode remover o próprio acesso administrativo.');
             }
 
             $isManagedUserAdmin = $managedUser->role === UserRole::Admin;
@@ -73,11 +73,11 @@ class UpdateUserRequest extends FormRequest
 
             if ($activeAdminsCount <= 1) {
                 if ($newRole !== UserRole::Admin) {
-                    $validator->errors()->add('role', 'Nao e permitido remover o ultimo administrador ativo do sistema.');
+                    $validator->errors()->add('role', 'Não é permitido remover o último administrador ativo do sistema.');
                 }
 
                 if (! $willBeActive) {
-                    $validator->errors()->add('is_active', 'Nao e permitido desativar o ultimo administrador ativo do sistema.');
+                    $validator->errors()->add('is_active', 'Não é permitido desativar o último administrador ativo do sistema.');
                 }
             }
         });

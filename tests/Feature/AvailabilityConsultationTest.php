@@ -83,7 +83,7 @@ class AvailabilityConsultationTest extends TestCase
         $response->assertSeeText('08:00 as 09:00');
         $response->assertSeeText('10:00 as 13:00');
         $response->assertSeeText('15:00 as 18:00');
-        $response->assertSeeText('Livre durante todo o periodo consultivo.');
+        $response->assertSeeText('Livre durante todo o período consultivo.');
     }
 
     public function test_availability_can_focus_on_single_room_summary(): void
@@ -263,5 +263,48 @@ class AvailabilityConsultationTest extends TestCase
         $response->assertOk();
         $response->assertSeeText('Sala 219');
         $response->assertSeeText('Reservas 1');
+    }
+
+    public function test_availability_marks_room_as_occupied_when_day_is_fully_booked(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::User]);
+        $room = Room::create(['name' => '305', 'is_active' => true]);
+
+        Reservation::create([
+            'room_id' => $room->id,
+            'user_id' => $user->id,
+            'date' => '2026-04-12',
+            'start_time' => '08:00',
+            'end_time' => '18:00',
+            'title' => 'Dia inteiro',
+            'requester' => 'Equipe Busy',
+            'contact' => null,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('availability.index', [
+            'date' => '2026-04-12',
+            'room_id' => $room->id,
+        ]));
+
+        $response->assertOk();
+        $response->assertSeeText('Ocupada');
+        $response->assertSeeText('Não há faixa livre dentro da janela consultiva.');
+        $response->assertSeeText('08:00 as 18:00 - Dia inteiro');
+    }
+
+    public function test_availability_handles_absence_of_active_rooms(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::User]);
+        Room::create(['name' => '203', 'is_active' => false]);
+
+        $response = $this->actingAs($user)->get(route('availability.index', [
+            'date' => '2026-04-12',
+        ]));
+
+        $response->assertOk();
+        $response->assertSeeText('Disponibilidade por sala');
+        $response->assertDontSeeText('203');
+        $response->assertSeeText('Salas livres 0');
+        $response->assertSeeText('Salas ocupadas 0');
     }
 }

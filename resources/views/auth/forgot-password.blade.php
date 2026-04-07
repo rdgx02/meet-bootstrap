@@ -1,6 +1,6 @@
 <x-guest-layout>
     <div class="mb-4 app-auth-intro">
-        <span class="app-page-eyebrow">Recuperacao</span>
+        <span class="app-page-eyebrow">Recuperação</span>
         <h2 class="h4 mb-1">Esqueceu a senha?</h2>
         <p class="text-body-secondary mb-0">Informe seu e-mail para receber um link de redefinicao.</p>
     </div>

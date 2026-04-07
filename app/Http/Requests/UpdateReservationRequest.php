@@ -56,7 +56,7 @@ class UpdateReservationRequest extends ReservationRequest
             }
 
             if ($endAt->lessThanOrEqualTo(now())) {
-                $validator->errors()->add('end_time', 'Nao e permitido salvar reserva que ja terminou.');
+                $validator->errors()->add('end_time', 'Não é permitido salvar reserva que já terminou.');
             }
         });
     }

@@ -43,7 +43,7 @@ class UserController extends Controller
 
         return redirect()
             ->route('users.index')
-            ->with('success', 'Usuario criado com sucesso.');
+            ->with('success', 'Usuário criado com sucesso.');
     }
 
     public function edit(User $user): View
@@ -65,6 +65,6 @@ class UserController extends Controller
 
         return redirect()
             ->route('users.index')
-            ->with('success', 'Usuario atualizado com sucesso.');
+            ->with('success', 'Usuário atualizado com sucesso.');
     }
 }

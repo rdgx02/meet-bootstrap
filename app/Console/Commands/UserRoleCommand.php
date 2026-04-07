@@ -46,7 +46,7 @@ class UserRoleCommand extends Command
         $user->role = $role;
         $user->save();
 
-        $this->info("Usuario {$user->name} agora e {$role->value}.");
+        $this->info("Usuário {$user->name} agora é {$role->value}.");
 
         return Command::SUCCESS;
     }

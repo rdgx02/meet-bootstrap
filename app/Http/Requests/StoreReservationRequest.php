@@ -52,12 +52,12 @@ class StoreReservationRequest extends ReservationRequest
                 $startAt = Carbon::parse(sprintf('%s %s', $startsOn, $this->input('start_time')));
 
                 if ($startAt->lessThanOrEqualTo(now())) {
-                    $validator->errors()->add('start_time', 'A primeira ocorrencia da recorrencia nao pode iniciar no passado.');
+                    $validator->errors()->add('start_time', 'A primeira ocorrência da recorrência não pode iniciar no passado.');
                 }
             }
 
             if (Carbon::parse($startsOn)->diffInDays(Carbon::parse($endsOn)) > 370) {
-                $validator->errors()->add('recurrence_ends_on', 'O periodo da recorrencia deve ter no maximo 12 meses.');
+                $validator->errors()->add('recurrence_ends_on', 'O período da recorrência deve ter no máximo 12 meses.');
             }
         });
     }

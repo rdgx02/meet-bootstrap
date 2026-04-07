@@ -35,10 +35,10 @@ Route::middleware('auth')->group(function () {
     // Salas
     Route::resource('rooms', RoomController::class)->except(['show']);
 
-    // Usuarios
+    // Usuários
     Route::resource('users', UserController::class)->except(['show', 'destroy']);
 
-    // Historico da agenda (passadas)
+    // Histórico da agenda (passadas)
     Route::get('reservations/history', [ReservationController::class, 'history'])
         ->name('reservations.history');
 

@@ -1,7 +1,7 @@
 <section x-data="{ showDeleteModal: {{ $errors->userDeletion->isNotEmpty() ? 'true' : 'false' }} }">
     <header>
         <h2 class="h4 mb-1">Excluir conta</h2>
-        <p class="text-body-secondary mb-0">Essa acao remove permanentemente seu acesso e os dados associados a conta.</p>
+        <p class="text-body-secondary mb-0">Essa ação remove permanentemente seu acesso e os dados associados à conta.</p>
     </header>
 
     <div class="mt-4">
@@ -22,7 +22,7 @@
 
                         <div class="app-modal-header">
                             <div>
-                                <span class="app-modal-kicker">Acao permanente</span>
+                                <span class="app-modal-kicker">Ação permanente</span>
                                 <h2 id="deleteAccountTitle" class="app-modal-title">Excluir conta?</h2>
                             </div>
 
@@ -31,11 +31,11 @@
 
                         <div class="app-modal-body">
                             <div class="app-delete-alert">
-                                Essa operacao encerra permanentemente seu acesso ao sistema.
+                                Essa operação encerra permanentemente seu acesso ao sistema.
                             </div>
 
                             <p class="app-modal-text">
-                                Essa acao remove permanentemente sua conta. Digite sua senha para confirmar.
+                                Essa ação remove permanentemente sua conta. Digite sua senha para confirmar.
                             </p>
 
                             <div>

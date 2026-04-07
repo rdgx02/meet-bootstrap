@@ -26,14 +26,14 @@
             deleteScope: 'occurrence',
             deleteSummary() {
                 if (this.deleteScope === 'following') {
-                    return 'Esta acao removera {{ $followingOccurrenceCount }} ocorrencia(s) a partir desta data.';
+                    return 'Esta ação removerá {{ $followingOccurrenceCount }} ocorrência(s) a partir desta data.';
                 }
 
                 if (this.deleteScope === 'all') {
-                    return 'Esta acao cancelara a serie e removera {{ $seriesFutureCount }} ocorrencia(s) futura(s).';
+                    return 'Esta ação cancelará a série e removerá {{ $seriesFutureCount }} ocorrência(s) futura(s).';
                 }
 
-                return 'Esta acao removera apenas este agendamento.';
+                return 'Esta ação removerá apenas este agendamento.';
             }
         }"
     >
@@ -41,7 +41,7 @@
             <div>
                 <div class="app-module-kicker">Consulta</div>
                 <h1 class="app-module-title">Detalhes do Agendamento</h1>
-                <p class="app-module-note">Visualizacao consolidada do registro selecionado na agenda.</p>
+                <p class="app-module-note">Visualização consolidada do registro selecionado na agenda.</p>
             </div>
 
             <div class="app-inline-actions">
@@ -77,7 +77,7 @@
                     <strong>{{ $reservation->room?->name }}</strong>
                 </div>
                 <div class="app-detail-card">
-                    <span class="app-detail-label">Hora inicio</span>
+                    <span class="app-detail-label">Hora início</span>
                     <strong>{{ $reservation->start_time_br }}</strong>
                 </div>
                 <div class="app-detail-card">
@@ -85,7 +85,7 @@
                     <strong>{{ $reservation->end_time_br }}</strong>
                 </div>
                 <div class="app-detail-card app-detail-card-wide">
-                    <span class="app-detail-label">Titulo</span>
+                    <span class="app-detail-label">Título</span>
                     <strong>{{ $reservation->title }}</strong>
                 </div>
                 <div class="app-detail-card">
@@ -114,7 +114,7 @@
                         <div class="app-modal-card">
                             <div class="app-modal-header">
                                 <div>
-                                    <span class="app-modal-kicker">Confirmar exclusao</span>
+                                    <span class="app-modal-kicker">Confirmar exclusão</span>
                                     <h2 id="deleteReservationDetailTitle" class="app-modal-title">Excluir agendamento?</h2>
                                 </div>
 
@@ -123,34 +123,34 @@
 
                             <div class="app-modal-body">
                                 <div class="app-delete-alert">
-                                    Essa exclusao remove o agendamento da agenda e do historico administrativo.
+                                    Essa exclusão remove o agendamento da agenda e do histórico administrativo.
                                 </div>
 
                                 @if ($reservation->series_id)
                                     <div class="mb-3">
-                                        <label class="app-form-label">Escopo da exclusao</label>
+                                        <label class="app-form-label">Escopo da exclusão</label>
                                         <div class="app-choice-grid app-choice-grid-compact">
                                             <label class="app-choice-card app-choice-card-compact" :class="{ 'is-active': deleteScope === 'occurrence' }">
                                                 <input type="radio" name="series_scope" value="occurrence" x-model="deleteScope" checked form="reservation-delete-form">
                                                 <span class="app-choice-card-body">
-                                                    <strong>So esta ocorrencia</strong>
-                                                    <small>Remove apenas este registro da recorrencia.</small>
+                                                    <strong>Só esta ocorrência</strong>
+                                                    <small>Remove apenas este registro da recorrência.</small>
                                                 </span>
                                             </label>
 
                                             <label class="app-choice-card app-choice-card-compact" :class="{ 'is-active': deleteScope === 'following' }">
                                                 <input type="radio" name="series_scope" value="following" x-model="deleteScope" form="reservation-delete-form">
                                                 <span class="app-choice-card-body">
-                                                    <strong>Esta e proximas</strong>
-                                                    <small>Remove esta ocorrencia e encerra a continuidade da serie a partir daqui.</small>
+                                                    <strong>Esta e próximas</strong>
+                                                    <small>Remove esta ocorrência e encerra a continuidade da série a partir daqui.</small>
                                                 </span>
                                             </label>
 
                                             <label class="app-choice-card app-choice-card-compact" :class="{ 'is-active': deleteScope === 'all' }">
                                                 <input type="radio" name="series_scope" value="all" x-model="deleteScope" form="reservation-delete-form">
                                                 <span class="app-choice-card-body">
-                                                    <strong>Toda a serie</strong>
-                                                    <small>Cancela a serie e remove todas as ocorrencias futuras.</small>
+                                                    <strong>Toda a série</strong>
+                                                    <small>Cancela a série e remove todas as ocorrências futuras.</small>
                                                 </span>
                                             </label>
                                         </div>
@@ -158,17 +158,17 @@
                                 @endif
 
                                 <p class="app-modal-text" x-text="deleteSummary()">
-                                    Essa acao remove o agendamento da agenda e nao pode ser desfeita.
+                                    Essa ação remove o agendamento da agenda e não pode ser desfeita.
                                 </p>
 
                                 <div class="app-modal-summary">
-                                    <div><span>Titulo</span><strong>{{ $reservation->title }}</strong></div>
+                                    <div><span>Título</span><strong>{{ $reservation->title }}</strong></div>
                                     <div><span>Data</span><strong>{{ $reservation->date_br }}</strong></div>
-                                    <div><span>Horario</span><strong>{{ $reservation->start_time_br }} - {{ $reservation->end_time_br }}</strong></div>
+                                    <div><span>Horário</span><strong>{{ $reservation->start_time_br }} - {{ $reservation->end_time_br }}</strong></div>
                                     <div><span>Sala</span><strong>{{ $reservation->room?->name ?? '-' }}</strong></div>
                                     @if ($reservation->series_id)
-                                        <div><span>Impacto esta e proximas</span><strong>{{ $followingOccurrenceCount }} ocorrencia(s)</strong></div>
-                                        <div><span>Impacto toda a serie</span><strong>{{ $seriesFutureCount }} futura(s)</strong></div>
+                                        <div><span>Impacto desta e próximas</span><strong>{{ $followingOccurrenceCount }} ocorrência(s)</strong></div>
+                                        <div><span>Impacto de toda a série</span><strong>{{ $seriesFutureCount }} futura(s)</strong></div>
                                     @endif
                                 </div>
                             </div>

@@ -12,7 +12,7 @@
             <div class="app-subpanel-head app-availability-head">
                 <div>
                     <h2 class="app-subpanel-title app-availability-title">Consulta por data e sala</h2>
-                    <p class="app-subpanel-note">Janela consultiva padrao de {{ $openTime }} as {{ $closeTime }} para leitura operacional da ocupacao.</p>
+                    <p class="app-subpanel-note">Janela consultiva padrão de {{ $openTime }} às {{ $closeTime }} para leitura operacional da ocupação.</p>
                 </div>
                 <div class="app-subpanel-meta">
                     <span class="lims-toolbar-stat">Data <strong>{{ $selectedDateLabel }}</strong></span>
@@ -77,7 +77,7 @@
 
                     <div class="app-availability-primary-sections">
                         <section class="app-availability-summary-block">
-                            <h3>Horarios disponiveis</h3>
+                            <h3>Horários disponíveis</h3>
                             @if ($primaryAvailability['free_ranges'] !== [])
                                 <ul class="app-availability-summary-list is-free">
                                     @foreach ($primaryAvailability['free_ranges'] as $range)
@@ -85,12 +85,12 @@
                                     @endforeach
                                 </ul>
                             @else
-                                <p class="app-availability-summary-empty">Nao ha faixa livre dentro da janela consultiva.</p>
+                                <p class="app-availability-summary-empty">Não há faixa livre dentro da janela consultiva.</p>
                             @endif
                         </section>
 
                         <section class="app-availability-summary-block">
-                            <h3>Horarios ocupados</h3>
+                            <h3>Horários ocupados</h3>
                             @if ($primaryAvailability['occupied_ranges'] !== [])
                                 <ul class="app-availability-summary-list is-busy">
                                     @foreach ($primaryAvailability['occupied_ranges'] as $range)
@@ -109,7 +109,7 @@
                 <div class="app-subpanel-head">
                     <div>
                         <h2 class="app-subpanel-title app-availability-title">Disponibilidade por sala</h2>
-                        <p class="app-subpanel-note">Leitura rapida por sala, priorizando primeiro as faixas disponiveis.</p>
+                        <p class="app-subpanel-note">Leitura rápida por sala, priorizando primeiro as faixas disponíveis.</p>
                     </div>
                 </div>
 
@@ -131,10 +131,10 @@
                             </div>
 
                             <section class="app-availability-summary-block">
-                                <h4>Horarios disponiveis</h4>
+                                <h4>Horários disponíveis</h4>
                                 @if ($entry['free_ranges'] !== [])
                                     @if ($entry['is_free_all_day'])
-                                        <p class="app-availability-summary-empty">Livre durante todo o periodo consultivo.</p>
+                                        <p class="app-availability-summary-empty">Livre durante todo o período consultivo.</p>
                                     @endif
                                     <ul class="app-availability-summary-list is-free">
                                         @foreach ($entry['free_ranges'] as $range)
@@ -148,7 +148,7 @@
 
                             @if ($entry['occupied_ranges'] !== [])
                                 <section class="app-availability-summary-block app-availability-summary-block-secondary">
-                                    <h4>Horarios ocupados</h4>
+                                    <h4>Horários ocupados</h4>
                                     <ul class="app-availability-summary-list is-busy">
                                         @foreach ($entry['occupied_ranges'] as $range)
                                             <li>{{ $range['label'] }} - {{ $range['title'] }}</li>
@@ -188,8 +188,8 @@
                                 <thead>
                                     <tr>
                                         <th>Sala</th>
-                                        <th>Horario</th>
-                                        <th>Titulo</th>
+                                        <th>Horário</th>
+                                        <th>Título</th>
                                         <th>Solicitante</th>
                                         <th>Criado por</th>
                                     </tr>
@@ -198,7 +198,7 @@
                                     @foreach ($dayReservations as $reservation)
                                         <tr>
                                             <td class="fw-semibold">{{ $reservation->room?->name ?? '-' }}</td>
-                                            <td>{{ $reservation->start_time_br }} as {{ $reservation->end_time_br }}</td>
+                                            <td>{{ $reservation->start_time_br }} às {{ $reservation->end_time_br }}</td>
                                             <td>{{ $reservation->title }}</td>
                                             <td>{{ $reservation->requester }}</td>
                                             <td>{{ $reservation->user?->name ?? '-' }}</td>

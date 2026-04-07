@@ -65,7 +65,7 @@ class ReservationSeriesController extends Controller
         if ($reservationSeries->status === 'cancelled') {
             return redirect()
                 ->route('reservation-series.show', $reservationSeries)
-                ->with('warning', 'Series canceladas nao podem ser editadas.');
+                ->with('warning', 'Séries canceladas não podem ser editadas.');
         }
 
         try {
@@ -84,7 +84,7 @@ class ReservationSeriesController extends Controller
             ->with(
                 'success',
                 sprintf(
-                    'Serie atualizada com sucesso. %d ocorrencias futuras foram recriadas.',
+                    'Série atualizada com sucesso. %d ocorrências futuras foram recriadas.',
                     $result['updated_count']
                 )
             );
@@ -99,7 +99,7 @@ class ReservationSeriesController extends Controller
         if ($reservationSeries->status === 'cancelled') {
             return redirect()
                 ->route('reservation-series.show', $reservationSeries)
-                ->with('warning', 'Essa serie ja estava cancelada.');
+                ->with('warning', 'Essa série já estava cancelada.');
         }
 
         $result = $cancelReservationSeries->execute($reservationSeries);
@@ -109,8 +109,8 @@ class ReservationSeriesController extends Controller
             ->with(
                 'success',
                 $result['deleted_count'] === 1
-                    ? 'Serie cancelada. 1 ocorrencia futura foi removida.'
-                    : sprintf('Serie cancelada. %d ocorrencias futuras foram removidas.', $result['deleted_count'])
+                    ? 'Série cancelada. 1 ocorrência futura foi removida.'
+                    : sprintf('Série cancelada. %d ocorrências futuras foram removidas.', $result['deleted_count'])
             );
     }
 

@@ -8,7 +8,7 @@
             <div>
                 <div class="app-module-kicker">Cadastro</div>
                 <h1 class="app-module-title">Salas</h1>
-                <p class="app-module-note">Gerencie a estrutura fisica disponivel para agendamentos.</p>
+                <p class="app-module-note">Gerencie a estrutura física disponível para agendamentos.</p>
             </div>
 
             @can('create', \App\Models\Room::class)
@@ -28,7 +28,7 @@
             <div class="app-subpanel-head">
                 <div>
                     <h2 class="app-subpanel-title">Lista de salas</h2>
-                    <p class="app-subpanel-note">Visualizacao compacta dos ambientes cadastrados no sistema.</p>
+                    <p class="app-subpanel-note">Visualização compacta dos ambientes cadastrados no sistema.</p>
                 </div>
                 <div class="app-subpanel-meta">
                     <span class="app-mini-stat">Total <strong>{{ $rooms->count() }}</strong></span>
@@ -42,7 +42,7 @@
                             <tr>
                                 <th>Nome</th>
                                 <th>Status</th>
-                                <th class="text-end">Acoes</th>
+                                <th class="text-end">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -94,7 +94,7 @@
                 <div class="modal-content lims-delete-modal">
                     <div class="modal-header">
                         <div>
-                            <span class="lims-modal-kicker">Acao permanente</span>
+                            <span class="lims-modal-kicker">Ação permanente</span>
                             <h2 id="roomDeleteModalTitle" class="lims-modal-title">Excluir sala</h2>
                         </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
@@ -102,11 +102,11 @@
 
                     <div class="modal-body">
                         <div class="app-delete-alert">
-                            Essa exclusao remove a sala do cadastro e pode afetar consultas futuras do ambiente.
+                            Essa exclusão remove a sala do cadastro e pode afetar consultas futuras do ambiente.
                         </div>
 
                         <p class="lims-modal-text mb-0">
-                            Confirme a operacao somente se essa sala nao precisar mais aparecer no cadastro administrativo.
+                            Confirme a operação somente se essa sala não precisar mais aparecer no cadastro administrativo.
                         </p>
 
                         <div class="lims-modal-summary mt-3">

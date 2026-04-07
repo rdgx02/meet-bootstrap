@@ -1,13 +1,13 @@
 <x-guest-layout>
     <div class="mb-4 app-auth-intro">
-        <span class="app-page-eyebrow">Verificacao</span>
+        <span class="app-page-eyebrow">Verificação</span>
         <h2 class="h4 mb-1">Verifique seu e-mail</h2>
         <p class="text-body-secondary mb-0">Antes de continuar, confirme seu endereco pelo link enviado para sua caixa de entrada.</p>
     </div>
 
     @if (session('status') == 'verification-link-sent')
         <div class="alert alert-success mb-4" role="alert">
-            Um novo link de verificacao foi enviado para o seu e-mail.
+            Um novo link de verificação foi enviado para o seu e-mail.
         </div>
     @endif
 
@@ -16,7 +16,7 @@
             @csrf
 
             <button type="submit" class="btn btn-primary app-btn-primary">
-                Reenviar e-mail de verificacao
+                Reenviar e-mail de verificação
             </button>
         </form>
 

@@ -10,7 +10,7 @@ class ReservationConflictException extends DomainException
 {
     public function __construct(
         private readonly ?array $conflict = null,
-        string $message = 'Conflito: ja existe um agendamento nessa sala nesse horario.'
+        string $message = 'Conflito: já existe um agendamento nessa sala nesse horário.'
     ) {
         parent::__construct($message);
     }
@@ -33,8 +33,8 @@ class ReservationConflictException extends DomainException
         ];
 
         $message = sprintf(
-            'Conflito: sala %s ja reservada em %s, de %s as %s.',
-            $conflict['room_name'] ?? '(nao informada)',
+            'Conflito: sala %s já reservada em %s, de %s às %s.',
+            $conflict['room_name'] ?? '(não informada)',
             $conflict['date'],
             $conflict['start_time'],
             $conflict['end_time']

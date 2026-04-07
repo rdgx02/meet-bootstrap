@@ -333,7 +333,7 @@ class ReservationSeriesManagementTest extends TestCase
         $response->assertSee(route('reservation-series.index'), false);
         $response->assertSee(route('reservation-series.edit', $series), false);
         $response->assertSee(route('reservation-series.cancel', $series), false);
-        $response->assertSeeText('Ocorrencias futuras');
+        $response->assertSeeText('Ocorrências futuras');
     }
 
     public function test_series_edit_buttons_point_to_series_routes(): void
@@ -455,8 +455,8 @@ class ReservationSeriesManagementTest extends TestCase
             $showResponse->assertOk();
             $showResponse->assertSee(route('reservation-series.show', $series), false);
             $showResponse->assertSee(route('reservations.edit', $futureOccurrence, false) . '?from=series&series=' . $series->id, false);
-            $showResponse->assertSeeText('Impacto esta e proximas');
-            $showResponse->assertSeeText('Impacto toda a serie');
+            $showResponse->assertSeeText('Impacto desta e próximas');
+            $showResponse->assertSeeText('Impacto de toda a série');
 
             $editResponse = $this->actingAs($secretary)
                 ->get(route('reservations.edit', $futureOccurrence, false) . '?from=series&series=' . $series->id);

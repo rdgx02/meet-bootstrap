@@ -4,20 +4,20 @@
 
 @extends('layouts.app')
 
-@section('title', 'Usuarios')
+@section('title', 'Usuários')
 
 @section('content')
     <div class="app-module-shell">
         <section class="app-module-header">
             <div>
-                <div class="app-module-kicker">Administracao</div>
-                <h1 class="app-module-title">Usuarios</h1>
-                <p class="app-module-note">Gerencie acesso, papeis e estado operacional das contas do sistema.</p>
+                <div class="app-module-kicker">Administração</div>
+                <h1 class="app-module-title">Usuários</h1>
+                <p class="app-module-note">Gerencie acesso, papéis e estado operacional das contas do sistema.</p>
             </div>
 
             @can('create', \App\Models\User::class)
                 <a href="{{ route('users.create') }}" class="btn app-btn-primary app-section-btn">
-                    Novo usuario
+                    Novo usuário
                 </a>
             @endcan
         </section>
@@ -31,8 +31,8 @@
         <section class="app-subpanel">
             <div class="app-subpanel-head">
                 <div>
-                    <h2 class="app-subpanel-title">Lista de usuarios</h2>
-                    <p class="app-subpanel-note">Visao administrativa das contas autenticaveis no produto.</p>
+                    <h2 class="app-subpanel-title">Lista de usuários</h2>
+                    <p class="app-subpanel-note">Visão administrativa das contas autenticáveis no produto.</p>
                 </div>
                 <div class="app-subpanel-meta">
                     <span class="app-mini-stat">Total <strong>{{ $users->count() }}</strong></span>
@@ -48,7 +48,7 @@
                                 <th>E-mail</th>
                                 <th>Papel</th>
                                 <th>Status</th>
-                                <th class="text-end">Acoes</th>
+                                <th class="text-end">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -60,7 +60,7 @@
                                         {{ match ($managedUser->role) {
                                             UserRole::Admin => 'Administrador',
                                             UserRole::Secretary => 'Secretaria',
-                                            UserRole::User => 'Usuario',
+                                            UserRole::User => 'Usuário',
                                         } }}
                                     </td>
                                     <td>
@@ -81,7 +81,7 @@
                             @empty
                                 <tr>
                                     <td colspan="5" class="text-center text-body-secondary py-5">
-                                        Nenhum usuario cadastrado.
+                                        Nenhum usuário cadastrado.
                                     </td>
                                 </tr>
                             @endforelse

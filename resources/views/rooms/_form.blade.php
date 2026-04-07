@@ -16,7 +16,7 @@
 
     @if ($errors->any())
         <div class="alert alert-danger app-danger-alert" role="alert">
-            <p class="fw-semibold mb-2">Nao foi possivel salvar:</p>
+            <p class="fw-semibold mb-2">Não foi possível salvar:</p>
             <ul class="mb-0 ps-3">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -77,14 +77,14 @@
         </div>
 
         <div class="app-form-actions app-form-actions-compact">
-            <p class="small text-body-secondary mb-0">Use sala inativa para impedir novos agendamentos sem apagar historico.</p>
+            <p class="small text-body-secondary mb-0">Use sala inativa para impedir novos agendamentos sem apagar histórico.</p>
 
             <div class="d-flex align-items-center gap-2">
                 <a href="{{ route('rooms.index') }}" class="btn btn-outline-secondary app-section-btn app-section-btn-light">
                     Cancelar
                 </a>
                 <button type="submit" class="btn app-btn-primary app-section-btn">
-                    {{ $isEdit ? 'Salvar alteracoes' : 'Criar sala' }}
+                    {{ $isEdit ? 'Salvar alterações' : 'Criar sala' }}
                 </button>
             </div>
         </div>

@@ -10,17 +10,17 @@
 <div class="app-module-shell app-module-shell-form">
     <section class="app-module-header">
         <div>
-            <div class="app-module-kicker">Administracao</div>
-            <h1 class="app-module-title">{{ $isEdit ? 'Editar Usuario' : 'Novo Usuario' }}</h1>
+            <div class="app-module-kicker">Administração</div>
+            <h1 class="app-module-title">{{ $isEdit ? 'Editar Usuário' : 'Novo Usuário' }}</h1>
             <p class="app-module-note">
-                {{ $isEdit ? 'Atualize papel, acesso e dados cadastrais do usuario.' : 'Cadastre um novo usuario com papel operacional definido.' }}
+                {{ $isEdit ? 'Atualize papel, acesso e dados cadastrais do usuário.' : 'Cadastre um novo usuário com papel operacional definido.' }}
             </p>
         </div>
     </section>
 
     @if ($errors->any())
         <div class="alert alert-danger app-danger-alert" role="alert">
-            <p class="fw-semibold mb-2">Nao foi possivel salvar:</p>
+            <p class="fw-semibold mb-2">Não foi possível salvar:</p>
             <ul class="mb-0 ps-3">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -37,8 +37,8 @@
 
         <div class="app-subpanel-head">
             <div>
-                <h2 class="app-subpanel-title">Dados do usuario</h2>
-                <p class="app-subpanel-note">Defina identidade, permissao e acesso ao sistema.</p>
+                <h2 class="app-subpanel-title">Dados do usuário</h2>
+                <p class="app-subpanel-note">Defina identidade, permissão e acesso ao sistema.</p>
             </div>
         </div>
 
@@ -83,7 +83,7 @@
                             {{ match ($role) {
                                 UserRole::Admin => 'Administrador',
                                 UserRole::Secretary => 'Secretaria',
-                                UserRole::User => 'Usuario',
+                                UserRole::User => 'Usuário',
                             } }}
                         </option>
                     @endforeach
@@ -96,7 +96,7 @@
             <div class="app-form-field app-form-toggle-row">
                 <div>
                     <label for="is_active" class="app-form-label">Acesso</label>
-                    <p class="app-field-hint mb-0">Usuarios inativos nao conseguem autenticar.</p>
+                    <p class="app-field-hint mb-0">Usuários inativos não conseguem autenticar.</p>
                 </div>
                 <div class="form-check form-switch app-form-switch mb-0">
                     <input type="hidden" name="is_active" value="0">
@@ -127,7 +127,7 @@
             </div>
 
             <div class="app-form-field">
-                <label for="password_confirmation" class="app-form-label">Confirmacao de senha</label>
+                <label for="password_confirmation" class="app-form-label">Confirmação de senha</label>
                 <input
                     id="password_confirmation"
                     type="password"
@@ -140,7 +140,7 @@
 
         <div class="app-form-actions app-form-actions-compact">
             <p class="small text-body-secondary mb-0">
-                {{ $isEdit ? 'Deixe a senha em branco para manter a atual.' : 'A senha inicial podera ser alterada pelo proprio usuario depois.' }}
+                {{ $isEdit ? 'Deixe a senha em branco para manter a atual.' : 'A senha inicial poderá ser alterada pelo próprio usuário depois.' }}
             </p>
 
             <div class="d-flex align-items-center gap-2">
@@ -148,7 +148,7 @@
                     Cancelar
                 </a>
                 <button type="submit" class="btn app-btn-primary app-section-btn">
-                    {{ $isEdit ? 'Salvar alteracoes' : 'Criar usuario' }}
+                    {{ $isEdit ? 'Salvar alterações' : 'Criar usuário' }}
                 </button>
             </div>
         </div>

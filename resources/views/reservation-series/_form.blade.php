@@ -18,10 +18,10 @@
 <div class="app-module-shell app-module-shell-form">
     <section class="app-module-header">
         <div>
-            <div class="app-module-kicker">Recorrencia</div>
-            <h1 class="app-module-title">Editar serie</h1>
+            <div class="app-module-kicker">Recorrência</div>
+            <h1 class="app-module-title">Editar série</h1>
             <p class="app-module-note">
-                Atualize a regra recorrente. O sistema recriara apenas as ocorrencias futuras que ainda nao iniciaram.
+                Atualize a regra recorrente. O sistema recriará apenas as ocorrências futuras que ainda não iniciaram.
             </p>
         </div>
     </section>
@@ -30,14 +30,14 @@
         <div class="alert alert-warning app-warning-alert" role="alert">
             <div class="app-alert-stack">
                 <div>
-                    <p class="fw-semibold mb-1">Nao foi possivel atualizar a serie</p>
+                    <p class="fw-semibold mb-1">Não foi possível atualizar a série</p>
                     <p class="small mb-0">{{ $recurringConflictMessage }}</p>
                 </div>
 
                 <div class="app-recurring-conflict-list">
                     @foreach ($recurringConflictItems->take(8) as $conflict)
                         <div class="app-card-soft p-3">
-                            <span class="app-alert-label">Ocorrencia com conflito</span>
+                            <span class="app-alert-label">Ocorrência com conflito</span>
                             <strong>{{ $conflict['attempted_date'] ?? '-' }} | {{ $conflict['attempted_start_time'] ?? '--:--' }} - {{ $conflict['attempted_end_time'] ?? '--:--' }}</strong>
                             <small>
                                 Sala {{ $conflict['room_name'] ?? '-' }} ocupada por {{ $conflict['existing_title'] ?? '-' }}
@@ -52,7 +52,7 @@
 
     @if ($otherErrors->isNotEmpty())
         <div class="alert alert-danger app-danger-alert" role="alert">
-            <p class="fw-semibold mb-2">Nao foi possivel salvar:</p>
+            <p class="fw-semibold mb-2">Não foi possível salvar:</p>
             <ul class="mb-0 ps-3">
                 @foreach ($otherErrors as $error)
                     <li>{{ $error }}</li>
@@ -75,8 +75,8 @@
 
         <div class="app-subpanel-head">
             <div>
-                <h2 class="app-subpanel-title">Regra da serie</h2>
-                <p class="app-subpanel-note">As alteracoes valem para a serie inteira, preservando historico ja iniciado.</p>
+                <h2 class="app-subpanel-title">Regra da série</h2>
+                <p class="app-subpanel-note">As alterações valem para a série inteira, preservando o histórico já iniciado.</p>
             </div>
         </div>
 
@@ -113,7 +113,7 @@
             </div>
 
             <div class="app-form-field">
-                <label for="title" class="app-form-label">Titulo</label>
+                <label for="title" class="app-form-label">Título</label>
                 <input
                     id="title"
                     type="text"
@@ -144,7 +144,7 @@
             </div>
 
             <div class="app-form-field">
-                <label for="recurrence_starts_on" class="app-form-label">Data de inicio</label>
+                <label for="recurrence_starts_on" class="app-form-label">Data de início</label>
                 <input
                     id="recurrence_starts_on"
                     type="text"
@@ -159,7 +159,7 @@
             </div>
 
             <div class="app-form-field">
-                <label for="recurrence_ends_on" class="app-form-label">Data de termino</label>
+                <label for="recurrence_ends_on" class="app-form-label">Data de término</label>
                 <input
                     id="recurrence_ends_on"
                     type="text"
@@ -175,14 +175,14 @@
             </div>
 
             <div class="app-form-field">
-                <label for="recurrence_frequency" class="app-form-label">Frequencia</label>
+                <label for="recurrence_frequency" class="app-form-label">Frequência</label>
                 <select
                     id="recurrence_frequency"
                     name="recurrence_frequency"
                     class="form-select @error('recurrence_frequency') is-invalid @enderror"
                     x-model="recurrenceFrequency"
                 >
-                    <option value="daily" @selected($recurrenceFrequency === 'daily')>Diaria</option>
+                    <option value="daily" @selected($recurrenceFrequency === 'daily')>Diária</option>
                     <option value="weekly" @selected($recurrenceFrequency === 'weekly')>Semanal</option>
                     <option value="monthly" @selected($recurrenceFrequency === 'monthly')>Mensal</option>
                 </select>
@@ -192,7 +192,7 @@
             </div>
 
             <div class="app-form-field">
-                <label for="start_time" class="app-form-label">Hora inicio</label>
+                <label for="start_time" class="app-form-label">Hora início</label>
                 <input
                     id="start_time"
                     type="text"
@@ -250,7 +250,7 @@
 
         <div class="app-form-actions app-form-actions-compact">
             <p class="small text-body-secondary mb-0">
-                Ocorrencias futuras existentes serao substituidas pela nova configuracao da serie.
+                Ocorrências futuras existentes serão substituídas pela nova configuração da série.
             </p>
 
             <div class="d-flex align-items-center gap-2">
@@ -258,7 +258,7 @@
                     Cancelar
                 </a>
                 <button type="submit" class="btn app-btn-primary app-section-btn">
-                    Salvar serie
+                    Salvar série
                 </button>
             </div>
         </div>
