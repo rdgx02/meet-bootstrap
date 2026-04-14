@@ -80,10 +80,10 @@ class AvailabilityConsultationTest extends TestCase
         $response->assertSeeText('Reuniao Geral');
         $response->assertSeeText('Treinamento');
         $response->assertDontSeeText('Outro Dia');
-        $response->assertSeeText('08:00 as 09:00');
-        $response->assertSeeText('10:00 as 13:00');
-        $response->assertSeeText('15:00 as 18:00');
-        $response->assertSeeText('Livre durante todo o período consultivo.');
+        $response->assertSeeText('08:00 às 09:00');
+        $response->assertSeeText('10:00 às 13:00');
+        $response->assertSeeText('15:00 às 18:00');
+        $response->assertSeeText('08:00 às 18:00');
     }
 
     public function test_availability_can_focus_on_single_room_summary(): void
@@ -122,9 +122,9 @@ class AvailabilityConsultationTest extends TestCase
         $response->assertOk();
         $response->assertSeeText('Sala 305');
         $response->assertSeeText('Parcialmente ocupada');
-        $response->assertSeeText('08:00 as 16:00');
-        $response->assertSeeText('17:00 as 18:00');
-        $response->assertSeeText('16:00 as 17:00 - TI');
+        $response->assertSeeText('08:00 às 16:00');
+        $response->assertSeeText('17:00 às 18:00');
+        $response->assertSeeText('16:00 às 17:00 — TI');
         $response->assertDontSeeText('Reuniao 203');
     }
 
@@ -235,7 +235,7 @@ class AvailabilityConsultationTest extends TestCase
         $response->assertOk();
         $response->assertSeeText('Agendamentos do dia');
         $response->assertSeeText('Conselho');
-        $response->assertSeeText('14:00 as 15:30');
+        $response->assertSeeText('14:00 às 15:30');
         $response->assertDontSeeText('Painel visual por sala');
     }
 
@@ -289,7 +289,7 @@ class AvailabilityConsultationTest extends TestCase
         $response->assertOk();
         $response->assertSeeText('Ocupada');
         $response->assertSeeText('Não há faixa livre dentro da janela consultiva.');
-        $response->assertSeeText('08:00 as 18:00 - Dia inteiro');
+        $response->assertSeeText('08:00 às 18:00 — Dia inteiro');
     }
 
     public function test_availability_handles_absence_of_active_rooms(): void
@@ -303,6 +303,7 @@ class AvailabilityConsultationTest extends TestCase
 
         $response->assertOk();
         $response->assertSeeText('Disponibilidade por sala');
+        $response->assertSeeText('Nenhuma sala ativa encontrada para consulta.');
         $response->assertDontSeeText('203');
         $response->assertSeeText('Salas livres 0');
         $response->assertSeeText('Salas ocupadas 0');

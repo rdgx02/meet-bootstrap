@@ -200,14 +200,6 @@
             <span class="lims-toolbar-stat">Tela <strong>{{ $scope === 'history' ? 'Histórico' : 'Agendamentos' }}</strong></span>
         </div>
     </div>
-
-    <p class="lims-grid-caption mb-0">
-        Selecione 1 agendamento para visualizar ou editar. Para excluir ou exportar, você pode selecionar um ou vários.
-    </p>
-    <p class="lims-grid-caption mb-0">
-        Use os campos acima e clique em Aplicar filtros para atualizar a listagem.
-    </p>
-
 </div>
 
 <div class="modal fade" id="reservationDeleteModal" tabindex="-1" aria-labelledby="reservationDeleteModalTitle" aria-hidden="true">

@@ -65,27 +65,34 @@
                 </div>
             </div>
 
-            <div class="app-alert-grid">
-                <div class="app-card-soft p-3">
-                    <span class="app-alert-label">Sala</span>
-                    <strong>{{ $series->room?->name ?? '-' }}</strong>
-                    <small>{{ $series->starts_on_br }} até {{ $series->ends_on_br }}</small>
-                </div>
-                <div class="app-card-soft p-3">
-                    <span class="app-alert-label">Frequência</span>
-                    <strong>{{ $series->frequency_label }}</strong>
-                    <small>{{ $series->start_time }} - {{ $series->end_time }}</small>
-                </div>
-                <div class="app-card-soft p-3">
-                    <span class="app-alert-label">Status</span>
-                    <strong>{{ $series->status === 'active' ? 'Ativa' : 'Cancelada' }}</strong>
-                    <small>{{ $futureOccurrences->count() }} ocorrências futuras</small>
-                </div>
-                <div class="app-card-soft p-3">
-                    <span class="app-alert-label">Exceções</span>
-                    <strong>{{ $exceptionCount }}</strong>
-                    <small>{{ $series->user?->name ?? '-' }}</small>
-                </div>
+            <div class="app-series-summary-grid">
+                <article class="app-series-summary-card">
+                    <span class="app-series-summary-label">Sala</span>
+                    <strong class="app-series-summary-value">{{ $series->room?->name ?? '-' }}</strong>
+                    <p class="app-series-summary-note">{{ $series->starts_on_br }} até {{ $series->ends_on_br }}</p>
+                </article>
+
+                <article class="app-series-summary-card">
+                    <span class="app-series-summary-label">Frequência</span>
+                    <strong class="app-series-summary-value">{{ $series->frequency_label }}</strong>
+                    <p class="app-series-summary-note">{{ $series->start_time }} - {{ $series->end_time }}</p>
+                </article>
+
+                <article class="app-series-summary-card">
+                    <span class="app-series-summary-label">Status</span>
+                    <div class="app-series-summary-status">
+                        <span class="app-status-pill {{ $series->status === 'active' ? 'is-active' : 'is-inactive' }}">
+                            {{ $series->status === 'active' ? 'Ativa' : 'Cancelada' }}
+                        </span>
+                    </div>
+                    <p class="app-series-summary-note">{{ $futureOccurrences->count() }} ocorrências futuras</p>
+                </article>
+
+                <article class="app-series-summary-card">
+                    <span class="app-series-summary-label">Exceções</span>
+                    <strong class="app-series-summary-value">{{ $exceptionCount }}</strong>
+                    <p class="app-series-summary-note">{{ $series->user?->name ?? '-' }}</p>
+                </article>
             </div>
         </section>
 

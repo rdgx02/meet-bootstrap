@@ -18,7 +18,7 @@ class AvailabilityOverviewService
     /**
      * @param Collection<int, Room> $rooms
      * @param Collection<int, Reservation> $reservations
-     * @return Collection<int, array{room: Room, reservations: Collection<int, Reservation>, free_ranges: array<int, array{start: string, end: string, label: string}>, occupied_ranges: array<int, array{start: string, end: string, label: string, title: string, requester: string}>, is_free_all_day: bool, status: string, status_label: string}>
+     * @return Collection<int, array{room: Room, reservations: Collection<int, Reservation>, free_ranges: array<int, array{start: string, end: string, label: string}>, occupied_ranges: array<int, array{start: string, end: string, label: string, title: string, requester: string}>, is_free_all_day: bool, status: string, status_label: string, free_summary: string, occupied_summary: string}>
      */
     public function summarize(Collection $rooms, Collection $reservations, ?Room $selectedRoom = null): Collection
     {
@@ -28,15 +28,19 @@ class AvailabilityOverviewService
             /** @var Collection<int, Reservation> $roomReservations */
             $roomReservations = $reservationsByRoom->get($room->id, collect())->values();
             $status = $this->resolveStatus($roomReservations);
+            $freeRanges = $this->buildFreeRanges($roomReservations);
+            $occupiedRanges = $this->buildOccupiedRanges($roomReservations);
 
             return [
                 'room' => $room,
                 'reservations' => $roomReservations,
-                'free_ranges' => $this->buildFreeRanges($roomReservations),
-                'occupied_ranges' => $this->buildOccupiedRanges($roomReservations),
+                'free_ranges' => $freeRanges,
+                'occupied_ranges' => $occupiedRanges,
                 'is_free_all_day' => $roomReservations->isEmpty(),
                 'status' => $status,
                 'status_label' => $this->resolveStatusLabelFromStatus($status),
+                'free_summary' => $this->buildFreeSummary($freeRanges),
+                'occupied_summary' => $this->buildOccupiedSummary($occupiedRanges),
             ];
         })->when(
             $selectedRoom instanceof Room,
@@ -90,7 +94,7 @@ class AvailabilityOverviewService
             return [
                 'start' => Carbon::parse($reservation->start_time)->format('H:i'),
                 'end' => Carbon::parse($reservation->end_time)->format('H:i'),
-                'label' => sprintf('%s as %s', $reservation->start_time_br, $reservation->end_time_br),
+                'label' => sprintf('%s às %s', $reservation->start_time_br, $reservation->end_time_br),
                 'title' => $reservation->title,
                 'requester' => $reservation->requester,
             ];
@@ -136,7 +140,35 @@ class AvailabilityOverviewService
         return [
             'start' => $start,
             'end' => $end,
-            'label' => sprintf('%s as %s', $start, $end),
+            'label' => sprintf('%s às %s', $start, $end),
         ];
+    }
+
+    /**
+     * @param array<int, array{start: string, end: string, label: string}> $ranges
+     */
+    private function buildFreeSummary(array $ranges): string
+    {
+        if ($ranges === []) {
+            return 'Sem faixas livres na janela consultiva.';
+        }
+
+        return collect($ranges)
+            ->pluck('label')
+            ->implode(' • ');
+    }
+
+    /**
+     * @param array<int, array{start: string, end: string, label: string, title: string, requester: string}> $ranges
+     */
+    private function buildOccupiedSummary(array $ranges): string
+    {
+        if ($ranges === []) {
+            return 'Nenhuma reserva registrada no dia.';
+        }
+
+        return collect($ranges)
+            ->map(fn (array $range): string => sprintf('%s — %s', $range['label'], $range['title']))
+            ->implode(' • ');
     }
 }

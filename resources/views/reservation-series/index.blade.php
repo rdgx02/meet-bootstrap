@@ -12,7 +12,6 @@
             <div>
                 <div class="app-module-kicker">Recorrência</div>
                 <h1 class="app-module-title">Séries recorrentes</h1>
-                <p class="app-module-note">Acompanhe séries ativas e canceladas criadas para a agenda institucional.</p>
             </div>
 
             <a href="{{ route('reservations.create') }}" class="btn app-btn-primary app-section-btn">
@@ -36,7 +35,6 @@
             <div class="app-subpanel-head">
                 <div>
                     <h2 class="app-subpanel-title">Lista de séries</h2>
-                    <p class="app-subpanel-note">Visão operacional das recorrências configuradas no sistema.</p>
                 </div>
                 <div class="app-subpanel-meta">
                     <span class="app-mini-stat">Total <strong>{{ $seriesCollection->count() }}</strong></span>

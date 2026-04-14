@@ -333,8 +333,6 @@ class ReservationManagementTest extends TestCase
             $response->assertSeeText('Em Andamento Hoje');
             $response->assertSeeText('Reserva Futura');
             $response->assertDontSeeText('Encerrada Hoje');
-            $response->assertSeeText('Selecione 1 agendamento para visualizar ou editar. Para excluir ou exportar, você pode selecionar um ou vários.');
-            $response->assertSeeText('Use os campos acima e clique em Aplicar filtros para atualizar a listagem.');
             $response->assertSeeText('Aplicar filtros');
         } finally {
             Carbon::setTestNow();
@@ -377,6 +375,42 @@ class ReservationManagementTest extends TestCase
         $response->assertOk();
         $response->assertSeeText('LAGOA');
         $response->assertDontSeeText('Equipe B');
+    }
+
+    public function test_index_filters_by_formatted_code_from_query_string(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::User]);
+        $room = Room::create(['name' => 'Sala Código', 'is_active' => true]);
+
+        $matchingReservation = Reservation::create([
+            'room_id' => $room->id,
+            'user_id' => $user->id,
+            'date' => now()->addDay()->toDateString(),
+            'start_time' => '08:00',
+            'end_time' => '09:00',
+            'title' => 'Reserva do código formatado',
+            'requester' => 'Equipe Código',
+            'contact' => null,
+        ]);
+
+        Reservation::create([
+            'room_id' => $room->id,
+            'user_id' => $user->id,
+            'date' => now()->addDays(2)->toDateString(),
+            'start_time' => '10:00',
+            'end_time' => '11:00',
+            'title' => 'Outra reserva',
+            'requester' => 'Equipe B',
+            'contact' => null,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('reservations.index', [
+            'code' => 'AG-' . str_pad((string) $matchingReservation->id, 5, '0', STR_PAD_LEFT),
+        ]));
+
+        $response->assertOk();
+        $response->assertSeeText('Reserva do código formatado');
+        $response->assertDontSeeText('Outra reserva');
     }
 
     public function test_history_shows_only_past_reservations_including_ended_today(): void

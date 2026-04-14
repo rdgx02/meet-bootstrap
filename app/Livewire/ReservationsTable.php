@@ -188,7 +188,7 @@ final class ReservationsTable extends PowerGridComponent
                 ->operators(['contains', 'is'])
                 ->placeholder('Código')
                 ->builder(function (Builder $query, array $values): void {
-                    $value = preg_replace('/\D+/', '', (string) ($values['value'] ?? ''));
+                    $value = $this->normalizeReservationCodeFilter($values['value'] ?? null);
 
                     if ($value === '' || $value === null) {
                         return;
@@ -296,7 +296,7 @@ final class ReservationsTable extends PowerGridComponent
 
     private function applyManualFilters(Builder $query): void
     {
-        $code = preg_replace('/\D+/', '', (string) ($this->manualFilters['code'] ?? ''));
+        $code = $this->normalizeReservationCodeFilter($this->manualFilters['code'] ?? null);
 
         if ($code !== null && $code !== '') {
             $query->where('id', 'like', '%' . $code . '%');
@@ -337,5 +337,16 @@ final class ReservationsTable extends PowerGridComponent
                 $editorQuery->where('name', 'like', '%' . trim((string) $this->manualFilters['editor_name']) . '%');
             });
         }
+    }
+
+    private function normalizeReservationCodeFilter(mixed $value): string
+    {
+        $digits = preg_replace('/\D+/', '', (string) $value);
+
+        if ($digits === null || $digits === '') {
+            return '';
+        }
+
+        return ltrim($digits, '0') ?: '0';
     }
 }
