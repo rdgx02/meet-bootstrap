@@ -148,9 +148,11 @@
             @endphp
 
             @can('create', \App\Models\Reservation::class)
+                @if ($scope !== 'history')
                 <a href="{{ route('reservations.create') }}" class="btn btn-sm lims-toolbar-btn lims-toolbar-btn-primary">
                     Cadastrar Agendamento
                 </a>
+                @endif
             @endcan
 
             <button

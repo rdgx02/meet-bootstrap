@@ -1,6 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 112" role="img" aria-labelledby="ladetecTitle">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 307" role="img" aria-labelledby="ladetecTitle">
   <title id="ladetecTitle">LADETEC</title>
-  <path fill="#0a1695" d="M34 56c0-20.4 32.1-37 71.6-37h92.2l15.6 15.3h-22l-10.2-10.1h-75.6C70.6 24.2 42 38.5 42 56s28.6 31.8 63.6 31.8h75.6l10.2-10.1h22L197.8 93H105.6C66.1 93 34 76.4 34 56Z"/>
-  <path fill="#0a1695" d="m191.2 69.5 22.4 22h-17.8l-13.5-13.3z"/>
-  <text x="160" y="68" fill="#ffffff" stroke="#ffffff" stroke-width="0.6" font-size="34" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" letter-spacing="1">LADETEC</text>
+  <g fill="#0a1695">
+    <ellipse cx="351" cy="144" rx="346" ry="140"/>
+    <polygon points="543,238 623,238 688,307 607,307"/>
+  </g>
+  <text
+    x="358"
+    y="176"
+    fill="#ffffff"
+    font-size="110"
+    font-family="Arial, Helvetica, sans-serif"
+    font-weight="400"
+    text-anchor="middle"
+    letter-spacing="2"
+  >LADETEC</text>
 </svg>

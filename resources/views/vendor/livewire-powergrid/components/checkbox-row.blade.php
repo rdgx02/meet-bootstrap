@@ -46,6 +46,11 @@
     >
         @php
             $isReservationTable = in_array($tableName, ['reservations-upcoming-table', 'reservations-history-table'], true);
+            $showUrl = route('reservations.show', $attribute);
+
+            if ($tableName === 'reservations-history-table') {
+                $showUrl .= '?from=history';
+            }
         @endphp
         <div class="{{ theme_style($theme, 'checkbox.base') }}">
             <label class="{{ theme_style($theme, 'checkbox.label') }}">
@@ -57,7 +62,7 @@
                     data-pg-bulk-table="{{ $tableName }}"
                     @if ($isReservationTable)
                         data-reservation-id="{{ $attribute }}"
-                        data-show-url="{{ route('reservations.show', $attribute) }}"
+                        data-show-url="{{ $showUrl }}"
                         data-edit-url="{{ route('reservations.edit', $attribute) }}"
                         data-delete-url="{{ route('reservations.destroy', $attribute) }}"
                         data-title="{{ data_get($row, 'title', '-') }}"

@@ -88,6 +88,10 @@ a {
     color: inherit;
 }
 
+.app-sidebar-brand-link-compact {
+    padding-inline: 0;
+}
+
 .app-sidebar-brand-wordmark,
 .app-sidebar-brand-compact {
     font-size: 1.7rem;
@@ -98,9 +102,13 @@ a {
 
 .app-brand-logo {
     display: block;
-    max-width: 11rem;
+    max-width: 9rem;
     width: 100%;
     height: auto;
+}
+
+.app-brand-logo-compact {
+    max-width: 7rem;
 }
 
 .app-sidebar-section-label {

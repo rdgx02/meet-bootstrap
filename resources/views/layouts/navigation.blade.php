@@ -16,14 +16,16 @@
     aria-labelledby="appSidebarLabel"
 >
     <div class="offcanvas-header d-lg-none border-bottom">
-        <div class="app-sidebar-brand-compact">Meet</div>
+        <a href="{{ route('reservations.index') }}" class="app-sidebar-brand-link app-sidebar-brand-link-compact">
+            <img src="{{ asset('images/ladetec-logo.svg') }}" alt="LADETEC" class="app-brand-logo app-brand-logo-compact">
+        </a>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#appSidebar" aria-label="Fechar"></button>
     </div>
 
     <div class="offcanvas-body p-0 d-flex flex-column">
         <div class="app-sidebar-brand d-none d-lg-flex">
             <a href="{{ route('reservations.index') }}" class="app-sidebar-brand-link">
-                <span class="app-sidebar-brand-wordmark">Meet</span>
+                <img src="{{ asset('images/ladetec-logo.svg') }}" alt="LADETEC" class="app-brand-logo">
             </a>
         </div>
 

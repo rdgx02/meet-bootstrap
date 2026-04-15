@@ -297,6 +297,10 @@ class ReservationController extends Controller
 
     private function returnToSeries(Reservation $reservation): ?string
     {
+        if (request()->query('from') === 'history') {
+            return route('reservations.history');
+        }
+
         if (request()->query('from') !== 'series') {
             return null;
         }
