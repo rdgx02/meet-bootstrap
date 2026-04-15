@@ -1508,18 +1508,20 @@ a {
 .app-delete-confirm-btn {
     min-height: 2rem;
     padding: 0.28rem 0.82rem;
-    border-radius: 0.38rem;
-    border-color: #b93838;
-    background: linear-gradient(180deg, #d74b4b 0%, #b93131 100%);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    border-radius: 0.24rem;
+    border-color: #d5b2b2;
+    background: #f4e6e6;
+    color: #8c2f2f;
+    box-shadow: none;
     font-size: 0.74rem;
     font-weight: 700;
 }
 
 .app-delete-confirm-btn:hover,
 .app-delete-confirm-btn:focus {
-    border-color: #a32a2a !important;
-    background: linear-gradient(180deg, #c93f3f 0%, #a82b2b 100%) !important;
+    border-color: #c59a9a !important;
+    background: #eddada !important;
+    color: #7f2525 !important;
 }
 
 .app-modal-footer-compact {

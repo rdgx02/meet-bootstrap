@@ -13,7 +13,7 @@
 
         <!-- Email Address -->
         <div>
-            <label for="email" class="form-label app-form-label">Email</label>
+            <label for="email" class="form-label app-form-label">E-mail</label>
             <input id="email" class="form-control" type="email" name="email" value="{{ old('email', $request->email) }}" required autofocus autocomplete="username" />
             @error('email')
                 <div class="invalid-feedback d-block">{{ $message }}</div>

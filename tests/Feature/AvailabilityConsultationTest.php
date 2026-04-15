@@ -76,7 +76,7 @@ class AvailabilityConsultationTest extends TestCase
         ]));
 
         $response->assertOk();
-        $response->assertSeeText('12/04/2026');
+        $response->assertSee('value="2026-04-12"', false);
         $response->assertSeeText('Reuniao Geral');
         $response->assertSeeText('Treinamento');
         $response->assertDontSeeText('Outro Dia');
@@ -194,7 +194,7 @@ class AvailabilityConsultationTest extends TestCase
             $response = $this->actingAs($user)->get(route('availability.index'));
 
             $response->assertOk();
-            $response->assertSeeText('12/04/2026');
+            $response->assertSee('value="2026-04-12"', false);
             $response->assertSeeText('Reserva de Hoje');
         } finally {
             Carbon::setTestNow();
@@ -305,7 +305,5 @@ class AvailabilityConsultationTest extends TestCase
         $response->assertSeeText('Disponibilidade por sala');
         $response->assertSeeText('Nenhuma sala ativa encontrada para consulta.');
         $response->assertDontSeeText('203');
-        $response->assertSeeText('Salas livres 0');
-        $response->assertSeeText('Salas ocupadas 0');
     }
 }

@@ -1,4 +1,4 @@
-# Meet LADETEC
+# LADETEC Agenda
 
 Sistema web de agendamento de salas com foco em uso interno da secretaria.
 
@@ -21,7 +21,7 @@ Sistema web de agendamento de salas com foco em uso interno da secretaria.
 ## Stack
 - PHP 8.2+
 - Laravel 12
-- Blade + Tailwind (Breeze)
+- Blade + Bootstrap
 - Banco: SQLite (padrão local)
 
 ## Configuração local
@@ -103,10 +103,11 @@ php artisan user:role <user_id> user
 - Modo `Todas` na disponibilidade priorizando leitura textual por sala, com ordenação por status (`Livre`, `Parcialmente ocupada`, `Ocupada`).
 - Modo de sala específica com resumo principal de horários livres e ocupados.
 - Tabela operacional do dia preservada abaixo da disponibilidade para apoio da secretaria.
+- Identidade visual ajustada para o padrão institucional do LADETEC.
+- Suíte automatizada atual com `75` testes passando.
 
 ## Próximos passos sugeridos
-- Revisar a UX das telas de detalhes e confirmações de exclusão/cancelamento.
-- Refinar responsividade e densidade visual da tela `Disponibilidade` em telas menores.
+- Revisar visualmente os fluxos principais em uso real da secretaria.
 - Avaliar se a janela consultiva da disponibilidade (`08:00` às `18:00`) deve virar configuração de sistema.
 - Melhorar relatórios e formatos de exportação.
 - Avaliar QR Code para auto-reserva de usuários como fase futura.

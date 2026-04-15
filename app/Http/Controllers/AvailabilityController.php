@@ -34,8 +34,6 @@ class AvailabilityController extends Controller
             'rooms' => $rooms,
             'roomAvailability' => $roomAvailability,
             'primaryAvailability' => $primaryAvailability,
-            'freeRoomsCount' => $roomAvailability->where('is_free_all_day', true)->count(),
-            'occupiedRoomsCount' => $roomAvailability->where('is_free_all_day', false)->count(),
         ]);
     }
 

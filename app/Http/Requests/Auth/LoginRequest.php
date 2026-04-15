@@ -49,7 +49,7 @@ class LoginRequest extends FormRequest
 
         if ($user instanceof User && ! $user->isActive() && Hash::check($this->string('password')->toString(), $user->getAuthPassword())) {
             throw ValidationException::withMessages([
-                'email' => 'Sua conta esta inativa. Procure um administrador.',
+                'email' => 'Sua conta está inativa. Procure um administrador.',
             ]);
         }
 
@@ -57,7 +57,7 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => 'Credenciais invalidas. Verifique e-mail e senha.',
+                'email' => 'Credenciais inválidas. Verifique e-mail e senha.',
             ]);
         }
 

@@ -1,7 +1,7 @@
 <section>
     <header>
-        <h2 class="h4 mb-1">Informacoes do perfil</h2>
-        <p class="text-body-secondary mb-0">Atualize seu nome e endereco de e-mail.</p>
+        <h2 class="h4 mb-1">Informações do perfil</h2>
+        <p class="text-body-secondary mb-0">Atualize seu nome e endereço de e-mail.</p>
     </header>
 
     <form id="send-verification" method="post" action="{{ route('verification.send') }}">
@@ -21,7 +21,7 @@
         </div>
 
         <div class="mb-4">
-            <label for="email" class="form-label app-form-label">Email</label>
+            <label for="email" class="form-label app-form-label">E-mail</label>
             <input id="email" name="email" type="email" class="form-control" value="{{ old('email', $user->email) }}" required autocomplete="username" />
             @error('email')
                 <div class="invalid-feedback d-block">{{ $message }}</div>

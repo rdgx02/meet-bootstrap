@@ -198,8 +198,7 @@
 
         <div class="lims-grid-toolbar-stats">
             <span class="lims-toolbar-stat">Registros <strong>{{ $this->total }}</strong></span>
-            <span class="lims-toolbar-stat">Selecionados <strong>{{ count($checkboxValues) }}</strong></span>
-            <span class="lims-toolbar-stat">Tela <strong>{{ $scope === 'history' ? 'Histórico' : 'Agendamentos' }}</strong></span>
+            <span class="lims-toolbar-stat">Selecionados <strong data-selected-count>{{ count($checkboxValues) }}</strong></span>
         </div>
     </div>
 </div>

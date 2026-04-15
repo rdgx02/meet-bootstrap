@@ -110,8 +110,8 @@ const initReservationDeleteModal = () => {
     modalElement.addEventListener('hidden.bs.modal', () => {
         form.action = '';
         idsInput.value = '';
-        message.textContent = 'Este registro sera removido da base operacional e nao podera ser recuperado.';
-        submitLabel.textContent = 'Confirmar exclusao';
+        message.textContent = 'Este registro será removido da base operacional e não poderá ser recuperado.';
+        submitLabel.textContent = 'Confirmar exclusão';
         singleSummary.classList.remove('d-none');
         bulkSummary.classList.add('d-none');
         bulkCount.textContent = '0 agendamentos';
@@ -191,6 +191,11 @@ const initReservationBulkToolbar = () => {
         const selectedCount = getSelectedInputs(tableName).length;
         const isSingleSelection = selectedCount === 1;
         const hasSelection = selectedCount > 0;
+        const selectedCountElement = toolbar.querySelector('[data-selected-count]');
+
+        if (selectedCountElement) {
+            selectedCountElement.textContent = String(selectedCount);
+        }
 
         setButtonDisabledState(
             toolbar.querySelector('[data-bulk-action="view"]'),
@@ -304,8 +309,8 @@ const initReservationBulkToolbar = () => {
 
                 form.action = input.dataset.deleteUrl;
                 idsInput.value = '';
-                message.textContent = 'Este registro sera removido da base operacional e nao podera ser recuperado.';
-                submitLabel.textContent = 'Confirmar exclusao';
+                message.textContent = 'Este registro será removido da base operacional e não poderá ser recuperado.';
+                submitLabel.textContent = 'Confirmar exclusão';
                 singleSummary.classList.remove('d-none');
                 bulkSummary.classList.add('d-none');
                 bulkCount.textContent = '0 agendamentos';
@@ -317,7 +322,7 @@ const initReservationBulkToolbar = () => {
             } else {
                 form.action = form.dataset.deleteSelectedUrl;
                 idsInput.value = selectedInputs.map((input) => input.dataset.reservationId).join(',');
-                message.textContent = 'Os agendamentos selecionados serao removidos da base operacional. Essa acao nao podera ser desfeita.';
+                message.textContent = 'Os agendamentos selecionados serão removidos da base operacional. Essa ação não poderá ser desfeita.';
                 submitLabel.textContent = 'Excluir selecionados';
                 singleSummary.classList.add('d-none');
                 bulkSummary.classList.remove('d-none');

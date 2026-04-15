@@ -9,14 +9,6 @@
         </section>
 
         <section class="app-subpanel app-availability-panel">
-            <div class="app-subpanel-head app-availability-head">
-                <div class="app-subpanel-meta">
-                    <span class="lims-toolbar-stat">Data <strong>{{ $selectedDateLabel }}</strong></span>
-                    <span class="lims-toolbar-stat">Salas livres <strong>{{ $freeRoomsCount }}</strong></span>
-                    <span class="lims-toolbar-stat">Salas ocupadas <strong>{{ $occupiedRoomsCount }}</strong></span>
-                </div>
-            </div>
-
             <form method="GET" action="{{ route('availability.index') }}" class="app-availability-form">
                 <div class="app-availability-form-fields">
                     <div class="app-availability-field">
@@ -177,9 +169,6 @@
                 <div class="app-subpanel-head">
                     <div>
                         <h2 class="app-subpanel-title app-availability-title">Agendamentos do dia</h2>
-                        <p class="app-subpanel-note">
-                            {{ $selectedRoom ? 'Lista do dia para a sala selecionada.' : 'Lista consolidada das reservas encontradas para o dia consultado.' }}
-                        </p>
                     </div>
                     <div class="app-subpanel-meta">
                         @if ($selectedRoom)

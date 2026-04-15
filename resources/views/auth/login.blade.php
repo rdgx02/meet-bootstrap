@@ -15,7 +15,7 @@
         @csrf
 
         <div class="mb-3">
-            <label for="email" class="form-label app-form-label">Email</label>
+            <label for="email" class="form-label app-form-label">E-mail</label>
             <input
                 id="email"
                 class="form-control @error('email') is-invalid @enderror"
