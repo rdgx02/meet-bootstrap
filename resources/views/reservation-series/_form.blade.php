@@ -129,21 +129,6 @@
             </div>
 
             <div class="app-form-field">
-                <label for="contact" class="app-form-label">Contato</label>
-                <input
-                    id="contact"
-                    type="text"
-                    name="contact"
-                    value="{{ old('contact', $series->contact) }}"
-                    maxlength="255"
-                    class="form-control @error('contact') is-invalid @enderror"
-                >
-                @error('contact')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="app-form-field">
                 <label for="recurrence_starts_on" class="app-form-label">Data de início</label>
                 <input
                     id="recurrence_starts_on"
@@ -221,6 +206,41 @@
                     placeholder="HH:MM"
                 >
                 @error('end_time')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="app-form-field">
+                <label for="phone" class="app-form-label">Telefone</label>
+                <input
+                    id="phone"
+                    type="text"
+                    name="phone"
+                    value="{{ old('phone', $series->phone) }}"
+                    maxlength="17"
+                    required
+                    data-phone-mask="br"
+                    inputmode="numeric"
+                    class="form-control @error('phone') is-invalid @enderror"
+                    placeholder="+55 21 99999-9999"
+                >
+                @error('phone')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="app-form-field">
+                <label for="contact" class="app-form-label">Contato</label>
+                <input
+                    id="contact"
+                    type="text"
+                    name="contact"
+                    value="{{ old('contact', $series->contact) }}"
+                    maxlength="255"
+                    class="form-control @error('contact') is-invalid @enderror"
+                    placeholder="Ramal, e-mail ou observação de contato"
+                >
+                @error('contact')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>

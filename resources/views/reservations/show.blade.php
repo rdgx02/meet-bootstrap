@@ -93,6 +93,10 @@
                     <strong>{{ $reservation->requester }}</strong>
                 </div>
                 <div class="app-detail-card">
+                    <span class="app-detail-label">Telefone</span>
+                    <strong>{{ $reservation->phone ?: '-' }}</strong>
+                </div>
+                <div class="app-detail-card">
                     <span class="app-detail-label">Contato</span>
                     <strong>{{ $reservation->contact ?: '-' }}</strong>
                 </div>

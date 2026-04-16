@@ -338,6 +338,7 @@ class ReservationController extends Controller
             'room_id' => $data['room_id'],
             'title' => $data['title'],
             'requester' => $data['requester'],
+            'phone' => $data['phone'],
             'contact' => $data['contact'] ?? null,
             'start_time' => $data['start_time'],
             'end_time' => $data['end_time'],

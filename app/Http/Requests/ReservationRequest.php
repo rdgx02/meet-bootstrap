@@ -9,9 +9,20 @@ abstract class ReservationRequest extends FormRequest
 {
     protected function prepareForValidation(): void
     {
+        $phone = $this->normalizePhone($this->input('phone'));
+
         if (! $this->has('booking_mode') || $this->input('booking_mode') === null || $this->input('booking_mode') === '') {
-            $this->merge([
+            $this->merge(array_filter([
                 'booking_mode' => 'single',
+                'phone' => $phone,
+            ], fn (mixed $value): bool => $value !== null));
+
+            return;
+        }
+
+        if ($phone !== null) {
+            $this->merge([
+                'phone' => $phone,
             ]);
         }
     }
@@ -24,6 +35,7 @@ abstract class ReservationRequest extends FormRequest
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
             'title' => ['required', 'string', 'max:255'],
             'requester' => ['required', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'regex:/^\+55 \d{2} \d{5}-\d{4}$/'],
             'contact' => ['nullable', 'string', 'max:255'],
         ];
     }
@@ -92,8 +104,38 @@ abstract class ReservationRequest extends FormRequest
             'end_time.after' => 'O horário de fim deve ser após o horário de início.',
             'title.required' => 'Informe o título do agendamento.',
             'requester.required' => 'Informe o solicitante.',
+            'phone.required' => 'Informe o telefone do solicitante.',
+            'phone.regex' => 'Informe o telefone no formato +55 DDD 99999-9999.',
             'recurrence_frequency.required' => 'Selecione a frequência da recorrência.',
             'recurrence_weekdays.required' => 'Selecione ao menos um dia da semana para a recorrência semanal.',
         ];
+    }
+
+    protected function normalizePhone(mixed $value): ?string
+    {
+        if (! is_string($value) || trim($value) === '') {
+            return null;
+        }
+
+        $digits = preg_replace('/\D+/', '', $value);
+
+        if ($digits === null) {
+            return trim($value);
+        }
+
+        if (strlen($digits) === 11) {
+            $digits = '55' . $digits;
+        }
+
+        if (strlen($digits) !== 13 || ! str_starts_with($digits, '55')) {
+            return trim($value);
+        }
+
+        return sprintf(
+            '+55 %s %s-%s',
+            substr($digits, 2, 2),
+            substr($digits, 4, 5),
+            substr($digits, 9, 4)
+        );
     }
 }

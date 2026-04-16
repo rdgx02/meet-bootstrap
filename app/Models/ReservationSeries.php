@@ -18,6 +18,7 @@ class ReservationSeries extends Model
         'end_time',
         'title',
         'requester',
+        'phone',
         'contact',
         'frequency',
         'interval',

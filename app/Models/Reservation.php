@@ -20,6 +20,7 @@ class Reservation extends Model
         'end_time',
         'title',
         'requester',
+        'phone',
         'contact',
     ];
 

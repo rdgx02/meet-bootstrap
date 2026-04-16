@@ -28,6 +28,7 @@ class ReservationManagementTest extends TestCase
             'end_time' => '11:00',
             'title' => 'Reuniao de planejamento',
             'requester' => 'Equipe Produto',
+            'phone' => '+55 21 99999-9999',
             'contact' => 'produto@example.com',
         ]);
 
@@ -53,6 +54,7 @@ class ReservationManagementTest extends TestCase
             'end_time' => '14:00',
             'title' => 'Tentativa sem permissao',
             'requester' => 'Usuario comum',
+            'phone' => '+55 21 99999-9999',
             'contact' => null,
         ]);
 
@@ -74,6 +76,7 @@ class ReservationManagementTest extends TestCase
             'end_time' => '11:00',
             'title' => 'Reserva existente',
             'requester' => 'Secretaria',
+            'phone' => '+55 21 99999-9999',
             'contact' => null,
         ]);
 
@@ -86,7 +89,8 @@ class ReservationManagementTest extends TestCase
                 'end_time' => '11:30',
                 'title' => 'Reserva em conflito',
                 'requester' => 'Secretaria',
-                'contact' => null,
+                'phone' => '+55 21 99999-9999',
+            'contact' => null,
             ]);
 
         $response->assertRedirect(route('reservations.create'));
@@ -119,7 +123,8 @@ class ReservationManagementTest extends TestCase
                     'end_time' => '09:00',
                     'title' => 'Reserva passada no mesmo dia',
                     'requester' => 'Secretaria',
-                    'contact' => null,
+                    'phone' => '+55 21 99999-9999',
+            'contact' => null,
                 ]);
 
             $response->assertRedirect(route('reservations.create'));
@@ -143,6 +148,7 @@ class ReservationManagementTest extends TestCase
             'end_time' => '09:00',
             'title' => 'Reserva encerrada',
             'requester' => 'Secretaria',
+            'phone' => '+55 21 99999-9999',
             'contact' => null,
         ]);
 
@@ -158,7 +164,8 @@ class ReservationManagementTest extends TestCase
                 'end_time' => '11:00',
                 'title' => 'Tentativa de alterar',
                 'requester' => 'Secretaria',
-                'contact' => null,
+                'phone' => '+55 21 99999-9999',
+            'contact' => null,
             ])
             ->assertForbidden();
 
@@ -185,6 +192,7 @@ class ReservationManagementTest extends TestCase
             'end_time' => '10:00',
             'title' => 'Reserva pela rota',
             'requester' => 'Secretaria',
+            'phone' => '+55 21 99999-9999',
             'contact' => null,
         ]);
 
@@ -210,6 +218,7 @@ class ReservationManagementTest extends TestCase
             'end_time' => '10:00',
             'title' => 'Reserva Lote 1',
             'requester' => 'Secretaria',
+            'phone' => '+55 21 99999-9999',
             'contact' => null,
         ]);
 
@@ -221,6 +230,7 @@ class ReservationManagementTest extends TestCase
             'end_time' => '11:00',
             'title' => 'Reserva Lote 2',
             'requester' => 'Secretaria',
+            'phone' => '+55 21 99999-9999',
             'contact' => null,
         ]);
 
@@ -266,6 +276,7 @@ class ReservationManagementTest extends TestCase
             'end_time' => '15:30',
             'title' => 'Exportar Agenda',
             'requester' => 'Equipe Operacional',
+            'phone' => '+55 21 99999-9999',
             'contact' => null,
         ]);
         $reservation->updated_by = $editor->id;
@@ -302,7 +313,8 @@ class ReservationManagementTest extends TestCase
                 'end_time' => '09:00',
                 'title' => 'Encerrada Hoje',
                 'requester' => 'Equipe',
-                'contact' => null,
+                'phone' => '+55 21 99999-9999',
+            'contact' => null,
             ]);
 
             Reservation::create([
@@ -313,7 +325,8 @@ class ReservationManagementTest extends TestCase
                 'end_time' => '11:30',
                 'title' => 'Em Andamento Hoje',
                 'requester' => 'Equipe',
-                'contact' => null,
+                'phone' => '+55 21 99999-9999',
+            'contact' => null,
             ]);
 
             Reservation::create([
@@ -324,7 +337,8 @@ class ReservationManagementTest extends TestCase
                 'end_time' => '12:00',
                 'title' => 'Reserva Futura',
                 'requester' => 'Equipe',
-                'contact' => null,
+                'phone' => '+55 21 99999-9999',
+            'contact' => null,
             ]);
 
             $response = $this->actingAs($user)->get(route('reservations.index'));
@@ -353,6 +367,7 @@ class ReservationManagementTest extends TestCase
             'end_time' => '09:00',
             'title' => 'LAGOA',
             'requester' => 'Equipe A',
+            'phone' => '+55 21 99999-9999',
             'contact' => null,
         ]);
 
@@ -364,6 +379,7 @@ class ReservationManagementTest extends TestCase
             'end_time' => '11:00',
             'title' => 'TI',
             'requester' => 'Equipe B',
+            'phone' => '+55 21 99999-9999',
             'contact' => null,
         ]);
 
@@ -390,6 +406,7 @@ class ReservationManagementTest extends TestCase
             'end_time' => '09:00',
             'title' => 'Reserva do código formatado',
             'requester' => 'Equipe Código',
+            'phone' => '+55 21 99999-9999',
             'contact' => null,
         ]);
 
@@ -401,6 +418,7 @@ class ReservationManagementTest extends TestCase
             'end_time' => '11:00',
             'title' => 'Outra reserva',
             'requester' => 'Equipe B',
+            'phone' => '+55 21 99999-9999',
             'contact' => null,
         ]);
 
@@ -429,7 +447,8 @@ class ReservationManagementTest extends TestCase
                 'end_time' => '10:00',
                 'title' => 'Passada no Historico',
                 'requester' => 'Equipe',
-                'contact' => null,
+                'phone' => '+55 21 99999-9999',
+            'contact' => null,
             ]);
 
             Reservation::create([
@@ -440,7 +459,8 @@ class ReservationManagementTest extends TestCase
                 'end_time' => '09:00',
                 'title' => 'Encerrada Hoje no Historico',
                 'requester' => 'Equipe',
-                'contact' => null,
+                'phone' => '+55 21 99999-9999',
+            'contact' => null,
             ]);
 
             Reservation::create([
@@ -451,7 +471,8 @@ class ReservationManagementTest extends TestCase
                 'end_time' => '11:30',
                 'title' => 'Em Andamento na Agenda',
                 'requester' => 'Equipe',
-                'contact' => null,
+                'phone' => '+55 21 99999-9999',
+            'contact' => null,
             ]);
 
             $response = $this->actingAs($user)->get(route('reservations.history'));
@@ -491,7 +512,8 @@ class ReservationManagementTest extends TestCase
                 'end_time' => '09:00',
                 'title' => 'Passada',
                 'requester' => 'Equipe',
-                'contact' => null,
+                'phone' => '+55 21 99999-9999',
+            'contact' => null,
             ]);
 
             Reservation::create([
@@ -502,7 +524,8 @@ class ReservationManagementTest extends TestCase
                 'end_time' => '09:00',
                 'title' => 'Encerrada Hoje',
                 'requester' => 'Equipe',
-                'contact' => null,
+                'phone' => '+55 21 99999-9999',
+            'contact' => null,
             ]);
 
             Reservation::create([
@@ -513,7 +536,8 @@ class ReservationManagementTest extends TestCase
                 'end_time' => '11:30',
                 'title' => 'Ativa Hoje',
                 'requester' => 'Equipe',
-                'contact' => null,
+                'phone' => '+55 21 99999-9999',
+            'contact' => null,
             ]);
 
             Reservation::create([
@@ -524,7 +548,8 @@ class ReservationManagementTest extends TestCase
                 'end_time' => '10:00',
                 'title' => 'Futura',
                 'requester' => 'Equipe',
-                'contact' => null,
+                'phone' => '+55 21 99999-9999',
+            'contact' => null,
             ]);
 
             $component = new ReservationsTable();
@@ -558,7 +583,8 @@ class ReservationManagementTest extends TestCase
                 'end_time' => '09:00',
                 'title' => 'Passada',
                 'requester' => 'Equipe',
-                'contact' => null,
+                'phone' => '+55 21 99999-9999',
+            'contact' => null,
             ]);
 
             Reservation::create([
@@ -569,7 +595,8 @@ class ReservationManagementTest extends TestCase
                 'end_time' => '09:00',
                 'title' => 'Encerrada Hoje',
                 'requester' => 'Equipe',
-                'contact' => null,
+                'phone' => '+55 21 99999-9999',
+            'contact' => null,
             ]);
 
             Reservation::create([
@@ -580,7 +607,8 @@ class ReservationManagementTest extends TestCase
                 'end_time' => '11:30',
                 'title' => 'Ativa Hoje',
                 'requester' => 'Equipe',
-                'contact' => null,
+                'phone' => '+55 21 99999-9999',
+            'contact' => null,
             ]);
 
             $component = new ReservationsTable();
@@ -611,3 +639,4 @@ class ReservationManagementTest extends TestCase
         $this->assertSame(['Alfa', 'Zulu'], $rooms);
     }
 }
+

@@ -28,6 +28,7 @@ class RecurringReservationOccurrenceGenerator
                 'end_time' => (string) $data['end_time'],
                 'title' => (string) $data['title'],
                 'requester' => (string) $data['requester'],
+                'phone' => (string) $data['phone'],
                 'contact' => $data['contact'] ?: null,
             ];
         });

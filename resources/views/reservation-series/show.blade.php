@@ -91,7 +91,7 @@
                 <article class="app-series-summary-card">
                     <span class="app-series-summary-label">Exceções</span>
                     <strong class="app-series-summary-value">{{ $exceptionCount }}</strong>
-                    <p class="app-series-summary-note">{{ $series->user?->name ?? '-' }}</p>
+                    <p class="app-series-summary-note">{{ $series->phone ?: '-' }}</p>
                 </article>
             </div>
         </section>

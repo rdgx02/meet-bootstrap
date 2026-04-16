@@ -38,11 +38,7 @@
 <div class="app-module-shell app-module-shell-form">
     <section class="app-module-header">
         <div>
-            <div class="app-module-kicker">Agenda</div>
             <h1 class="app-module-title">{{ $isEdit ? 'Editar Agendamento' : 'Novo Agendamento' }}</h1>
-            <p class="app-module-note">
-                {{ $isEdit ? 'Atualize os dados do registro selecionado.' : 'Preencha os campos para registrar um novo agendamento.' }}
-            </p>
         </div>
     </section>
 
@@ -130,13 +126,6 @@
                 <input type="hidden" name="series" value="{{ $reservation->series_id }}">
             @endif
         @endif
-
-        <div class="app-subpanel-head">
-            <div>
-                <h2 class="app-subpanel-title">Dados do agendamento</h2>
-                <p class="app-subpanel-note">Formulário operacional para controle de reservas de sala.</p>
-            </div>
-        </div>
 
         <div class="app-form-grid-compact app-form-grid-2">
             @if ($isEdit && isset($reservation) && $reservation->series_id)
@@ -365,6 +354,41 @@
                 @enderror
             </div>
 
+            <div class="app-form-field">
+                <label for="phone" class="app-form-label">Telefone</label>
+                <input
+                    id="phone"
+                    type="text"
+                    name="phone"
+                    value="{{ old('phone', $isEdit ? $reservation->phone : '') }}"
+                    maxlength="17"
+                    required
+                    data-phone-mask="br"
+                    inputmode="numeric"
+                    class="form-control @error('phone') is-invalid @enderror"
+                    placeholder="+55 21 99999-9999"
+                >
+                @error('phone')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="app-form-field">
+                <label for="contact" class="app-form-label">Contato</label>
+                <input
+                    id="contact"
+                    type="text"
+                    name="contact"
+                    value="{{ old('contact', $isEdit ? $reservation->contact : '') }}"
+                    maxlength="255"
+                    class="form-control @error('contact') is-invalid @enderror"
+                    placeholder="Ramal, e-mail ou observação de contato"
+                >
+                @error('contact')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
             <div class="app-form-field app-form-field-full">
                 @if (! $isEdit)
                     <div x-show="bookingMode === 'recurring' && recurrenceFrequency === 'weekly'" x-cloak>
@@ -397,21 +421,6 @@
                 @endif
             </div>
 
-            <div class="app-form-field app-form-field-full">
-                <label for="contact" class="app-form-label">Contato</label>
-                <input
-                    id="contact"
-                    type="text"
-                    name="contact"
-                    value="{{ old('contact', $isEdit ? $reservation->contact : '') }}"
-                    maxlength="255"
-                    class="form-control @error('contact') is-invalid @enderror"
-                    placeholder="Telefone, ramal ou e-mail"
-                >
-                @error('contact')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
         </div>
 
         <div class="app-form-actions app-form-actions-compact">

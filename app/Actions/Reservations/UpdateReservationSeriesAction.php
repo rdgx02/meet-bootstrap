@@ -80,6 +80,7 @@ class UpdateReservationSeriesAction
                 'end_time' => (string) $data['end_time'],
                 'title' => (string) $data['title'],
                 'requester' => (string) $data['requester'],
+                'phone' => (string) $data['phone'],
                 'contact' => $data['contact'] ?: null,
                 'frequency' => (string) $data['recurrence_frequency'],
                 'interval' => 1,
