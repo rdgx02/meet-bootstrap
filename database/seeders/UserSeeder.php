@@ -11,7 +11,15 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $defaultPassword = (string) env('DEFAULT_USER_PASSWORD', '12345678');
+        // Senha inicial obrigatoria via ambiente. Sem fallback: evita senha fraca
+        // silenciosa em producao. Defina DEFAULT_USER_PASSWORD (forte) no .env.
+        $defaultPassword = (string) env('DEFAULT_USER_PASSWORD', '');
+
+        if (trim($defaultPassword) === '') {
+            throw new \RuntimeException(
+                'Defina DEFAULT_USER_PASSWORD (senha forte) no .env antes de rodar o seeder de usuarios.'
+            );
+        }
 
         User::updateOrCreate(
             ['email' => 'admin@meet.local'],
