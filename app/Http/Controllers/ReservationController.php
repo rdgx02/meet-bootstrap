@@ -15,6 +15,8 @@ use App\Http\Requests\UpdateReservationRequest;
 use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\ReservationSeries;
+use App\Models\User;
+use App\Services\WhatsApp\ReservationWhatsAppNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -39,14 +41,16 @@ class ReservationController extends Controller
         $rooms = Room::active()
             ->orderBy('name')
             ->get();
+        $owners = $this->reservationOwners();
 
-        return view('reservations.create', compact('rooms'));
+        return view('reservations.create', compact('rooms', 'owners'));
     }
 
     public function store(
         StoreReservationRequest $request,
         CreateReservationAction $createReservation,
-        CreateRecurringReservationSeriesAction $createRecurringReservationSeries
+        CreateRecurringReservationSeriesAction $createRecurringReservationSeries,
+        ReservationWhatsAppNotificationService $whatsAppNotifications
     ) {
         if ($request->validated('booking_mode') === 'recurring') {
             try {
@@ -81,11 +85,13 @@ class ReservationController extends Controller
                 );
             }
 
+            $whatsAppNotifications->notifySeriesCreated($result['series']);
+
             return $redirect;
         }
 
         try {
-            $createReservation->execute(
+            $reservation = $createReservation->execute(
                 $request->validated(),
                 (int) $request->user()->id
             );
@@ -98,6 +104,8 @@ class ReservationController extends Controller
                 ]);
         }
 
+        $whatsAppNotifications->notifyReservationCreated($reservation);
+
         return redirect()->route('reservations.index')
             ->with('success', 'Agendamento criado com sucesso!');
     }
@@ -106,7 +114,7 @@ class ReservationController extends Controller
     {
         $this->authorize('view', $reservation);
 
-        $reservation->load(['room', 'user', 'editor']);
+        $reservation->load(['room', 'user', 'owner', 'editor']);
 
         return view('reservations.show', [
             'reservation' => $reservation,
@@ -121,10 +129,12 @@ class ReservationController extends Controller
         $rooms = Room::active()
             ->orderBy('name')
             ->get();
+        $owners = $this->reservationOwners();
 
         return view('reservations.edit', [
             'reservation' => $reservation,
             'rooms' => $rooms,
+            'owners' => $owners,
             'returnToSeries' => $this->returnToSeries($reservation),
         ]);
     }
@@ -133,17 +143,20 @@ class ReservationController extends Controller
         UpdateReservationRequest $request,
         Reservation $reservation,
         UpdateReservationAction $updateReservation,
-        UpdateReservationFollowingAction $updateReservationFollowing
+        UpdateReservationFollowingAction $updateReservationFollowing,
+        ReservationWhatsAppNotificationService $whatsAppNotifications
     ) {
         $scope = $request->validated('series_scope') ?? 'occurrence';
+        $updatedReservation = null;
+        $updatedSeries = null;
 
         try {
             if ($reservation->series_id !== null && $scope === 'following') {
-                $updateReservationFollowing->execute($reservation, $request->validated());
+                $updatedSeries = $updateReservationFollowing->execute($reservation, $request->validated());
             } elseif ($reservation->series_id !== null && $scope === 'all') {
-                $this->updateEntireSeriesFromReservation($reservation, $request->validated());
+                $updatedSeries = $this->updateEntireSeriesFromReservation($reservation, $request->validated());
             } else {
-                $updateReservation->execute($reservation, $request->validated());
+                $updatedReservation = $updateReservation->execute($reservation, $request->validated());
             }
         } catch (ReservationConflictException $exception) {
             return back()
@@ -161,6 +174,12 @@ class ReservationController extends Controller
                 ]);
         }
 
+        if ($updatedSeries instanceof ReservationSeries) {
+            $whatsAppNotifications->notifySeriesUpdated($updatedSeries);
+        } elseif ($updatedReservation instanceof Reservation) {
+            $whatsAppNotifications->notifyReservationUpdated($updatedReservation);
+        }
+
         return $this->redirectAfterReservationAction($request, $reservation)
             ->with('success', 'Agendamento atualizado com sucesso!');
     }
@@ -168,32 +187,42 @@ class ReservationController extends Controller
     public function destroy(
         Request $request,
         Reservation $reservation,
-        DeleteReservationFollowingAction $deleteReservationFollowing
+        DeleteReservationFollowingAction $deleteReservationFollowing,
+        ReservationWhatsAppNotificationService $whatsAppNotifications
     )
     {
         $this->authorize('delete', $reservation);
 
         $scope = $request->input('series_scope', 'occurrence');
+        $reservationSnapshot = $reservation->loadMissing(['room', 'owner']);
 
         if ($reservation->series_id !== null && $scope === 'following') {
             $deleteReservationFollowing->execute($reservation);
+            $series = $reservation->series?->fresh(['room', 'owner']);
+
+            if ($series instanceof ReservationSeries) {
+                $whatsAppNotifications->notifySeriesTrimmed($series, (string) $reservation->date);
+            }
         } elseif ($reservation->series_id !== null && $scope === 'all') {
             $series = $reservation->series;
 
             if ($series instanceof ReservationSeries) {
                 app(\App\Actions\Reservations\CancelReservationSeriesAction::class)->execute($series);
+                $whatsAppNotifications->notifySeriesCancelled($series->fresh(['room', 'owner']));
             } else {
                 $reservation->delete();
+                $whatsAppNotifications->notifyReservationCancelled($reservationSnapshot);
             }
         } else {
             $reservation->delete();
+            $whatsAppNotifications->notifyReservationCancelled($reservationSnapshot);
         }
 
         return $this->redirectAfterReservationAction($request, $reservation)
             ->with('success', 'Agendamento excluído com sucesso!');
     }
 
-    public function destroySelected(Request $request)
+    public function destroySelected(Request $request, ReservationWhatsAppNotificationService $whatsAppNotifications)
     {
         $this->authorize('viewAny', Reservation::class);
 
@@ -208,6 +237,7 @@ class ReservationController extends Controller
         }
 
         $reservations = Reservation::query()
+            ->with(['room', 'owner'])
             ->whereIn('id', $selectedIds)
             ->get();
 
@@ -225,6 +255,10 @@ class ReservationController extends Controller
                 $reservation->delete();
             }
         });
+
+        foreach ($reservations as $reservation) {
+            $whatsAppNotifications->notifyReservationCancelled($reservation);
+        }
 
         $count = $reservations->count();
 
@@ -252,6 +286,10 @@ class ReservationController extends Controller
             ->orderBy('date')
             ->orderBy('start_time')
             ->get();
+
+        foreach ($reservations as $reservation) {
+            $this->authorize('view', $reservation);
+        }
 
         $filename = 'agendamentos-' . now()->format('Ymd-His') . '.csv';
 
@@ -326,7 +364,7 @@ class ReservationController extends Controller
         return redirect()->route('reservations.index');
     }
 
-    private function updateEntireSeriesFromReservation(Reservation $reservation, array $data): void
+    private function updateEntireSeriesFromReservation(Reservation $reservation, array $data): ReservationSeries
     {
         $series = $reservation->series;
 
@@ -339,7 +377,7 @@ class ReservationController extends Controller
             'title' => $data['title'],
             'requester' => $data['requester'],
             'phone' => $data['phone'],
-            'contact' => $data['contact'] ?? null,
+            'owner_user_id' => $data['owner_user_id'],
             'start_time' => $data['start_time'],
             'end_time' => $data['end_time'],
             'recurrence_starts_on' => $series->starts_on,
@@ -347,5 +385,15 @@ class ReservationController extends Controller
             'recurrence_frequency' => $series->frequency,
             'recurrence_weekdays' => $series->weekdays ?? [],
         ]);
+
+        return $series->fresh(['room', 'owner']);
+    }
+
+    private function reservationOwners()
+    {
+        return User::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name', 'email']);
     }
 }

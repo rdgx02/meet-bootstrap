@@ -20,12 +20,14 @@ class ReservationPolicy
 
     public function view(User $user, Reservation $reservation): bool
     {
-        return true;
+        $ownerUserId = $reservation->owner_user_id ?? $reservation->user_id;
+
+        return $this->canManageAgenda($user) || $ownerUserId === $user->id;
     }
 
     public function create(User $user): bool
     {
-        return $this->canManageAgenda($user);
+        return $user->isActive();
     }
 
     public function update(User $user, Reservation $reservation): bool

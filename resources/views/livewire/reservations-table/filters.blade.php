@@ -143,18 +143,6 @@
 
     <div class="lims-grid-toolbar" data-reservation-toolbar data-table-name="{{ $tableName }}">
         <div class="lims-grid-toolbar-actions">
-            @php
-                $canManageReservations = auth()->user()?->canManageAgenda() ?? false;
-            @endphp
-
-            @can('create', \App\Models\Reservation::class)
-                @if ($scope !== 'history')
-                <a href="{{ route('reservations.create') }}" class="btn btn-sm lims-toolbar-btn lims-toolbar-btn-primary">
-                    Cadastrar Agendamento
-                </a>
-                @endif
-            @endcan
-
             <button
                 type="button"
                 class="btn btn-sm lims-toolbar-btn js-reservation-bulk-view"

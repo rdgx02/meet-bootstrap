@@ -17,6 +17,7 @@ class CreateReservationAction
     {
         $payload = $data;
         $payload['user_id'] = $creatorId;
+        $payload['owner_user_id'] = (int) ($data['owner_user_id'] ?? $creatorId);
 
         return DB::transaction(function () use ($payload): Reservation {
             $conflict = $this->conflictService->findConflict($payload, lockForUpdate: true);

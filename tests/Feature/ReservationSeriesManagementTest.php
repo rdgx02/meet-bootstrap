@@ -3,12 +3,14 @@
 namespace Tests\Feature;
 
 use App\Enums\UserRole;
+use App\Jobs\SendWhatsAppMessageJob;
 use App\Models\Reservation;
 use App\Models\ReservationSeries;
 use App\Models\Room;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class ReservationSeriesManagementTest extends TestCase
@@ -145,6 +147,94 @@ class ReservationSeriesManagementTest extends TestCase
         }
     }
 
+    public function test_series_update_dispatches_whatsapp_notification(): void
+    {
+        Queue::fake();
+        config([
+            'services.evolution_whatsapp.enabled' => true,
+            'services.evolution_whatsapp.queue' => true,
+        ]);
+
+        $secretary = User::factory()->create(['role' => UserRole::Secretary]);
+        $room = Room::create(['name' => 'Sala Serie Update', 'is_active' => true]);
+        $series = ReservationSeries::create([
+            'room_id' => $room->id,
+            'user_id' => $secretary->id,
+            'owner_user_id' => $secretary->id,
+            'starts_on' => now()->addDay()->toDateString(),
+            'ends_on' => now()->addDays(10)->toDateString(),
+            'start_time' => '09:00',
+            'end_time' => '10:00',
+            'title' => 'Serie Atualizar',
+            'requester' => 'Secretaria',
+            'phone' => '+55 21 99999-9999',
+            'frequency' => 'weekly',
+            'interval' => 1,
+            'weekdays' => [1],
+            'conflict_mode' => 'strict',
+            'status' => 'active',
+        ]);
+
+        $this->actingAs($secretary)->put(route('reservation-series.update', $series), [
+            'room_id' => $room->id,
+            'owner_user_id' => $secretary->id,
+            'title' => 'Serie Atualizada',
+            'requester' => 'Secretaria',
+            'phone' => '+55 21 99999-9999',
+            'start_time' => '10:00',
+            'end_time' => '11:00',
+            'recurrence_starts_on' => $series->starts_on,
+            'recurrence_ends_on' => $series->ends_on,
+            'recurrence_frequency' => 'weekly',
+            'recurrence_weekdays' => [1],
+        ])->assertRedirect(route('reservation-series.show', $series));
+
+        Queue::assertPushed(SendWhatsAppMessageJob::class, function (SendWhatsAppMessageJob $job): bool {
+            return $job->contextType === 'series_updated'
+                && str_contains($job->message, 'SÉRIE RECORRENTE ATUALIZADA - SALAS')
+                && str_contains($job->message, 'Status: Atualizada');
+        });
+    }
+
+    public function test_series_cancel_dispatches_whatsapp_notification(): void
+    {
+        Queue::fake();
+        config([
+            'services.evolution_whatsapp.enabled' => true,
+            'services.evolution_whatsapp.queue' => true,
+        ]);
+
+        $secretary = User::factory()->create(['role' => UserRole::Secretary]);
+        $room = Room::create(['name' => 'Sala Serie Cancelar', 'is_active' => true]);
+        $series = ReservationSeries::create([
+            'room_id' => $room->id,
+            'user_id' => $secretary->id,
+            'owner_user_id' => $secretary->id,
+            'starts_on' => now()->addDay()->toDateString(),
+            'ends_on' => now()->addDays(10)->toDateString(),
+            'start_time' => '09:00',
+            'end_time' => '10:00',
+            'title' => 'Serie Cancelar',
+            'requester' => 'Secretaria',
+            'phone' => '+55 21 99999-9999',
+            'frequency' => 'weekly',
+            'interval' => 1,
+            'weekdays' => [1],
+            'conflict_mode' => 'strict',
+            'status' => 'active',
+        ]);
+
+        $this->actingAs($secretary)
+            ->patch(route('reservation-series.cancel', $series))
+            ->assertRedirect(route('reservation-series.show', $series));
+
+        Queue::assertPushed(SendWhatsAppMessageJob::class, function (SendWhatsAppMessageJob $job): bool {
+            return $job->contextType === 'series_cancelled'
+                && str_contains($job->message, 'SÉRIE RECORRENTE CANCELADA - SALAS')
+                && str_contains($job->message, 'Status: Cancelada');
+        });
+    }
+
     public function test_secretary_can_edit_series_and_recreate_future_occurrences(): void
     {
         Carbon::setTestNow(Carbon::create(2026, 3, 18, 10, 0, 0, 'America/Sao_Paulo'));
@@ -204,10 +294,10 @@ class ReservationSeriesManagementTest extends TestCase
             $response = $this->actingAs($secretary)
                 ->put(route('reservation-series.update', $series), [
                     'room_id' => $roomB->id,
+                    'owner_user_id' => $secretary->id,
                     'title' => 'Serie Atualizada',
                     'requester' => 'Equipe Operacional',
                     'phone' => '+55 21 99999-9999',
-            'contact' => 'contato@example.com',
                     'start_time' => '14:00',
                     'end_time' => '15:00',
                     'recurrence_starts_on' => now()->subDay()->toDateString(),
@@ -223,7 +313,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie Atualizada',
                 'requester' => 'Equipe Operacional',
                 'phone' => '+55 21 99999-9999',
-            'contact' => 'contato@example.com',
                 'start_time' => '14:00',
                 'end_time' => '15:00',
             ]);
@@ -412,10 +501,10 @@ class ReservationSeriesManagementTest extends TestCase
         $updateResponse = $this->actingAs($secretary)
             ->put(route('reservation-series.update', $series), [
                 'room_id' => $room->id,
+                'owner_user_id' => $secretary->id,
                 'title' => 'Serie Retorno Atualizada',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-            'contact' => null,
                 'start_time' => '09:00',
                 'end_time' => '10:00',
                 'recurrence_starts_on' => $series->starts_on,
@@ -486,13 +575,13 @@ class ReservationSeriesManagementTest extends TestCase
             $updateResponse = $this->actingAs($secretary)
                 ->put(route('reservations.update', $futureOccurrence), [
                     'room_id' => $room->id,
+                    'owner_user_id' => $secretary->id,
                     'date' => $futureOccurrence->date,
                     'start_time' => '10:00',
                     'end_time' => '11:00',
                     'title' => 'Ocorrencia Ajustada',
                     'requester' => 'Secretaria',
                     'phone' => '+55 21 99999-9999',
-            'contact' => null,
                     'series_scope' => 'occurrence',
                     'from' => 'series',
                     'series' => $series->id,
@@ -576,13 +665,13 @@ class ReservationSeriesManagementTest extends TestCase
 
             $response = $this->actingAs($secretary)->put(route('reservations.update', $target), [
                 'room_id' => $room->id,
+                'owner_user_id' => $secretary->id,
                 'date' => '2026-03-19',
                 'start_time' => '10:00',
                 'end_time' => '11:00',
                 'title' => 'Serie Split Nova',
                 'requester' => 'Equipe',
                 'phone' => '+55 21 99999-9999',
-            'contact' => 'time@example.com',
                 'series_scope' => 'following',
                 'from' => 'series',
                 'series' => $series->id,
@@ -649,13 +738,13 @@ class ReservationSeriesManagementTest extends TestCase
 
             $response = $this->actingAs($secretary)->put(route('reservations.update', $target), [
                 'room_id' => $room->id,
+                'owner_user_id' => $secretary->id,
                 'date' => '2026-03-19',
                 'start_time' => '12:00',
                 'end_time' => '13:00',
                 'title' => 'Serie All Atualizada',
                 'requester' => 'Equipe Toda',
                 'phone' => '+55 21 99999-9999',
-            'contact' => 'all@example.com',
                 'series_scope' => 'all',
                 'from' => 'series',
                 'series' => $series->id,

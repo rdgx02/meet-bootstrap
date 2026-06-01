@@ -65,7 +65,7 @@ class RoomManagementTest extends TestCase
         $this->assertDatabaseMissing('rooms', ['id' => $room->id]);
     }
 
-    public function test_secretary_cannot_manage_rooms(): void
+    public function test_secretary_can_view_rooms_but_cannot_manage_them(): void
     {
         $secretary = User::factory()->create(['role' => UserRole::Secretary]);
         $room = Room::create([
@@ -75,7 +75,8 @@ class RoomManagementTest extends TestCase
 
         $this->actingAs($secretary)
             ->get(route('rooms.index'))
-            ->assertForbidden();
+            ->assertOk()
+            ->assertSeeText('Sala Restrita');
 
         $this->actingAs($secretary)
             ->get(route('rooms.create'))
@@ -102,6 +103,26 @@ class RoomManagementTest extends TestCase
         $this->actingAs($secretary)
             ->delete(route('rooms.destroy', $room))
             ->assertForbidden();
+    }
+
+    public function test_regular_user_can_view_rooms_and_see_menu_link(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::User]);
+        Room::create([
+            'name' => 'Sala Consulta',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('rooms.index'))
+            ->assertOk()
+            ->assertSeeText('Sala Consulta');
+
+        $this->actingAs($user)
+            ->get(route('reservations.index'))
+            ->assertOk()
+            ->assertSee(route('rooms.index'), false)
+            ->assertSeeText('Salas');
     }
 
     public function test_room_name_must_be_unique(): void

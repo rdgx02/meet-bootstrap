@@ -1,11 +1,13 @@
 @php
     $usersRoute = \Illuminate\Support\Facades\Route::has('users.index') ? route('users.index') : null;
     $canViewRooms = auth()->user()?->can('viewAny', \App\Models\Room::class) ?? false;
+    $canViewUsers = auth()->user()?->can('viewAny', \App\Models\User::class) ?? false;
     $canViewReservationSeries = auth()->user()?->can('viewAny', \App\Models\ReservationSeries::class) ?? false;
+    $canCreateReservation = auth()->user()?->can('create', \App\Models\Reservation::class) ?? false;
     $reservationsActive = request()->routeIs('reservations.index')
-        || request()->routeIs('reservations.create')
         || request()->routeIs('reservations.show')
         || request()->routeIs('reservations.edit');
+    $reservationCreateActive = request()->routeIs('reservations.create');
     $availabilityActive = request()->routeIs('availability.*');
 @endphp
 
@@ -29,8 +31,6 @@
             </a>
         </div>
 
-        <div class="app-sidebar-section-label">Principal</div>
-
         <nav class="app-sidebar-nav">
             <a class="app-side-link {{ $reservationsActive ? 'is-active' : '' }}" href="{{ route('reservations.index') }}">
                 <span class="app-side-link-icon" aria-hidden="true">
@@ -42,6 +42,19 @@
                     <span class="app-side-link-label">Agendamentos</span>
                 </span>
             </a>
+
+            @if ($canCreateReservation)
+                <a class="app-side-link {{ $reservationCreateActive ? 'is-active' : '' }}" href="{{ route('reservations.create') }}">
+                    <span class="app-side-link-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    <span class="app-side-link-copy">
+                        <span class="app-side-link-label">Novo agendamento</span>
+                    </span>
+                </a>
+            @endif
 
             <a class="app-side-link {{ request()->routeIs('reservations.history') ? 'is-active' : '' }}" href="{{ route('reservations.history') }}">
                 <span class="app-side-link-icon" aria-hidden="true">
@@ -78,22 +91,23 @@
                 </a>
             @endif
 
-            <a
-                class="app-side-link {{ request()->routeIs('rooms.*') ? 'is-active' : '' }} {{ $canViewRooms ? '' : 'is-disabled' }}"
-                href="{{ $canViewRooms ? route('rooms.index') : '#' }}"
-                @if (! $canViewRooms) aria-disabled="true" tabindex="-1" @endif
-            >
-                <span class="app-side-link-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M4 20V6.5A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5V20M9 20v-4h6v4M8 9h.01M16 9h.01M8 13h.01M16 13h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </span>
-                <span class="app-side-link-copy">
-                    <span class="app-side-link-label">Salas</span>
-                </span>
-            </a>
+            @if ($canViewRooms)
+                <a
+                    class="app-side-link {{ request()->routeIs('rooms.*') ? 'is-active' : '' }}"
+                    href="{{ route('rooms.index') }}"
+                >
+                    <span class="app-side-link-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M4 20V6.5A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5V20M9 20v-4h6v4M8 9h.01M16 9h.01M8 13h.01M16 13h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    <span class="app-side-link-copy">
+                        <span class="app-side-link-label">Salas</span>
+                    </span>
+                </a>
+            @endif
 
-            @if ($usersRoute)
+            @if ($usersRoute && $canViewUsers)
                 <a
                     class="app-side-link {{ request()->routeIs('users.*') ? 'is-active' : '' }}"
                     href="{{ $usersRoute }}"

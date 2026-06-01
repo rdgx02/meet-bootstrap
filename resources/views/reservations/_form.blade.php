@@ -18,6 +18,9 @@
     $recurringConflictItems = collect(session('recurring_conflicts', []));
     $recurringConflictMessage = $errors->first('recurrence_ends_on');
     $showRecurringConflictAlert = ! $isEdit && $recurringConflictItems->isNotEmpty() && $recurringConflictMessage !== '';
+    $canCreateRecurring = auth()->user()?->canManageAgenda() ?? false;
+    $canChooseOwner = auth()->user()?->canManageAgenda() ?? false;
+    $ownerValue = old('owner_user_id', $isEdit ? ($reservation->owner_user_id ?? $reservation->user_id) : auth()->id());
     $conflictRoomName = $conflictDetails['room_name'] ?? '-';
     $conflictDate = $conflictDetails['date'] ?? '-';
     $conflictStart = $conflictDetails['start_time'] ?? '--:--';
@@ -159,11 +162,11 @@
                 </div>
             @endif
 
-            @if (! $isEdit)
+            @if (! $isEdit && $canCreateRecurring)
                 <div class="app-form-field app-form-field-full">
                     <label class="app-form-label">Tipo de agendamento</label>
-                    <div class="app-choice-grid">
-                        <label class="app-choice-card" :class="{ 'is-active': bookingMode === 'single' }">
+                    <div class="app-choice-grid app-choice-grid-compact">
+                        <label class="app-choice-card app-choice-card-compact" :class="{ 'is-active': bookingMode === 'single' }">
                             <input
                                 type="radio"
                                 name="booking_mode"
@@ -172,12 +175,11 @@
                                 {{ $bookingMode === 'single' ? 'checked' : '' }}
                             >
                             <span class="app-choice-card-body">
-                                <strong>Agendamento único</strong>
-                                <small>Cria uma única reserva para a data escolhida.</small>
+                                <strong>Único</strong>
                             </span>
                         </label>
 
-                        <label class="app-choice-card" :class="{ 'is-active': bookingMode === 'recurring' }">
+                        <label class="app-choice-card app-choice-card-compact" :class="{ 'is-active': bookingMode === 'recurring' }">
                             <input
                                 type="radio"
                                 name="booking_mode"
@@ -186,8 +188,7 @@
                                 {{ $bookingMode === 'recurring' ? 'checked' : '' }}
                             >
                             <span class="app-choice-card-body">
-                                <strong>Agendamento recorrente</strong>
-                                <small>Gera automaticamente uma série de reservas no período informado.</small>
+                                <strong>Recorrente</strong>
                             </span>
                         </label>
                     </div>
@@ -215,6 +216,30 @@
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
+
+            @if ($canChooseOwner)
+                <div class="app-form-field">
+                    <label for="owner_user_id" class="app-form-label">Titular</label>
+                    <select
+                        id="owner_user_id"
+                        name="owner_user_id"
+                        required
+                        class="form-select @error('owner_user_id') is-invalid @enderror"
+                    >
+                        <option value="">Selecione</option>
+                        @foreach (($owners ?? collect()) as $owner)
+                            <option value="{{ $owner->id }}" @selected((string) $ownerValue === (string) $owner->id)>
+                                {{ $owner->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('owner_user_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            @else
+                <input type="hidden" name="owner_user_id" value="{{ auth()->id() }}">
+            @endif
 
             <div class="app-form-field" @if (! $isEdit) x-show="bookingMode === 'single'" x-cloak @endif>
                 <label for="date" class="app-form-label">Data</label>
@@ -277,7 +302,7 @@
                     maxlength="255"
                     required
                     class="form-control @error('requester') is-invalid @enderror"
-                    placeholder="Nome de quem pediu a reserva"
+                    placeholder="Nome"
                 >
                 @error('requester')
                     <div class="invalid-feedback">{{ $message }}</div>
@@ -369,22 +394,6 @@
                     placeholder="+55 21 99999-9999"
                 >
                 @error('phone')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="app-form-field">
-                <label for="contact" class="app-form-label">Contato</label>
-                <input
-                    id="contact"
-                    type="text"
-                    name="contact"
-                    value="{{ old('contact', $isEdit ? $reservation->contact : '') }}"
-                    maxlength="255"
-                    class="form-control @error('contact') is-invalid @enderror"
-                    placeholder="Ramal, e-mail ou observação de contato"
-                >
-                @error('contact')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>

@@ -12,6 +12,7 @@ class ReservationSeries extends Model
     protected $fillable = [
         'room_id',
         'user_id',
+        'owner_user_id',
         'starts_on',
         'ends_on',
         'start_time',
@@ -19,7 +20,6 @@ class ReservationSeries extends Model
         'title',
         'requester',
         'phone',
-        'contact',
         'frequency',
         'interval',
         'weekdays',
@@ -39,6 +39,11 @@ class ReservationSeries extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_user_id');
     }
 
     public function reservations(): HasMany

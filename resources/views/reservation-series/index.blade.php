@@ -10,7 +10,6 @@
     <div class="app-module-shell">
         <section class="app-module-header">
             <div>
-                <div class="app-module-kicker">Recorrência</div>
                 <h1 class="app-module-title">Séries recorrentes</h1>
             </div>
 

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +14,7 @@ class Reservation extends Model
         'room_id',
         'series_id',
         'user_id', // quem criou
+        'owner_user_id', // para quem a reserva foi criada
         'date',
         'original_date',
         'is_exception',
@@ -21,7 +23,6 @@ class Reservation extends Model
         'title',
         'requester',
         'phone',
-        'contact',
     ];
 
     /*
@@ -65,6 +66,11 @@ class Reservation extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_user_id');
+    }
+
     // Usuário que EDITOU por último
     public function editor(): BelongsTo
     {
@@ -90,5 +96,20 @@ class Reservation extends Model
     public function getEndTimeBrAttribute(): string
     {
         return Carbon::parse($this->end_time)->format('H:i');
+    }
+
+    public function scopeVisibleTo(Builder $query, ?User $user): Builder
+    {
+        if ($user === null || $user->canManageAgenda()) {
+            return $query;
+        }
+
+        return $query->where(function (Builder $ownedQuery) use ($user): void {
+            $ownedQuery->where('owner_user_id', $user->id)
+                ->orWhere(function (Builder $fallbackQuery) use ($user): void {
+                    $fallbackQuery->whereNull('owner_user_id')
+                        ->where('user_id', $user->id);
+                });
+        });
     }
 }

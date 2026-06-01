@@ -12,11 +12,22 @@ class UpdateReservationSeriesRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $phone = $this->normalizePhone($this->input('phone'));
+        $ownerUserId = $this->user()?->canManageAgenda()
+            ? $this->input('owner_user_id')
+            : $this->user()?->id;
+
+        $payload = [];
 
         if ($phone !== null) {
-            $this->merge([
-                'phone' => $phone,
-            ]);
+            $payload['phone'] = $phone;
+        }
+
+        if ($ownerUserId !== null && $ownerUserId !== '') {
+            $payload['owner_user_id'] = $ownerUserId;
+        }
+
+        if ($payload !== []) {
+            $this->merge($payload);
         }
     }
 
@@ -35,7 +46,10 @@ class UpdateReservationSeriesRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'requester' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'regex:/^\+55 \d{2} \d{5}-\d{4}$/'],
-            'contact' => ['nullable', 'string', 'max:255'],
+            'owner_user_id' => [
+                'required',
+                Rule::exists('users', 'id')->where(fn ($query) => $query->where('is_active', true)),
+            ],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
             'recurrence_starts_on' => ['required', 'date'],
@@ -79,6 +93,8 @@ class UpdateReservationSeriesRequest extends FormRequest
             'requester.required' => 'Informe o solicitante.',
             'phone.required' => 'Informe o telefone do solicitante.',
             'phone.regex' => 'Informe o telefone no formato +55 DDD 99999-9999.',
+            'owner_user_id.required' => 'Selecione o titular da recorrência.',
+            'owner_user_id.exists' => 'Titular inválido.',
             'start_time.required' => 'Informe o horário de início.',
             'start_time.date_format' => 'Horário de início inválido (use HH:MM).',
             'end_time.required' => 'Informe o horário de fim.',

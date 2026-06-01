@@ -29,7 +29,7 @@ class RecurringReservationOccurrenceGenerator
                 'title' => (string) $data['title'],
                 'requester' => (string) $data['requester'],
                 'phone' => (string) $data['phone'],
-                'contact' => $data['contact'] ?: null,
+                'owner_user_id' => (int) $data['owner_user_id'],
             ];
         });
     }

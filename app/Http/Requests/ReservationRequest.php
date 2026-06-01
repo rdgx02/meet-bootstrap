@@ -10,20 +10,32 @@ abstract class ReservationRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $phone = $this->normalizePhone($this->input('phone'));
+        $ownerUserId = $this->user()?->canManageAgenda()
+            ? $this->input('owner_user_id')
+            : $this->user()?->id;
 
         if (! $this->has('booking_mode') || $this->input('booking_mode') === null || $this->input('booking_mode') === '') {
             $this->merge(array_filter([
                 'booking_mode' => 'single',
                 'phone' => $phone,
+                'owner_user_id' => $ownerUserId,
             ], fn (mixed $value): bool => $value !== null));
 
             return;
         }
 
+        $payload = [];
+
         if ($phone !== null) {
-            $this->merge([
-                'phone' => $phone,
-            ]);
+            $payload['phone'] = $phone;
+        }
+
+        if ($ownerUserId !== null && $ownerUserId !== '') {
+            $payload['owner_user_id'] = $ownerUserId;
+        }
+
+        if ($payload !== []) {
+            $this->merge($payload);
         }
     }
 
@@ -36,7 +48,10 @@ abstract class ReservationRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'requester' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'regex:/^\+55 \d{2} \d{5}-\d{4}$/'],
-            'contact' => ['nullable', 'string', 'max:255'],
+            'owner_user_id' => [
+                'required',
+                Rule::exists('users', 'id')->where(fn ($query) => $query->where('is_active', true)),
+            ],
         ];
     }
 
@@ -106,6 +121,8 @@ abstract class ReservationRequest extends FormRequest
             'requester.required' => 'Informe o solicitante.',
             'phone.required' => 'Informe o telefone do solicitante.',
             'phone.regex' => 'Informe o telefone no formato +55 DDD 99999-9999.',
+            'owner_user_id.required' => 'Selecione o titular da reserva.',
+            'owner_user_id.exists' => 'Titular inválido.',
             'recurrence_frequency.required' => 'Selecione a frequência da recorrência.',
             'recurrence_weekdays.required' => 'Selecione ao menos um dia da semana para a recorrência semanal.',
         ];

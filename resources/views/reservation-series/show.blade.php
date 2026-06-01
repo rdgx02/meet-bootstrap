@@ -85,13 +85,13 @@
                             {{ $series->status === 'active' ? 'Ativa' : 'Cancelada' }}
                         </span>
                     </div>
-                    <p class="app-series-summary-note">{{ $futureOccurrences->count() }} ocorrências futuras</p>
+                    <p class="app-series-summary-note">{{ $series->owner?->name ?? $series->user?->name ?? '-' }}</p>
                 </article>
 
                 <article class="app-series-summary-card">
                     <span class="app-series-summary-label">Exceções</span>
                     <strong class="app-series-summary-value">{{ $exceptionCount }}</strong>
-                    <p class="app-series-summary-note">{{ $series->phone ?: '-' }}</p>
+                    <p class="app-series-summary-note">Ocorrências editadas manualmente</p>
                 </article>
             </div>
         </section>

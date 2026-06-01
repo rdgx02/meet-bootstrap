@@ -7,9 +7,6 @@ use App\Models\User;
 
 class RoomPolicy
 {
-    /**
-     * Somente admins podem gerenciar salas.
-     */
     private function isAdmin(User $user): bool
     {
         return $user->isAdmin();
@@ -17,12 +14,12 @@ class RoomPolicy
 
     public function viewAny(User $user): bool
     {
-        return $this->isAdmin($user);
+        return $user->isActive();
     }
 
     public function view(User $user, Room $room): bool
     {
-        return $this->isAdmin($user);
+        return $user->isActive();
     }
 
     public function create(User $user): bool

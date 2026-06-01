@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    'evolution_whatsapp' => [
+        'enabled' => env('EVOLUTION_WHATSAPP_ENABLED', false),
+        'queue' => env('EVOLUTION_WHATSAPP_QUEUE', true),
+        'base_url' => env('EVOLUTION_WHATSAPP_BASE_URL'),
+        'instance' => env('EVOLUTION_WHATSAPP_INSTANCE'),
+        'api_key' => env('EVOLUTION_WHATSAPP_API_KEY'),
+        'timeout' => env('EVOLUTION_WHATSAPP_TIMEOUT', 10),
+    ],
+
 ];

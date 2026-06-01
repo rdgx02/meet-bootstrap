@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Relatório de Câmeras - IQ-NVR-01</title>
+<style>
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #e5e7eb; color: #1e293b; font-family: Arial, Helvetica, sans-serif; }
+.page { width: 210mm; min-height: 297mm; margin: 16px auto; background: #f8fafc; padding-bottom: 22mm; position: relative; }
+header { height: 78px; background: #0f172a; color: white; border-left: 6px solid #0ea5e9; padding: 18px 36px; }
+.meta { color: #cbd5e1; font-size: 11px; display: flex; justify-content: space-between; }
+h1 { margin: 10px 0 2px; font-size: 24px; letter-spacing: 0; }
+.sub { color: #cbd5e1; font-size: 12px; }
+main { padding: 34px 36px 0; }
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.metric { background: white; border: 1px solid #e2e8f0; padding: 16px; border-top: 4px solid var(--accent); }
+.metric small { color: #64748b; font-weight: 700; font-size: 10px; }
+.metric strong { display: block; color: #0f172a; font-size: 34px; margin-top: 8px; }
+.metric span { color: #64748b; font-size: 11px; }
+h2 { margin: 34px 0 4px; color: #0f172a; font-size: 19px; }
+p.lead { margin: 0 0 14px; color: #64748b; font-size: 12px; }
+table { width: 100%; border-collapse: collapse; background: white; border: 1px solid #e2e8f0; font-size: 12px; }
+th { background: #0f172a; color: white; text-align: left; padding: 10px; }
+td { padding: 10px; border-top: 1px solid #e2e8f0; }
+tr:nth-child(even) td { background: #f1f5f9; }
+.bar { height: 18px; background: #dc2626; margin: 18px 0 6px; }
+.bar > div { height: 100%; width: 81%; background: #16a34a; }
+.bar-labels { display: flex; justify-content: space-between; font-weight: 700; font-size: 12px; }
+.two { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; margin-top: 34px; }
+.panel { background: white; border: 1px solid #e2e8f0; padding: 18px; }
+.panel h3 { margin: 0 0 12px; font-size: 16px; color: #0f172a; }
+.panel p { margin: 7px 0; font-size: 13px; }
+.note { margin-top: 28px; border-top: 1px solid #cbd5e1; padding-top: 16px; font-size: 12px; color: #475569; }
+footer { position: absolute; left: 36px; right: 36px; bottom: 22px; color: #64748b; font-size: 11px; }
+@media print { body { background: white; } .page { margin: 0; page-break-after: always; } }
+</style>
+</head>
+<body>
+<section class="page">
+<header><div class="meta"><span>Relatório técnico | IQ-NVR-01</span><span>Página 1 de 2</span></div><h1>Relatório de Câmeras</h1><div class="sub">Quantitativo consolidado de câmeras boas e ruins</div></header>
+<main>
+<div class="metrics">
+<div class="metric" style="--accent:#16a34a"><small>CÂMERAS BOAS</small><strong>160</strong><span>157 online + 3 em estoque</span></div>
+<div class="metric" style="--accent:#dc2626"><small>CÂMERAS RUINS</small><strong>37</strong><span>12 offline + 25 em estoque</span></div>
+<div class="metric" style="--accent:#0ea5e9"><small>TOTAL MAPEADO</small><strong>197</strong><span>servidor ACC + estoque</span></div>
+</div>
+<h2>Composição do Quantitativo</h2><p class="lead">Resumo por origem e condição</p>
+<table><thead><tr><th>Origem</th><th>Boas</th><th>Ruins</th><th>Total</th></tr></thead><tbody><tr><td>Servidor ACC</td><td>157</td><td>12</td><td>169</td></tr><tr><td>Estoque físico</td><td>3</td><td>25</td><td>28</td></tr><tr><td><strong>Total geral</strong></td><td><strong>160</strong></td><td><strong>37</strong></td><td><strong>197</strong></td></tr></tbody></table>
+<h2>Leitura Operacional</h2><p class="lead">O parque monitorado está majoritariamente funcional; as perdas estão concentradas no estoque físico.</p>
+<div class="bar"><div></div></div><div class="bar-labels"><span style="color:#166534">Boas: 160 (81%)</span><span style="color:#991b1b">Ruins: 37 (19%)</span></div>
+<div class="two"><div class="panel"><h3>Servidor ACC</h3><p>157 câmeras online</p><p>12 câmeras offline</p><p><strong>Total no servidor: 169 câmeras</strong></p></div><div class="panel"><h3>Estoque físico</h3><p>3 câmeras boas</p><p>25 câmeras ruins</p><p><strong>Total no estoque: 28 câmeras</strong></p></div></div>
+<div class="note"><strong>Observação</strong><br>O estoque físico concentra a maior parte das câmeras ruins fora do servidor. A lista nominal da página seguinte considera apenas as câmeras offline identificadas no servidor.</div>
+</main><footer>Base: relatório IQ-NVR-01 e conferência física do estoque.</footer>
+</section>
+<section class="page">
+<header><div class="meta"><span>Relatório técnico | IQ-NVR-01</span><span>Página 2 de 2</span></div><h1>Relatório de Câmeras</h1><div class="sub">Relação nominal das câmeras offline no servidor</div></header>
+<main>
+<h2 style="margin-top:0">Câmeras Offline no Servidor</h2><p class="lead">Total identificado no relatório: 12 câmeras</p>
+<table><thead><tr><th style="width:38px">#</th><th>Nome da câmera</th><th>IP</th><th>MAC Address</th></tr></thead><tbody><tr><td>1</td><td>IQ_Bl_C3_HIB_CAM02</td><td>10.7.46.45</td><td>00:18:85:07:AC:3F</td></tr>
+<tr><td>2</td><td>IQ_Bl_C1_HIB_CAM03</td><td>10.7.46.151</td><td>00:18:85:07:AB:8E</td></tr>
+<tr><td>3</td><td>CDE#Bl_C_ala12_Cam03</td><td>10.7.46.130</td><td>00:18:85:07:AC:25</td></tr>
+<tr><td>4</td><td>CDE#Bl_C_ala11_Cam03</td><td>10.7.46.38</td><td>00:18:85:07:AB:BF</td></tr>
+<tr><td>5</td><td>CCI#Bl_C_ala32_Cam03</td><td>10.7.46.128</td><td>00:18:85:07:AC:38</td></tr>
+<tr><td>6</td><td>G.PRI.CAM02</td><td>10.7.254.182</td><td>00:18:85:08:15:FD</td></tr>
+<tr><td>7</td><td>Guarita_Serviço</td><td>10.7.254.161</td><td>00:18:85:08:14:76</td></tr>
+<tr><td>8</td><td>Est. PRI. CAM10</td><td>10.7.254.195</td><td>00:18:85:08:16:50</td></tr>
+<tr><td>9</td><td>IntelBras</td><td>10.7.254.24</td><td>98:E5:5B:81:6E:D5</td></tr>
+<tr><td>10</td><td>estoque10.7.254.212</td><td>10.7.254.212</td><td>00:18:85:08:16:A0</td></tr>
+<tr><td>11</td><td>Externa Dir_ALA1_CAM01</td><td>10.7.254.128</td><td>00:18:85:08:16:72</td></tr>
+<tr><td>12</td><td>estoque10.7.254.191</td><td>10.7.254.25</td><td>00:18:85:08:16:75</td></tr></tbody></table>
+<div class="note"><strong>Observação</strong><br>A relação acima contempla somente as câmeras offline identificadas no servidor. O quantitativo de câmeras ruins em estoque foi consolidado na página anterior.</div>
+</main><footer>Base: relatório IQ-NVR-01 e conferência física do estoque.</footer>
+</section>
+</body>
+</html>

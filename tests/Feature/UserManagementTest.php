@@ -98,6 +98,20 @@ class UserManagementTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_regular_user_does_not_see_users_menu_link(): void
+    {
+        $user = User::factory()->create([
+            'role' => UserRole::User,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('reservations.index'));
+
+        $response->assertOk();
+        $response->assertDontSee(route('users.index'), false);
+        $response->assertDontSeeText('Usuários');
+    }
+
     public function test_inactive_user_cannot_login(): void
     {
         $user = User::factory()->create([

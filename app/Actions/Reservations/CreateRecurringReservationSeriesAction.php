@@ -48,6 +48,7 @@ class CreateRecurringReservationSeriesAction
             $series = ReservationSeries::create([
                 'room_id' => (int) $data['room_id'],
                 'user_id' => $creatorId,
+                'owner_user_id' => (int) $data['owner_user_id'],
                 'starts_on' => (string) $data['recurrence_starts_on'],
                 'ends_on' => (string) $data['recurrence_ends_on'],
                 'start_time' => (string) $data['start_time'],
@@ -55,7 +56,6 @@ class CreateRecurringReservationSeriesAction
                 'title' => (string) $data['title'],
                 'requester' => (string) $data['requester'],
                 'phone' => (string) $data['phone'],
-                'contact' => $data['contact'] ?: null,
                 'frequency' => (string) $data['recurrence_frequency'],
                 'interval' => 1,
                 'weekdays' => $data['recurrence_frequency'] === 'weekly'
@@ -70,6 +70,7 @@ class CreateRecurringReservationSeriesAction
                     ...$occurrence,
                     'series_id' => $series->id,
                     'user_id' => $creatorId,
+                    'owner_user_id' => (int) $data['owner_user_id'],
                     'original_date' => $occurrence['date'],
                     'is_exception' => false,
                 ]);

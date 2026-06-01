@@ -32,7 +32,7 @@ class UpdateReservationFollowingAction
             'title' => $data['title'],
             'requester' => $data['requester'],
             'phone' => $data['phone'],
-            'contact' => $data['contact'] ?? null,
+            'owner_user_id' => $data['owner_user_id'],
             'start_time' => $data['start_time'],
             'end_time' => $data['end_time'],
             'recurrence_starts_on' => $data['date'],
@@ -82,6 +82,7 @@ class UpdateReservationFollowingAction
             $newSeries = ReservationSeries::create([
                 'room_id' => (int) $data['room_id'],
                 'user_id' => $series->user_id,
+                'owner_user_id' => (int) $data['owner_user_id'],
                 'starts_on' => (string) $data['date'],
                 'ends_on' => $originalSeriesEndsOn,
                 'start_time' => (string) $data['start_time'],
@@ -89,7 +90,6 @@ class UpdateReservationFollowingAction
                 'title' => (string) $data['title'],
                 'requester' => (string) $data['requester'],
                 'phone' => (string) $data['phone'],
-                'contact' => $data['contact'] ?: null,
                 'frequency' => (string) $series->frequency,
                 'interval' => (int) $series->interval,
                 'weekdays' => $series->weekdays,
@@ -102,6 +102,7 @@ class UpdateReservationFollowingAction
                     ...$occurrence,
                     'series_id' => $newSeries->id,
                     'user_id' => $series->user_id,
+                    'owner_user_id' => (int) $data['owner_user_id'],
                     'original_date' => $occurrence['date'],
                     'is_exception' => false,
                 ]);

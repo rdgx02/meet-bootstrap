@@ -7,6 +7,8 @@ use App\Actions\Reservations\UpdateReservationSeriesAction;
 use App\Exceptions\RecurringReservationConflictException;
 use App\Http\Requests\UpdateReservationSeriesRequest;
 use App\Models\ReservationSeries;
+use App\Models\User;
+use App\Services\WhatsApp\ReservationWhatsAppNotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -17,7 +19,7 @@ class ReservationSeriesController extends Controller
         $this->authorize('viewAny', ReservationSeries::class);
 
         $seriesCollection = ReservationSeries::query()
-            ->with(['room', 'user', 'reservations'])
+            ->with(['room', 'user', 'owner', 'reservations'])
             ->orderByRaw("CASE status WHEN 'active' THEN 0 ELSE 1 END")
             ->orderByDesc('starts_on')
             ->get();
@@ -35,6 +37,7 @@ class ReservationSeriesController extends Controller
         $reservationSeries->load([
             'room',
             'user',
+            'owner',
             'reservations' => fn ($query) => $query->orderBy('date')->orderBy('start_time'),
         ]);
 
@@ -53,6 +56,7 @@ class ReservationSeriesController extends Controller
         return view('reservation-series.edit', [
             'series' => $reservationSeries,
             'rooms' => \App\Models\Room::active()->orderBy('name')->get(),
+            'owners' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'email']),
             'returnTo' => $this->seriesReturnTo($reservationSeries),
         ]);
     }
@@ -60,7 +64,8 @@ class ReservationSeriesController extends Controller
     public function update(
         UpdateReservationSeriesRequest $request,
         ReservationSeries $reservationSeries,
-        UpdateReservationSeriesAction $updateReservationSeries
+        UpdateReservationSeriesAction $updateReservationSeries,
+        ReservationWhatsAppNotificationService $whatsAppNotifications
     ): RedirectResponse {
         if ($reservationSeries->status === 'cancelled') {
             return redirect()
@@ -79,6 +84,8 @@ class ReservationSeriesController extends Controller
                 ]);
         }
 
+        $whatsAppNotifications->notifySeriesUpdated($reservationSeries->fresh(['room', 'owner']));
+
         return redirect()
             ->to($this->seriesRedirectTarget($request, $reservationSeries))
             ->with(
@@ -92,7 +99,8 @@ class ReservationSeriesController extends Controller
 
     public function cancel(
         ReservationSeries $reservationSeries,
-        CancelReservationSeriesAction $cancelReservationSeries
+        CancelReservationSeriesAction $cancelReservationSeries,
+        ReservationWhatsAppNotificationService $whatsAppNotifications
     ): RedirectResponse {
         $this->authorize('cancel', $reservationSeries);
 
@@ -103,6 +111,7 @@ class ReservationSeriesController extends Controller
         }
 
         $result = $cancelReservationSeries->execute($reservationSeries);
+        $whatsAppNotifications->notifySeriesCancelled($reservationSeries->fresh(['room', 'owner']));
 
         return redirect()
             ->route('reservation-series.show', $reservationSeries)

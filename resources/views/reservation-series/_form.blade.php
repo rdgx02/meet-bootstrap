@@ -97,6 +97,21 @@
             </div>
 
             <div class="app-form-field">
+                <label for="owner_user_id" class="app-form-label">Titular</label>
+                <select id="owner_user_id" name="owner_user_id" required class="form-select @error('owner_user_id') is-invalid @enderror">
+                    <option value="">Selecione</option>
+                    @foreach (($owners ?? collect()) as $owner)
+                        <option value="{{ $owner->id }}" @selected((string) old('owner_user_id', $series->owner_user_id ?? $series->user_id) === (string) $owner->id)>
+                            {{ $owner->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('owner_user_id')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="app-form-field">
                 <label for="requester" class="app-form-label">Solicitante</label>
                 <input
                     id="requester"
@@ -225,22 +240,6 @@
                     placeholder="+55 21 99999-9999"
                 >
                 @error('phone')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="app-form-field">
-                <label for="contact" class="app-form-label">Contato</label>
-                <input
-                    id="contact"
-                    type="text"
-                    name="contact"
-                    value="{{ old('contact', $series->contact) }}"
-                    maxlength="255"
-                    class="form-control @error('contact') is-invalid @enderror"
-                    placeholder="Ramal, e-mail ou observação de contato"
-                >
-                @error('contact')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>

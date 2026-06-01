@@ -25,6 +25,12 @@ class StoreReservationRequest extends ReservationRequest
                 return;
             }
 
+            if (! ($this->user()?->canManageAgenda() ?? false) && $this->input('booking_mode', 'single') !== 'single') {
+                $validator->errors()->add('booking_mode', 'Somente a secretaria e a administração podem criar agendamentos recorrentes.');
+
+                return;
+            }
+
             if ($this->input('booking_mode', 'single') === 'single') {
                 $date = (string) $this->input('date');
 

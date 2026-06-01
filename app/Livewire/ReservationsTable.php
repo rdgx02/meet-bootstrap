@@ -73,29 +73,8 @@ final class ReservationsTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        $today = now()->toDateString();
-        $currentTime = now()->format('H:i:s');
-
-        $query = Reservation::query()
+        $query = $this->baseScopedReservationsQuery()
             ->with(['room', 'user', 'editor']);
-
-        if ($this->scope === 'history') {
-            $query->where(function (Builder $historyQuery) use ($today, $currentTime): void {
-                $historyQuery->whereDate('date', '<', $today)
-                    ->orWhere(function (Builder $sameDayQuery) use ($today, $currentTime): void {
-                        $sameDayQuery->whereDate('date', '=', $today)
-                            ->where('end_time', '<=', $currentTime);
-                    });
-            });
-        } else {
-            $query->where(function (Builder $upcomingQuery) use ($today, $currentTime): void {
-                $upcomingQuery->whereDate('date', '>', $today)
-                    ->orWhere(function (Builder $sameDayQuery) use ($today, $currentTime): void {
-                        $sameDayQuery->whereDate('date', '=', $today)
-                            ->where('end_time', '>', $currentTime);
-                    });
-            });
-        }
 
         $this->applyManualFilters($query);
 
@@ -268,7 +247,23 @@ final class ReservationsTable extends PowerGridComponent
 
     public function rooms()
     {
-        return Room::active()
+        $roomIdsWithVisibleReservations = $this->baseScopedReservationsQuery()
+            ->select('room_id')
+            ->distinct()
+            ->pluck('room_id');
+
+        if (filled($this->manualFilters['room_id'] ?? null)) {
+            $roomIdsWithVisibleReservations->push((int) $this->manualFilters['room_id']);
+        }
+
+        return Room::query()
+            ->where(function (Builder $query) use ($roomIdsWithVisibleReservations): void {
+                $query->where('is_active', true);
+
+                if ($roomIdsWithVisibleReservations->isNotEmpty()) {
+                    $query->orWhereIn('id', $roomIdsWithVisibleReservations->unique()->values()->all());
+                }
+            })
             ->orderBy('name')
             ->get(['id', 'name']);
     }
@@ -292,6 +287,38 @@ final class ReservationsTable extends PowerGridComponent
         }
 
         return $reservation->date === now()->toDateString() ? 'confirmed' : 'reserved';
+    }
+
+    private function baseScopedReservationsQuery(): Builder
+    {
+        $today = now()->toDateString();
+        $currentTime = now()->format('H:i:s');
+
+        $query = Reservation::query();
+        $user = auth()->user();
+        $query->visibleTo($user);
+
+        if ($this->scope === 'history') {
+            $query->where(function (Builder $historyQuery) use ($today, $currentTime): void {
+                $historyQuery->whereDate('date', '<', $today)
+                    ->orWhere(function (Builder $sameDayQuery) use ($today, $currentTime): void {
+                        $sameDayQuery->whereDate('date', '=', $today)
+                            ->where('end_time', '<=', $currentTime);
+                    });
+            });
+
+            return $query;
+        }
+
+        $query->where(function (Builder $upcomingQuery) use ($today, $currentTime): void {
+            $upcomingQuery->whereDate('date', '>', $today)
+                ->orWhere(function (Builder $sameDayQuery) use ($today, $currentTime): void {
+                    $sameDayQuery->whereDate('date', '=', $today)
+                        ->where('end_time', '>', $currentTime);
+                });
+        });
+
+        return $query;
     }
 
     private function applyManualFilters(Builder $query): void

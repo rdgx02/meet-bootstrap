@@ -6,9 +6,7 @@
     <div class="app-module-shell">
         <section class="app-module-header">
             <div>
-                <div class="app-module-kicker">Cadastro</div>
                 <h1 class="app-module-title">Salas</h1>
-                <p class="app-module-note">Gerencie a estrutura física disponível para agendamentos.</p>
             </div>
 
             @can('create', \App\Models\Room::class)
@@ -28,7 +26,6 @@
             <div class="app-subpanel-head">
                 <div>
                     <h2 class="app-subpanel-title">Lista de salas</h2>
-                    <p class="app-subpanel-note">Visualização compacta dos ambientes cadastrados no sistema.</p>
                 </div>
                 <div class="app-subpanel-meta">
                     <span class="app-mini-stat">Total <strong>{{ $rooms->count() }}</strong></span>

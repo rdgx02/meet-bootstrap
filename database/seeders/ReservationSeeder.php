@@ -92,12 +92,12 @@ class ReservationSeeder extends Seeder
             Reservation::create([
                 'room_id' => $room->id,
                 'user_id' => $creatorUserId,
+                'owner_user_id' => $creatorUserId,
                 'date' => $date,
                 'start_time' => $start,
                 'end_time' => $end,
                 'title' => $titles[array_rand($titles)].' - '.$room->name,
                 'requester' => $requesters[array_rand($requesters)],
-                'contact' => null,
             ]);
 
             $created++;
