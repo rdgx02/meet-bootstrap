@@ -172,28 +172,28 @@ const initReservationDeleteModal = () => {
     document.body.dataset.reservationDeleteModalReady = '1';
 };
 
-const initRoomDeleteModal = () => {
-    const modalElement = document.getElementById('roomDeleteModal');
+const initRoomArchiveModal = () => {
+    const modalElement = document.getElementById('roomArchiveModal');
 
-    if (!modalElement || document.body.dataset.roomDeleteModalReady === '1') {
+    if (!modalElement || document.body.dataset.roomArchiveModalReady === '1') {
         return;
     }
 
     const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
-    const form = modalElement.querySelector('[data-room-delete-form]');
+    const form = modalElement.querySelector('[data-room-archive-form]');
     const summaryFields = {
-        name: modalElement.querySelector('[data-room-delete-summary="name"]'),
-        status: modalElement.querySelector('[data-room-delete-summary="status"]'),
+        name: modalElement.querySelector('[data-room-archive-summary="name"]'),
+        status: modalElement.querySelector('[data-room-archive-summary="status"]'),
     };
 
     document.addEventListener('click', (event) => {
-        const trigger = event.target.closest('.js-room-delete-trigger');
+        const trigger = event.target.closest('.js-room-archive-trigger');
 
         if (!trigger) {
             return;
         }
 
-        form.action = trigger.dataset.roomDeleteUrl;
+        form.action = trigger.dataset.roomArchiveUrl;
         summaryFields.name.textContent = trigger.dataset.roomName ?? '-';
         summaryFields.status.textContent = trigger.dataset.roomStatus ?? '-';
 
@@ -207,7 +207,7 @@ const initRoomDeleteModal = () => {
         });
     });
 
-    document.body.dataset.roomDeleteModalReady = '1';
+    document.body.dataset.roomArchiveModalReady = '1';
 };
 
 const initReservationBulkToolbar = () => {
@@ -493,12 +493,12 @@ const initStickyGridHeaders = () => {
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initReservationDeleteModal);
-    document.addEventListener('DOMContentLoaded', initRoomDeleteModal);
+    document.addEventListener('DOMContentLoaded', initRoomArchiveModal);
     document.addEventListener('DOMContentLoaded', initReservationBulkToolbar);
     document.addEventListener('DOMContentLoaded', initStickyGridHeaders);
 } else {
     initReservationDeleteModal();
-    initRoomDeleteModal();
+    initRoomArchiveModal();
     initReservationBulkToolbar();
     initStickyGridHeaders();
 }

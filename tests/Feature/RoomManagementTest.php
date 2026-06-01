@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\UserRole;
+use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -51,18 +52,73 @@ class RoomManagementTest extends TestCase
         ]);
     }
 
-    public function test_admin_can_delete_room(): void
+    public function test_admin_can_archive_room_preserving_reservations(): void
     {
         $admin = User::factory()->create(['role' => UserRole::Admin]);
         $room = Room::create([
-            'name' => 'Sala Excluir',
+            'name' => 'Sala Arquivar',
             'is_active' => true,
         ]);
 
-        $response = $this->actingAs($admin)->delete(route('rooms.destroy', $room));
+        // Reserva futura nesta sala deve sobreviver ao arquivamento.
+        $reservation = Reservation::create([
+            'room_id' => $room->id,
+            'user_id' => $admin->id,
+            'owner_user_id' => $admin->id,
+            'date' => now()->addDay()->toDateString(),
+            'start_time' => '09:00',
+            'end_time' => '10:00',
+            'title' => 'Reunião preservada',
+            'requester' => $admin->name,
+            'phone' => '+55 21 99999-9999',
+        ]);
+
+        $response = $this->actingAs($admin)->patch(route('rooms.archive', $room));
 
         $response->assertRedirect(route('rooms.index'));
-        $this->assertDatabaseMissing('rooms', ['id' => $room->id]);
+
+        // A sala continua existindo, apenas inativa.
+        $this->assertDatabaseHas('rooms', [
+            'id' => $room->id,
+            'is_active' => 0,
+        ]);
+
+        // E a reserva NÃO foi apagada em cascata.
+        $this->assertDatabaseHas('reservations', [
+            'id' => $reservation->id,
+            'room_id' => $room->id,
+        ]);
+    }
+
+    public function test_admin_can_restore_archived_room(): void
+    {
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $room = Room::create([
+            'name' => 'Sala Inativa',
+            'is_active' => false,
+        ]);
+
+        $response = $this->actingAs($admin)->patch(route('rooms.restore', $room));
+
+        $response->assertRedirect(route('rooms.index'));
+
+        $this->assertDatabaseHas('rooms', [
+            'id' => $room->id,
+            'is_active' => 1,
+        ]);
+    }
+
+    public function test_archived_room_is_hidden_from_new_reservation_form(): void
+    {
+        $secretary = User::factory()->create(['role' => UserRole::Secretary]);
+        $activeRoom = Room::create(['name' => 'Sala Disponivel', 'is_active' => true]);
+        $archivedRoom = Room::create(['name' => 'Sala Arquivada', 'is_active' => false]);
+
+        $this->actingAs($secretary)
+            ->get(route('reservations.create'))
+            ->assertOk()
+            ->assertSeeText('Sala Disponivel')
+            ->assertDontSeeText('Sala Arquivada');
     }
 
     public function test_secretary_can_view_rooms_but_cannot_manage_them(): void
@@ -101,7 +157,11 @@ class RoomManagementTest extends TestCase
             ->assertForbidden();
 
         $this->actingAs($secretary)
-            ->delete(route('rooms.destroy', $room))
+            ->patch(route('rooms.archive', $room))
+            ->assertForbidden();
+
+        $this->actingAs($secretary)
+            ->patch(route('rooms.restore', $room))
             ->assertForbidden();
     }
 

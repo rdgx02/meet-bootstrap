@@ -33,7 +33,11 @@ Route::middleware('auth')->group(function () {
         ->name('availability.index');
 
     // Salas
-    Route::resource('rooms', RoomController::class)->except(['show']);
+    Route::patch('rooms/{room}/archive', [RoomController::class, 'archive'])
+        ->name('rooms.archive');
+    Route::patch('rooms/{room}/restore', [RoomController::class, 'restore'])
+        ->name('rooms.restore');
+    Route::resource('rooms', RoomController::class)->except(['show', 'destroy']);
 
     // Usuários
     Route::resource('users', UserController::class)->except(['show', 'destroy']);
