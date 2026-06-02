@@ -59,17 +59,29 @@
                                                 </a>
                                             @endcan
 
-                                            @can('delete', $room)
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-sm app-ghost-btn app-ghost-btn-danger js-room-delete-trigger"
-                                                    data-room-delete-url="{{ route('rooms.destroy', $room) }}"
-                                                    data-room-name="{{ $room->name }}"
-                                                    data-room-status="{{ $room->is_active ? 'Ativa' : 'Inativa' }}"
-                                                >
-                                                    Excluir
-                                                </button>
-                                            @endcan
+                                            @if ($room->is_active)
+                                                @can('delete', $room)
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-sm app-ghost-btn app-ghost-btn-danger js-room-archive-trigger"
+                                                        data-room-archive-url="{{ route('rooms.archive', $room) }}"
+                                                        data-room-name="{{ $room->name }}"
+                                                        data-room-status="{{ $room->is_active ? 'Ativa' : 'Inativa' }}"
+                                                    >
+                                                        Arquivar
+                                                    </button>
+                                                @endcan
+                                            @else
+                                                @can('restore', $room)
+                                                    <form method="POST" action="{{ route('rooms.restore', $room) }}" class="d-inline">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <button type="submit" class="btn btn-sm app-ghost-btn">
+                                                            Reativar
+                                                        </button>
+                                                    </form>
+                                                @endcan
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
@@ -86,29 +98,29 @@
             </div>
         </section>
 
-        <div class="modal fade" id="roomDeleteModal" tabindex="-1" aria-labelledby="roomDeleteModalTitle" aria-hidden="true">
+        <div class="modal fade" id="roomArchiveModal" tabindex="-1" aria-labelledby="roomArchiveModalTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content lims-delete-modal">
                     <div class="modal-header">
                         <div>
-                            <span class="lims-modal-kicker">Ação permanente</span>
-                            <h2 id="roomDeleteModalTitle" class="lims-modal-title">Excluir sala</h2>
+                            <span class="lims-modal-kicker">Ação reversível</span>
+                            <h2 id="roomArchiveModalTitle" class="lims-modal-title">Arquivar sala</h2>
                         </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                     </div>
 
                     <div class="modal-body">
                         <div class="app-delete-alert">
-                            Essa exclusão remove a sala do cadastro e pode afetar consultas futuras do ambiente.
+                            Arquivar impede novos agendamentos nesta sala. As reservas já existentes (futuras e do histórico) são preservadas e continuam visíveis.
                         </div>
 
                         <p class="lims-modal-text mb-0">
-                            Confirme a operação somente se essa sala não precisar mais aparecer no cadastro administrativo.
+                            Você pode reativar a sala a qualquer momento pela própria lista.
                         </p>
 
                         <div class="lims-modal-summary mt-3">
-                            <div><span>Sala</span><strong data-room-delete-summary="name">-</strong></div>
-                            <div><span>Status atual</span><strong data-room-delete-summary="status">-</strong></div>
+                            <div><span>Sala</span><strong data-room-archive-summary="name">-</strong></div>
+                            <div><span>Status atual</span><strong data-room-archive-summary="status">-</strong></div>
                         </div>
                     </div>
 
@@ -117,12 +129,12 @@
                             Cancelar
                         </button>
 
-                        <form method="POST" data-room-delete-form>
+                        <form method="POST" data-room-archive-form>
                             @csrf
-                            @method('DELETE')
+                            @method('PATCH')
 
                             <button type="submit" class="btn btn-danger btn-sm app-delete-confirm-btn">
-                                Excluir sala
+                                Arquivar sala
                             </button>
                         </form>
                     </div>

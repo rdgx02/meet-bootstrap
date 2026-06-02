@@ -7,7 +7,6 @@ use App\Models\Reservation;
 use App\Models\ReservationSeries;
 use App\Services\RecurringReservationOccurrenceGenerator;
 use App\Services\ReservationConflictService;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class CreateRecurringReservationSeriesAction
@@ -30,7 +29,8 @@ class CreateRecurringReservationSeriesAction
                 $conflict = $this->conflictService->findConflict($occurrence, lockForUpdate: true);
 
                 if ($conflict !== null) {
-                    $conflicts[] = $this->formatConflict($occurrence, $conflict);
+                    $conflicts[] = $this->conflictService->describeOccurrenceConflict($occurrence, $conflict);
+
                     continue;
                 }
 
@@ -83,21 +83,5 @@ class CreateRecurringReservationSeriesAction
                 'conflicts' => $conflicts,
             ];
         });
-    }
-
-    private function formatConflict(array $occurrence, Reservation $conflict): array
-    {
-        $conflict->loadMissing('room');
-
-        return [
-            'attempted_date' => Carbon::parse($occurrence['date'])->format('d/m/Y'),
-            'attempted_start_time' => Carbon::parse($occurrence['start_time'])->format('H:i'),
-            'attempted_end_time' => Carbon::parse($occurrence['end_time'])->format('H:i'),
-            'room_name' => $conflict->room?->name ?? '-',
-            'existing_title' => $conflict->title,
-            'existing_requester' => $conflict->requester,
-            'existing_start_time' => Carbon::parse($conflict->start_time)->format('H:i'),
-            'existing_end_time' => Carbon::parse($conflict->end_time)->format('H:i'),
-        ];
     }
 }

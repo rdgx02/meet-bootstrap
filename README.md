@@ -53,10 +53,11 @@ composer run dev
 ```env
 ALLOW_PUBLIC_REGISTRATION=false
 ```
-- Senha padrão para seed inicial:
+- Senha inicial dos usuários semeados — **obrigatória** e definida por ambiente (sem valor padrão no código):
 ```env
-DEFAULT_USER_PASSWORD=12345678
+DEFAULT_USER_PASSWORD=use-uma-senha-forte-aqui
 ```
+  Sem essa variável, o seeder de usuários falha de propósito (evita senha fraca silenciosa). Troque a senha pela tela de perfil logo após o primeiro acesso.
 - Para habilitar cadastro aberto (não recomendado em ambiente interno):
 ```env
 ALLOW_PUBLIC_REGISTRATION=true
@@ -67,7 +68,56 @@ Ao rodar `php artisan db:seed`, o sistema cria/atualiza:
 - `admin@meet.local` (role `admin`)
 - `secretaria@meet.local` (role `secretary`)
 
-Senha padrão: valor de `DEFAULT_USER_PASSWORD`.
+Senha inicial: valor de `DEFAULT_USER_PASSWORD` (obrigatório; veja acima).
+
+## Deploy seguro (produção)
+
+O `.env.example` é apenas um **template de desenvolvimento**. Em produção, todas as
+configurações sensíveis vivem no `.env` do servidor, que **não é versionado** (está no
+`.gitignore`). Nunca coloque segredos no `.env.example` nem no repositório.
+
+### Checklist de entrega
+
+1. **Debug desligado e ambiente de produção** — no `.env` do servidor:
+   ```env
+   APP_ENV=production
+   APP_DEBUG=false
+   APP_URL=https://seu-dominio
+   ```
+   `APP_DEBUG=true` expõe stack traces e configuração; nunca use em produção.
+2. **Chave da aplicação gerada** (uma vez, no servidor):
+   ```bash
+   php artisan key:generate
+   ```
+3. **Senha inicial forte** — defina `DEFAULT_USER_PASSWORD` no `.env` antes de semear, e
+   troque a senha pela tela de perfil após o primeiro acesso. Considere também trocar os
+   e-mails padrão (`admin@meet.local`, `secretaria@meet.local`).
+4. **Cookies de sessão seguros** (quando o site roda sob HTTPS):
+   ```env
+   SESSION_SECURE_COOKIE=true
+   # opcional, cifra a sessão em repouso:
+   SESSION_ENCRYPT=true
+   ```
+   `SESSION_SAME_SITE=lax` e `SESSION_HTTP_ONLY=true` já são os padrões (em `config/session.php`).
+5. **Registro público fechado** — mantenha `ALLOW_PUBLIC_REGISTRATION=false`.
+6. **Cache de configuração** após ajustar o `.env`:
+   ```bash
+   php artisan config:cache
+   php artisan route:cache
+   ```
+7. **Worker da fila ativo** se `EVOLUTION_WHATSAPP_QUEUE=true` (`php artisan queue:work`,
+   idealmente via supervisor/systemd).
+
+### Hardening adicional recomendado (não incluído — avaliar caso a caso)
+
+Estes itens exigem código novo ou dependem da infraestrutura, então ficam como recomendação:
+
+- **HTTPS forçado**: terminar TLS no servidor web (Nginx/Apache) e redirecionar HTTP→HTTPS.
+  Alternativamente, `URL::forceScheme('https')` no `AppServiceProvider` gateado por
+  `app()->environment('production')`.
+- **Cabeçalhos de segurança** via middleware próprio: `Strict-Transport-Security` (HSTS),
+  `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`.
+- **Backups** do banco SQLite (ou migração para Postgres/MySQL em uso mais intenso).
 
 ## Comandos úteis
 - Rodar testes:

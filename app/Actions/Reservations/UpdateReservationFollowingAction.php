@@ -41,7 +41,7 @@ class UpdateReservationFollowingAction
             'recurrence_weekdays' => $series->weekdays ?? [],
         ]);
 
-        return DB::transaction(function () use ($series, $reservation, $data, $originalReservationDate, $originalSeriesEndsOn, $generatedOccurrences): ReservationSeries {
+        return DB::transaction(function () use ($series, $data, $originalReservationDate, $originalSeriesEndsOn, $generatedOccurrences): ReservationSeries {
             $followingReservations = Reservation::query()
                 ->where('series_id', $series->id)
                 ->whereDate('date', '>=', $originalReservationDate)
@@ -51,19 +51,13 @@ class UpdateReservationFollowingAction
             $conflicts = [];
 
             foreach ($generatedOccurrences as $occurrence) {
-                $conflict = $this->conflictService->findConflict($occurrence, null, true);
+                // Ignora no banco (whereNotIn) as ocorrências que serão substituídas.
+                // Assim qualquer sobreposição remanescente é um conflito real — inclusive
+                // uma que "fique atrás" de uma ocorrência substituída e antes era ignorada.
+                $conflict = $this->conflictService->findConflict($occurrence, $followingIds, true);
 
-                if ($conflict !== null && ! in_array($conflict->id, $followingIds, true)) {
-                    $conflicts[] = [
-                        'attempted_date' => Carbon::parse($occurrence['date'])->format('d/m/Y'),
-                        'attempted_start_time' => Carbon::parse($occurrence['start_time'])->format('H:i'),
-                        'attempted_end_time' => Carbon::parse($occurrence['end_time'])->format('H:i'),
-                        'room_name' => $conflict->room?->name ?? '-',
-                        'existing_title' => $conflict->title,
-                        'existing_requester' => $conflict->requester,
-                        'existing_start_time' => Carbon::parse($conflict->start_time)->format('H:i'),
-                        'existing_end_time' => Carbon::parse($conflict->end_time)->format('H:i'),
-                    ];
+                if ($conflict !== null) {
+                    $conflicts[] = $this->conflictService->describeOccurrenceConflict($occurrence, $conflict);
                 }
             }
 

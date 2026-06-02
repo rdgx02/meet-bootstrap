@@ -54,14 +54,27 @@ class RoomController extends Controller
             ->with('success', 'Sala atualizada com sucesso.');
     }
 
-    public function destroy(Room $room): RedirectResponse
+    public function archive(Room $room): RedirectResponse
     {
         $this->authorize('delete', $room);
 
-        $room->delete();
+        // Arquivar (soft-disable) em vez de excluir: a sala deixa de receber novos
+        // agendamentos, mas as reservas existentes (futuras e históricas) sao preservadas.
+        $room->update(['is_active' => false]);
 
         return redirect()
             ->route('rooms.index')
-            ->with('success', 'Sala excluida com sucesso.');
+            ->with('success', 'Sala arquivada. As reservas existentes foram preservadas.');
+    }
+
+    public function restore(Room $room): RedirectResponse
+    {
+        $this->authorize('restore', $room);
+
+        $room->update(['is_active' => true]);
+
+        return redirect()
+            ->route('rooms.index')
+            ->with('success', 'Sala reativada com sucesso.');
     }
 }

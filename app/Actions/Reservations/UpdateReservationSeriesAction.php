@@ -6,14 +6,15 @@ use App\Exceptions\RecurringReservationConflictException;
 use App\Models\Reservation;
 use App\Models\ReservationSeries;
 use App\Services\RecurringReservationOccurrenceGenerator;
+use App\Services\ReservationConflictService;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class UpdateReservationSeriesAction
 {
     public function __construct(
-        private readonly RecurringReservationOccurrenceGenerator $occurrenceGenerator
+        private readonly RecurringReservationOccurrenceGenerator $occurrenceGenerator,
+        private readonly ReservationConflictService $conflictService
     ) {}
 
     public function execute(ReservationSeries $series, array $data): array
@@ -37,30 +38,12 @@ class UpdateReservationSeriesAction
             $conflicts = [];
 
             foreach ($generatedOccurrences as $occurrence) {
-                $conflict = Reservation::query()
-                    ->where('room_id', $occurrence['room_id'])
-                    ->where('date', $occurrence['date'])
-                    ->where(function ($query) use ($occurrence): void {
-                        $query->where('start_time', '<', $occurrence['end_time'])
-                            ->where('end_time', '>', $occurrence['start_time']);
-                    })
-                    ->when($editableIds->isNotEmpty(), fn ($query) => $query->whereNotIn('id', $editableIds))
-                    ->with('room')
-                    ->orderBy('start_time')
-                    ->lockForUpdate()
-                    ->first();
+                // Ignora as ocorrências editáveis (que serão recriadas) e detecta conflito
+                // com qualquer outra reserva via fonte única (ReservationConflictService).
+                $conflict = $this->conflictService->findConflict($occurrence, $editableIds->all(), true);
 
                 if ($conflict !== null) {
-                    $conflicts[] = [
-                        'attempted_date' => Carbon::parse($occurrence['date'])->format('d/m/Y'),
-                        'attempted_start_time' => Carbon::parse($occurrence['start_time'])->format('H:i'),
-                        'attempted_end_time' => Carbon::parse($occurrence['end_time'])->format('H:i'),
-                        'room_name' => $conflict->room?->name ?? '-',
-                        'existing_title' => $conflict->title,
-                        'existing_requester' => $conflict->requester,
-                        'existing_start_time' => Carbon::parse($conflict->start_time)->format('H:i'),
-                        'existing_end_time' => Carbon::parse($conflict->end_time)->format('H:i'),
-                    ];
+                    $conflicts[] = $this->conflictService->describeOccurrenceConflict($occurrence, $conflict);
                 }
             }
 
