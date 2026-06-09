@@ -137,10 +137,7 @@ class ReservationManagementTest extends TestCase
     public function test_single_reservation_creation_dispatches_whatsapp_notification(): void
     {
         Queue::fake();
-        config([
-            'services.evolution_whatsapp.enabled' => true,
-            'services.evolution_whatsapp.queue' => true,
-        ]);
+        $this->fakeEvolutionWhatsApp();
 
         $user = User::factory()->create(['role' => UserRole::Secretary]);
         $owner = User::factory()->create(['role' => UserRole::User]);
@@ -169,10 +166,7 @@ class ReservationManagementTest extends TestCase
     public function test_single_reservation_update_dispatches_whatsapp_notification(): void
     {
         Queue::fake();
-        config([
-            'services.evolution_whatsapp.enabled' => true,
-            'services.evolution_whatsapp.queue' => true,
-        ]);
+        $this->fakeEvolutionWhatsApp();
 
         $user = User::factory()->create(['role' => UserRole::Secretary]);
         $room = Room::create(['name' => 'Sala Atualizacao', 'is_active' => true]);
@@ -210,10 +204,7 @@ class ReservationManagementTest extends TestCase
     public function test_recurring_reservation_creation_dispatches_whatsapp_notification(): void
     {
         Queue::fake();
-        config([
-            'services.evolution_whatsapp.enabled' => true,
-            'services.evolution_whatsapp.queue' => true,
-        ]);
+        $this->fakeEvolutionWhatsApp();
 
         $user = User::factory()->create(['role' => UserRole::Secretary]);
         $owner = User::factory()->create(['role' => UserRole::User]);

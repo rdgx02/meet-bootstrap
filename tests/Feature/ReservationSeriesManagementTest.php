@@ -145,10 +145,7 @@ class ReservationSeriesManagementTest extends TestCase
     public function test_series_update_dispatches_whatsapp_notification(): void
     {
         Queue::fake();
-        config([
-            'services.evolution_whatsapp.enabled' => true,
-            'services.evolution_whatsapp.queue' => true,
-        ]);
+        $this->fakeEvolutionWhatsApp();
 
         $secretary = User::factory()->create(['role' => UserRole::Secretary]);
         $room = Room::create(['name' => 'Sala Serie Update', 'is_active' => true]);
@@ -194,10 +191,7 @@ class ReservationSeriesManagementTest extends TestCase
     public function test_series_cancel_dispatches_whatsapp_notification(): void
     {
         Queue::fake();
-        config([
-            'services.evolution_whatsapp.enabled' => true,
-            'services.evolution_whatsapp.queue' => true,
-        ]);
+        $this->fakeEvolutionWhatsApp();
 
         $secretary = User::factory()->create(['role' => UserRole::Secretary]);
         $room = Room::create(['name' => 'Sala Serie Cancelar', 'is_active' => true]);
