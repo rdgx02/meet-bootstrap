@@ -31,7 +31,6 @@ class ReservationSeriesManagementTest extends TestCase
             'title' => 'Serie Semanal',
             'requester' => 'Secretaria',
             'phone' => '+55 21 99999-9999',
-            'contact' => null,
             'frequency' => 'weekly',
             'interval' => 1,
             'weekdays' => [1, 3],
@@ -76,7 +75,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie para cancelar',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
                 'frequency' => 'daily',
                 'interval' => 1,
                 'weekdays' => null,
@@ -96,7 +94,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie para cancelar',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
             ]);
 
             $activeOccurrence = Reservation::create([
@@ -111,7 +108,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie para cancelar',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
             ]);
 
             $futureOccurrence = Reservation::create([
@@ -126,7 +122,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie para cancelar',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
             ]);
 
             $response = $this->actingAs($secretary)
@@ -253,7 +248,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie Original',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
                 'frequency' => 'daily',
                 'interval' => 1,
                 'weekdays' => null,
@@ -273,7 +267,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie Original',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
             ]);
 
             $futureOccurrence = Reservation::create([
@@ -288,7 +281,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie Original',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
             ]);
 
             $response = $this->actingAs($secretary)
@@ -358,7 +350,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie UX',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
                 'frequency' => 'daily',
                 'interval' => 1,
                 'weekdays' => null,
@@ -378,7 +369,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie UX',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
             ]);
 
             $futureOccurrence = Reservation::create([
@@ -393,7 +383,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie UX',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
             ]);
 
             $response = $this->actingAs($secretary)
@@ -421,7 +410,6 @@ class ReservationSeriesManagementTest extends TestCase
             'title' => 'Serie Botoes',
             'requester' => 'Secretaria',
             'phone' => '+55 21 99999-9999',
-            'contact' => null,
             'frequency' => 'weekly',
             'interval' => 1,
             'weekdays' => [1, 3],
@@ -453,7 +441,6 @@ class ReservationSeriesManagementTest extends TestCase
             'title' => 'Serie Edicao',
             'requester' => 'Secretaria',
             'phone' => '+55 21 99999-9999',
-            'contact' => null,
             'frequency' => 'weekly',
             'interval' => 1,
             'weekdays' => [1, 3],
@@ -483,7 +470,6 @@ class ReservationSeriesManagementTest extends TestCase
             'title' => 'Serie Retorno',
             'requester' => 'Secretaria',
             'phone' => '+55 21 99999-9999',
-            'contact' => null,
             'frequency' => 'weekly',
             'interval' => 1,
             'weekdays' => [1, 3],
@@ -534,7 +520,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie Contexto',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
                 'frequency' => 'daily',
                 'interval' => 1,
                 'weekdays' => null,
@@ -554,7 +539,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie Contexto',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
             ]);
 
             $showResponse = $this->actingAs($secretary)
@@ -731,7 +715,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie Split',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
                 'frequency' => 'daily',
                 'interval' => 1,
                 'weekdays' => null,
@@ -751,7 +734,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie Split',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
             ]);
 
             $target = Reservation::create([
@@ -766,7 +748,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie Split',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
             ]);
 
             Reservation::create([
@@ -781,7 +762,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie Split',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
             ]);
 
             $response = $this->actingAs($secretary)->put(route('reservations.update', $target), [
@@ -834,7 +814,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie All',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
                 'frequency' => 'daily',
                 'interval' => 1,
                 'weekdays' => null,
@@ -854,7 +833,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie All',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
             ]);
 
             $response = $this->actingAs($secretary)->put(route('reservations.update', $target), [
@@ -900,7 +878,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie Delete Following',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
                 'frequency' => 'daily',
                 'interval' => 1,
                 'weekdays' => null,
@@ -920,7 +897,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie Delete Following',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
             ]);
 
             $future = Reservation::create([
@@ -935,7 +911,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie Delete Following',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
             ]);
 
             $response = $this->actingAs($secretary)->delete(route('reservations.destroy', $target), [
@@ -973,7 +948,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie Delete All',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
                 'frequency' => 'daily',
                 'interval' => 1,
                 'weekdays' => null,
@@ -993,7 +967,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'title' => 'Serie Delete All',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-                'contact' => null,
             ]);
 
             $response = $this->actingAs($secretary)->delete(route('reservations.destroy', $target), [

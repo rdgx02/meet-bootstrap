@@ -46,7 +46,6 @@ class AvailabilityConsultationTest extends TestCase
             'end_time' => '10:00',
             'title' => 'Reuniao Geral',
             'requester' => 'Secretaria',
-            'contact' => null,
         ]);
 
         Reservation::create([
@@ -57,7 +56,6 @@ class AvailabilityConsultationTest extends TestCase
             'end_time' => '15:00',
             'title' => 'Treinamento',
             'requester' => 'Equipe TI',
-            'contact' => null,
         ]);
 
         Reservation::create([
@@ -68,7 +66,6 @@ class AvailabilityConsultationTest extends TestCase
             'end_time' => '11:00',
             'title' => 'Outro Dia',
             'requester' => 'Equipe B',
-            'contact' => null,
         ]);
 
         $response = $this->actingAs($user)->get(route('availability.index', [
@@ -100,7 +97,6 @@ class AvailabilityConsultationTest extends TestCase
             'end_time' => '17:00',
             'title' => 'TI',
             'requester' => 'Equipe TI',
-            'contact' => null,
         ]);
 
         Reservation::create([
@@ -111,7 +107,6 @@ class AvailabilityConsultationTest extends TestCase
             'end_time' => '10:00',
             'title' => 'Reuniao 203',
             'requester' => 'Equipe A',
-            'contact' => null,
         ]);
 
         $response = $this->actingAs($user)->get(route('availability.index', [
@@ -143,7 +138,6 @@ class AvailabilityConsultationTest extends TestCase
             'end_time' => '09:00',
             'title' => 'Parcial',
             'requester' => 'Equipe Parcial',
-            'contact' => null,
         ]);
 
         Reservation::create([
@@ -154,7 +148,6 @@ class AvailabilityConsultationTest extends TestCase
             'end_time' => '18:00',
             'title' => 'Dia inteiro',
             'requester' => 'Equipe Busy',
-            'contact' => null,
         ]);
 
         $response = $this->actingAs($user)->get(route('availability.index', [
@@ -188,7 +181,6 @@ class AvailabilityConsultationTest extends TestCase
                 'end_time' => '11:00',
                 'title' => 'Reserva de Hoje',
                 'requester' => 'Equipe Hoje',
-                'contact' => null,
             ]);
 
             $response = $this->actingAs($user)->get(route('availability.index'));
@@ -214,7 +206,6 @@ class AvailabilityConsultationTest extends TestCase
             'end_time' => '15:30',
             'title' => 'Conselho',
             'requester' => 'Diretoria',
-            'contact' => null,
         ]);
 
         Reservation::create([
@@ -225,7 +216,6 @@ class AvailabilityConsultationTest extends TestCase
             'end_time' => '10:00',
             'title' => 'Outro dia',
             'requester' => 'Equipe',
-            'contact' => null,
         ]);
 
         $response = $this->actingAs($user)->get(route('availability.index', [
@@ -252,7 +242,6 @@ class AvailabilityConsultationTest extends TestCase
             'end_time' => '11:00',
             'title' => 'Reuniao 219',
             'requester' => 'Equipe 219',
-            'contact' => null,
         ]);
 
         $response = $this->actingAs($user)->get(route('availability.index', [
@@ -278,7 +267,6 @@ class AvailabilityConsultationTest extends TestCase
             'end_time' => '18:00',
             'title' => 'Dia inteiro',
             'requester' => 'Equipe Busy',
-            'contact' => null,
         ]);
 
         $response = $this->actingAs($user)->get(route('availability.index', [

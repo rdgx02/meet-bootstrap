@@ -59,7 +59,6 @@ class ReservationManagementTest extends TestCase
             'title' => 'Tentativa sem permissao',
             'requester' => 'Usuario comum',
             'phone' => '+55 21 99999-9999',
-            'contact' => null,
         ]);
 
         $response->assertRedirect(route('reservations.index'));
@@ -257,7 +256,6 @@ class ReservationManagementTest extends TestCase
             'title' => 'Reserva existente',
             'requester' => 'Secretaria',
             'phone' => '+55 21 99999-9999',
-            'contact' => null,
         ]);
 
         $response = $this->actingAs($user)
@@ -329,7 +327,6 @@ class ReservationManagementTest extends TestCase
             'title' => 'Reserva encerrada',
             'requester' => 'Secretaria',
             'phone' => '+55 21 99999-9999',
-            'contact' => null,
         ]);
 
         $this->actingAs($user)
@@ -345,7 +342,6 @@ class ReservationManagementTest extends TestCase
                 'title' => 'Tentativa de alterar',
                 'requester' => 'Secretaria',
                 'phone' => '+55 21 99999-9999',
-            'contact' => null,
             ])
             ->assertForbidden();
 
@@ -373,7 +369,6 @@ class ReservationManagementTest extends TestCase
             'title' => 'Reserva pela rota',
             'requester' => 'Secretaria',
             'phone' => '+55 21 99999-9999',
-            'contact' => null,
         ]);
 
         $response = $this->actingAs($user)
@@ -399,7 +394,6 @@ class ReservationManagementTest extends TestCase
             'title' => 'Reserva Lote 1',
             'requester' => 'Secretaria',
             'phone' => '+55 21 99999-9999',
-            'contact' => null,
         ]);
 
         $secondReservation = Reservation::create([
@@ -411,7 +405,6 @@ class ReservationManagementTest extends TestCase
             'title' => 'Reserva Lote 2',
             'requester' => 'Secretaria',
             'phone' => '+55 21 99999-9999',
-            'contact' => null,
         ]);
 
         $response = $this->actingAs($user)->delete(route('reservations.destroy-selected'), [
@@ -457,7 +450,6 @@ class ReservationManagementTest extends TestCase
             'title' => 'Exportar Agenda',
             'requester' => 'Equipe Operacional',
             'phone' => '+55 21 99999-9999',
-            'contact' => null,
         ]);
         $reservation->updated_by = $editor->id;
         $reservation->save();
@@ -473,7 +465,7 @@ class ReservationManagementTest extends TestCase
         $content = $response->streamedContent();
 
         $this->assertStringContainsString('Código;Sala;Título;Solicitante;Data;Início;Fim;"Criado por";"Editado por"', $content);
-        $this->assertStringContainsString('AG-0000' . $reservation->id, $content);
+        $this->assertStringContainsString('AG-0000'.$reservation->id, $content);
         $this->assertStringContainsString('"Sala Exportacao";"Exportar Agenda";"Equipe Operacional";26/03/2026;14:00;15:30;"Ana Secretaria";"Carlos Editor"', $content);
     }
 
@@ -494,7 +486,6 @@ class ReservationManagementTest extends TestCase
                 'title' => 'Encerrada Hoje',
                 'requester' => 'Equipe',
                 'phone' => '+55 21 99999-9999',
-            'contact' => null,
             ]);
 
             Reservation::create([
@@ -506,7 +497,6 @@ class ReservationManagementTest extends TestCase
                 'title' => 'Em Andamento Hoje',
                 'requester' => 'Equipe',
                 'phone' => '+55 21 99999-9999',
-            'contact' => null,
             ]);
 
             Reservation::create([
@@ -518,7 +508,6 @@ class ReservationManagementTest extends TestCase
                 'title' => 'Reserva Futura',
                 'requester' => 'Equipe',
                 'phone' => '+55 21 99999-9999',
-            'contact' => null,
             ]);
 
             $response = $this->actingAs($user)->get(route('reservations.index'));
@@ -560,7 +549,6 @@ class ReservationManagementTest extends TestCase
             'title' => 'LAGOA',
             'requester' => 'Equipe A',
             'phone' => '+55 21 99999-9999',
-            'contact' => null,
         ]);
 
         Reservation::create([
@@ -572,7 +560,6 @@ class ReservationManagementTest extends TestCase
             'title' => 'TI',
             'requester' => 'Equipe B',
             'phone' => '+55 21 99999-9999',
-            'contact' => null,
         ]);
 
         $response = $this->actingAs($user)->get(route('reservations.index', [
@@ -599,7 +586,6 @@ class ReservationManagementTest extends TestCase
             'title' => 'Reserva do código formatado',
             'requester' => 'Equipe Código',
             'phone' => '+55 21 99999-9999',
-            'contact' => null,
         ]);
 
         Reservation::create([
@@ -611,11 +597,10 @@ class ReservationManagementTest extends TestCase
             'title' => 'Outra reserva',
             'requester' => 'Equipe B',
             'phone' => '+55 21 99999-9999',
-            'contact' => null,
         ]);
 
         $response = $this->actingAs($user)->get(route('reservations.index', [
-            'code' => 'AG-' . str_pad((string) $matchingReservation->id, 5, '0', STR_PAD_LEFT),
+            'code' => 'AG-'.str_pad((string) $matchingReservation->id, 5, '0', STR_PAD_LEFT),
         ]));
 
         $response->assertOk();
@@ -640,7 +625,6 @@ class ReservationManagementTest extends TestCase
                 'title' => 'Passada no Historico',
                 'requester' => 'Equipe',
                 'phone' => '+55 21 99999-9999',
-            'contact' => null,
             ]);
 
             Reservation::create([
@@ -652,7 +636,6 @@ class ReservationManagementTest extends TestCase
                 'title' => 'Encerrada Hoje no Historico',
                 'requester' => 'Equipe',
                 'phone' => '+55 21 99999-9999',
-            'contact' => null,
             ]);
 
             Reservation::create([
@@ -664,7 +647,6 @@ class ReservationManagementTest extends TestCase
                 'title' => 'Em Andamento na Agenda',
                 'requester' => 'Equipe',
                 'phone' => '+55 21 99999-9999',
-            'contact' => null,
             ]);
 
             $response = $this->actingAs($user)->get(route('reservations.history'));
@@ -788,7 +770,7 @@ class ReservationManagementTest extends TestCase
 
     public function test_reservations_table_exposes_expected_empty_state_message(): void
     {
-        $component = new ReservationsTable();
+        $component = new ReservationsTable;
 
         $this->assertSame(
             'Nenhum agendamento corresponde aos filtros informados.',
@@ -813,7 +795,6 @@ class ReservationManagementTest extends TestCase
                 'title' => 'Passada',
                 'requester' => 'Equipe',
                 'phone' => '+55 21 99999-9999',
-            'contact' => null,
             ]);
 
             Reservation::create([
@@ -825,7 +806,6 @@ class ReservationManagementTest extends TestCase
                 'title' => 'Encerrada Hoje',
                 'requester' => 'Equipe',
                 'phone' => '+55 21 99999-9999',
-            'contact' => null,
             ]);
 
             Reservation::create([
@@ -837,7 +817,6 @@ class ReservationManagementTest extends TestCase
                 'title' => 'Ativa Hoje',
                 'requester' => 'Equipe',
                 'phone' => '+55 21 99999-9999',
-            'contact' => null,
             ]);
 
             Reservation::create([
@@ -849,10 +828,9 @@ class ReservationManagementTest extends TestCase
                 'title' => 'Futura',
                 'requester' => 'Equipe',
                 'phone' => '+55 21 99999-9999',
-            'contact' => null,
             ]);
 
-            $component = new ReservationsTable();
+            $component = new ReservationsTable;
             $component->scope = 'upcoming';
 
             $titles = $component->datasource()
@@ -884,7 +862,6 @@ class ReservationManagementTest extends TestCase
                 'title' => 'Passada',
                 'requester' => 'Equipe',
                 'phone' => '+55 21 99999-9999',
-            'contact' => null,
             ]);
 
             Reservation::create([
@@ -896,7 +873,6 @@ class ReservationManagementTest extends TestCase
                 'title' => 'Encerrada Hoje',
                 'requester' => 'Equipe',
                 'phone' => '+55 21 99999-9999',
-            'contact' => null,
             ]);
 
             Reservation::create([
@@ -908,10 +884,9 @@ class ReservationManagementTest extends TestCase
                 'title' => 'Ativa Hoje',
                 'requester' => 'Equipe',
                 'phone' => '+55 21 99999-9999',
-            'contact' => null,
             ]);
 
-            $component = new ReservationsTable();
+            $component = new ReservationsTable;
             $component->scope = 'history';
 
             $titles = $component->datasource()
@@ -942,10 +917,9 @@ class ReservationManagementTest extends TestCase
             'title' => 'Reserva em sala inativa',
             'requester' => 'Equipe',
             'phone' => '+55 21 99999-9999',
-            'contact' => null,
         ]);
 
-        $component = new ReservationsTable();
+        $component = new ReservationsTable;
 
         $rooms = $component->rooms()->pluck('name')->all();
 
@@ -953,4 +927,3 @@ class ReservationManagementTest extends TestCase
         $this->assertNotContains($inactiveWithoutReservation->name, $rooms);
     }
 }
-
