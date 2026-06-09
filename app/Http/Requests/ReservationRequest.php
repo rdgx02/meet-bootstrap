@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\WithinBusinessHours;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -43,8 +44,8 @@ abstract class ReservationRequest extends FormRequest
     {
         return [
             'room_id' => ['required', 'exists:rooms,id'],
-            'start_time' => ['required', 'date_format:H:i'],
-            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
+            'start_time' => ['required', 'date_format:H:i', new WithinBusinessHours('start')],
+            'end_time' => ['required', 'date_format:H:i', 'after:start_time', new WithinBusinessHours('end')],
             'title' => ['required', 'string', 'max:255'],
             'requester' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'regex:/^\+55 \d{2} \d{5}-\d{4}$/'],
@@ -141,7 +142,7 @@ abstract class ReservationRequest extends FormRequest
         }
 
         if (strlen($digits) === 11) {
-            $digits = '55' . $digits;
+            $digits = '55'.$digits;
         }
 
         if (strlen($digits) !== 13 || ! str_starts_with($digits, '55')) {

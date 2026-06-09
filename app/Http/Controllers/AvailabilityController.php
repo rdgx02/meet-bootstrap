@@ -7,15 +7,13 @@ use App\Models\Room;
 use App\Services\AvailabilityOverviewService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class AvailabilityController extends Controller
 {
     public function __construct(
         private readonly AvailabilityOverviewService $availabilityOverview,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): View
     {
@@ -28,8 +26,8 @@ class AvailabilityController extends Controller
             'selectedDate' => $selectedDate,
             'selectedDateLabel' => $selectedDate->translatedFormat('d/m/Y'),
             'selectedRoom' => $selectedRoom,
-            'openTime' => '08:00',
-            'closeTime' => '18:00',
+            'openTime' => config('reservations.business_hours.start'),
+            'closeTime' => config('reservations.business_hours.end'),
             'dayReservations' => $reservations,
             'rooms' => $rooms,
             'roomAvailability' => $roomAvailability,

@@ -3,7 +3,7 @@
     $formAction = $isEdit ? route('reservations.update', $reservation) : route('reservations.store');
     $backUrl = $returnToSeries ?? route('reservations.index');
     $dateValue = old('date', $isEdit ? $reservation->date : now()->toDateString());
-    $startValue = old('start_time', $isEdit ? $reservation->start_time : '08:00');
+    $startValue = old('start_time', $isEdit ? $reservation->start_time : config('reservations.business_hours.start'));
     $endValue = old('end_time', $isEdit ? $reservation->end_time : '09:00');
     $bookingMode = old('booking_mode', 'single');
     $seriesScope = old('series_scope', 'occurrence');

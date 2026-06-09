@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\ReservationSeries;
+use App\Rules\WithinBusinessHours;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -50,8 +51,8 @@ class UpdateReservationSeriesRequest extends FormRequest
                 'required',
                 Rule::exists('users', 'id')->where(fn ($query) => $query->where('is_active', true)),
             ],
-            'start_time' => ['required', 'date_format:H:i'],
-            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
+            'start_time' => ['required', 'date_format:H:i', new WithinBusinessHours('start')],
+            'end_time' => ['required', 'date_format:H:i', 'after:start_time', new WithinBusinessHours('end')],
             'recurrence_starts_on' => ['required', 'date'],
             'recurrence_ends_on' => ['required', 'date', 'after_or_equal:recurrence_starts_on', 'after_or_equal:today'],
             'recurrence_frequency' => ['required', Rule::in(['daily', 'weekly', 'monthly'])],
@@ -121,7 +122,7 @@ class UpdateReservationSeriesRequest extends FormRequest
         }
 
         if (strlen($digits) === 11) {
-            $digits = '55' . $digits;
+            $digits = '55'.$digits;
         }
 
         if (strlen($digits) !== 13 || ! str_starts_with($digits, '55')) {

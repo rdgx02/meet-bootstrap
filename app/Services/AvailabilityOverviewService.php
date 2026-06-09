@@ -9,15 +9,19 @@ use Illuminate\Support\Collection;
 
 class AvailabilityOverviewService
 {
-    public function __construct(
-        private readonly string $openTime = '08:00',
-        private readonly string $closeTime = '18:00',
-    ) {
+    private readonly string $openTime;
+
+    private readonly string $closeTime;
+
+    public function __construct(?string $openTime = null, ?string $closeTime = null)
+    {
+        $this->openTime = $openTime ?? (string) config('reservations.business_hours.start', '08:00');
+        $this->closeTime = $closeTime ?? (string) config('reservations.business_hours.end', '18:00');
     }
 
     /**
-     * @param Collection<int, Room> $rooms
-     * @param Collection<int, Reservation> $reservations
+     * @param  Collection<int, Room>  $rooms
+     * @param  Collection<int, Reservation>  $reservations
      * @return Collection<int, array{room: Room, reservations: Collection<int, Reservation>, free_ranges: array<int, array{start: string, end: string, label: string}>, occupied_ranges: array<int, array{start: string, end: string, label: string, title: string, requester: string}>, is_free_all_day: bool, status: string, status_label: string, free_summary: string, occupied_summary: string}>
      */
     public function summarize(Collection $rooms, Collection $reservations, ?Room $selectedRoom = null): Collection
@@ -56,7 +60,7 @@ class AvailabilityOverviewService
     }
 
     /**
-     * @param Collection<int, Reservation> $reservations
+     * @param  Collection<int, Reservation>  $reservations
      * @return array<int, array{start: string, end: string, label: string}>
      */
     public function buildFreeRanges(Collection $reservations): array
@@ -85,7 +89,7 @@ class AvailabilityOverviewService
     }
 
     /**
-     * @param Collection<int, Reservation> $reservations
+     * @param  Collection<int, Reservation>  $reservations
      * @return array<int, array{start: string, end: string, label: string, title: string, requester: string}>
      */
     public function buildOccupiedRanges(Collection $reservations): array
@@ -102,7 +106,7 @@ class AvailabilityOverviewService
     }
 
     /**
-     * @param Collection<int, Reservation> $reservations
+     * @param  Collection<int, Reservation>  $reservations
      */
     public function resolveStatus(Collection $reservations): string
     {
@@ -145,7 +149,7 @@ class AvailabilityOverviewService
     }
 
     /**
-     * @param array<int, array{start: string, end: string, label: string}> $ranges
+     * @param  array<int, array{start: string, end: string, label: string}>  $ranges
      */
     private function buildFreeSummary(array $ranges): string
     {
@@ -159,7 +163,7 @@ class AvailabilityOverviewService
     }
 
     /**
-     * @param array<int, array{start: string, end: string, label: string, title: string, requester: string}> $ranges
+     * @param  array<int, array{start: string, end: string, label: string, title: string, requester: string}>  $ranges
      */
     private function buildOccupiedSummary(array $ranges): string
     {
