@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  tests:
+    name: Testes (PHP 8.3, SQLite :memory:)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, dom, xml, bcmath, curl, sqlite3, pdo_sqlite, fileinfo, tokenizer, ctype
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Preparar .env
+        run: cp .env.example .env
+
+      - name: Cache do Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Instalar dependências PHP
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Gerar APP_KEY
+        run: php artisan key:generate
+
+      - name: Criar arquivo SQLite (para comandos artisan fora dos testes)
+        run: touch database/database.sqlite
+
+      - name: Build de assets (Vite manifest — exigido por @vite nas views)
+        run: |
+          npm ci
+          npm run build
+
+      - name: Smoke — a aplicação sobe
+        run: php artisan about
+
+      - name: Rodar a suíte
+        run: composer run test
+
+      - name: Estilo (Pint) — informativo, não bloqueia
+        if: always()
+        continue-on-error: true
+        run: ./vendor/bin/pint --test
