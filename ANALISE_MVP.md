@@ -1,32 +1,32 @@
 # Análise de MVP — Meet LADETEC
 
-> Análise original em **2026-06-01** (nota 82/100). **Atualizada em 2026-06-09** após uma rodada de
-> melhorias. Referência de "100%" = **MVP funcional pronto para entregar** a uma secretaria interna
-> (não produção enterprise). Avaliação subjetiva, baseada em leitura do código e execução da suíte
-> (92 testes, 321 asserções).
+> Análise original em **2026-06-01** (82/100). Revisada em **2026-06-09** ao longo de melhorias
+> sucessivas: **82 → 90 → 93**. Referência de "100%" = **MVP funcional pronto para entregar** a uma
+> secretaria interna (não produção enterprise). Avaliação subjetiva, baseada em leitura do código e
+> execução da suíte (**98 testes, 341 asserções**).
 
-## Nota geral: 90/100 (para MVP) — antes: 82/100 (+8)
+## Nota geral: 93/100 (para MVP) — antes: 90/100 (+3)
 
-A nota subiu porque os três pontos que realmente pesavam na análise anterior (todos 🟡) foram
-resolvidos, **e** um bug de integridade de dados que nem estava no radar original foi encontrado e
-corrigido. O que sobra hoje é majoritariamente 🟢 (nice-to-have).
+A nota subiu porque os dois pontos que o próprio documento citava como barreira aos 95 foram
+fechados: a **validação de janela de expediente** (lacuna funcional real num sistema de reserva) e o
+**CI** (que agora guarda regressões). O que sobra é polish e feature incompleta — tudo 🟢.
 
-Não chega a 95+ porque ainda há lacunas funcionais reais (ainda que aceitáveis para MVP) e dívida
-de polimento — descritas honestamente abaixo. Continua sendo um MVP entregável **hoje**, agora com
-menos risco.
+**Justificativa (+3):** validar o expediente fechou a última lacuna funcional real e o CI verde passa
+a guardar regressões; o que ainda segura em 93 é só `conflict_mode` meio-feito, `interval` não
+suportado e o acoplamento síncrono do WhatsApp. Continua um MVP entregável **hoje**, com menos risco.
 
 | Critério | Avaliação atual |
 |---|---|
-| Funcionalidades do MVP | Praticamente completas (booking simples + recorrente + conflito + papéis + disponibilidade + export + WhatsApp) |
+| Funcionalidades do MVP | Praticamente completas (booking simples + recorrente + conflito + papéis + disponibilidade + export + WhatsApp), agora com janela de expediente validada no backend |
 | Arquitetura / qualidade | Forte — separação Controller→Request→Action→Service→Model real e consistente |
-| Testes | Boa cobertura do domínio crítico (92 testes); reforçada nos pontos sensíveis (conflito, "following", arquivar sala) |
+| Testes | Boa cobertura do domínio crítico (**98 testes**); reforçada nos pontos sensíveis (conflito, "following", arquivar sala, expediente) e **rodando em CI** |
 | Segurança | Adequada para uso interno (policies, rate limit, escaping, sem mass-assignment) + hardening de deploy |
 | Performance | Sem problemas no volume esperado (uma secretaria) |
 | Bugs/riscos concretos | Os dois riscos concretos da v1 (perda de dados e double-booking) foram eliminados |
 
 ---
 
-## O que foi RESOLVIDO desde a v1 (82 → 90)
+## O que foi RESOLVIDO
 
 ### ✅ 1. Exclusão destrutiva de sala → arquivamento — `ffe8f10`  (era 🟡, o pior risco prático)
 O `RoomController::destroy` fazia hard delete com `cascadeOnDelete`, apagando silenciosamente todas
@@ -52,8 +52,26 @@ Removidos: `AdminMiddleware` órfão (+ alias), `tests/Unit/ExampleTest.php` boi
 `er_id` (dump de Tinker) e a coluna `contact` das duas tabelas (migration reversível). O
 `tests/Feature/ExampleTest.php` foi **mantido de propósito** — não é boilerplate, cobre o redirect de `/`.
 
-> Observação: a suíte saiu de 87 para **92 testes**, com a cobertura nova concentrada nos pontos
-> críticos (service de conflito, o bug do "following", arquivar/reativar sala) — não foi volume vazio.
+### ✅ 5. Validação de janela de expediente no backend — `6773d97`  (era 🟢, mas lacuna funcional real)
+O backend aceitava **qualquer** horário (o limite 08–18h existia só no front). Regra
+`WithinBusinessHours` (config `reservations.business_hours`, env `RESERVATION_OPENING_TIME`/
+`CLOSING_TIME`) aplicada em **todos** os caminhos de escrita (criar single/recorrente, editar
+ocorrência/following/all e edição direta da série); UI de disponibilidade alinhada ao mesmo config.
+Coberta por `BusinessHoursValidationTest` (red→green: rejeita 07:00 e 19:00, aceita 08:00–18:00,
+inclui série recorrente).
+
+### ✅ 6. CI (GitHub Actions) — `62eee7c` (workflow) + `87f6dc1` (hermeticidade)  (era 🟢)
+Workflow roda a suíte em **push e pull_request na `main`** (PHP 8.3, SQLite `:memory:`, build do Vite
+— necessário pro manifest exigido por `@vite` nas views —, smoke `php artisan about`, Pint como passo
+**informativo**). O primeiro run revelou 5 testes de WhatsApp **não-herméticos**: sobrescreviam só
+`enabled`/`queue` via `config()`, mas dependiam das credenciais reais do `.env` local — em ambiente
+limpo (CI) o gate `EvolutionWhatsAppService::enabled()` retornava `false` e o job não era enfileirado.
+Corrigido com o helper `fakeEvolutionWhatsApp()` na base `TestCase` (seta também `base_url`/`instance`/
+`api_key` fake) → CI verde, **98 testes**.
+
+> Observação: a suíte saiu de 87 para **98 testes**, com a cobertura nova concentrada nos pontos
+> críticos (service de conflito, o bug do "following", arquivar/reativar sala, janela de expediente)
+> e agora **executada automaticamente em CI** — não foi volume vazio.
 
 ---
 
@@ -80,41 +98,39 @@ inclusive na grade PowerGrid (`ReservationsTable.php:299`), não só na policy d
 
 ## O que AINDA falta (tudo 🟢 — nenhum bloqueante)
 
-### 1. Sem validação de janela de expediente
-- A tela de Disponibilidade assume 08:00–18:00 (`AvailabilityController` hardcoded), mas a
-  criação/edição aceita **qualquer** horário (ex.: 03:00). Os FormRequests só validam `end_time after start_time`.
-- **Onde:** `app/Http/Requests/ReservationRequest.php`. **Gravidade:** 🟢. **Esforço:** baixo.
-
-### 2. `conflict_mode` é código morto (feature pela metade)
+### 1. `conflict_mode` é código morto (feature pela metade)
 - `CreateRecurringReservationSeriesAction` fixa `$conflictMode = 'strict'` (`:22`), então o caminho
   "criar válidas e pular conflitantes" nunca roda; a coluna `conflict_mode` só guarda `'strict'`.
 - **Onde:** `CreateRecurringReservationSeriesAction.php:22,40`. **Gravidade:** 🟢. **Esforço:** baixo (remover) / médio (expor "lenient" na UI).
 
-### 3. `interval` sempre 1
+### 2. `interval` sempre 1
 - A coluna `interval` existe nas séries mas é sempre gravada como `1` — não há "a cada 2 semanas".
 - **Onde:** Actions de série (`'interval' => 1`). **Gravidade:** 🟢. **Esforço:** médio.
 
-### 4. WhatsApp síncrono quando `queue=false`
+### 3. WhatsApp síncrono quando `queue=false`
 - Com `EVOLUTION_WHATSAPP_QUEUE=false`, o envio acontece dentro do request; uma chamada HTTP lenta
   atrasa a resposta. Mitigado por timeout e por ser best-effort; o default `queue=true` exige `queue:work`.
-- **Onde:** `ReservationWhatsAppNotificationService.php:194`. **Gravidade:** 🟢. **Esforço:** baixo (manter `queue=true`).
-
-### 5. Sem CI / sem smoke test em ambiente de produção
-- A suíte roda localmente (92 verdes), mas não há pipeline automatizado nem teste end-to-end num
-  ambiente parecido com produção. Não é exigido para MVP, mas é o que separaria 90 de 95+.
-- **Gravidade:** 🟢. **Esforço:** baixo/médio.
+- **Onde:** `ReservationWhatsAppNotificationService.php:194`. **Gravidade:** 🟢. **Esforço:** baixo (manter `queue=true`) / médio (desacoplar).
+- **Nota do diagnóstico (sessão de CI):** o gargalo real não é só a flag `queue`. O gate
+  `EvolutionWhatsAppService::enabled()` exige `base_url`/`instance`/`api_key` preenchidos; quando
+  `queue=false` (como está no `.env` de produção/local), `dispatch()` faz um **POST síncrono à
+  Evolution API dentro do request HTTP** (timeout 10s, best-effort em try/catch) — ou seja, **a
+  latência do request fica acoplada a um serviço externo** (até ~10s se a API travar). Resolver o
+  item = **desacoplar o envio** (sempre enfileirar, ou circuit-breaker/timeout curto), não só mexer
+  na flag. Esse mesmo gate `enabled()` foi o que expôs a não-hermeticidade dos testes corrigida em `87f6dc1`.
 
 ---
 
-## Por que 90 e não mais — e não menos
+## Por que 93 e não mais — e não menos
 
-- **Não mais:** a ausência de validação de horário é uma lacuna funcional real num sistema de
-  reserva de salas (não só estética), e o `conflict_mode` pela metade é ambiguidade no domínio mais
-  complexo do app. Somados, valem os ~10 pontos restantes. 95+ exigiria fechar essas pontas + CI.
-- **Não menos:** o núcleo já era forte a 82, e os **riscos concretos** (perda de dados na exclusão
-  de sala; double-booking no "following") foram **eliminados** — não contornados.
+- **Não mais:** o `conflict_mode` pela metade é ambiguidade no domínio mais complexo do app, falta
+  `interval` real, e o WhatsApp síncrono acopla a latência do request a um serviço externo. Somados,
+  valem os ~7 pontos restantes. 95+ exigiria fechar essas pontas.
+- **Não menos:** o núcleo já era forte, os **riscos concretos** (perda de dados na exclusão de sala;
+  double-booking no "following") foram **eliminados**, a última lacuna funcional real (validação de
+  expediente) foi fechada, e o **CI** agora protege contra regressões.
 
 ## Resumo em uma linha
 
-**De 82 → 90:** os riscos reais foram fechados (perda de dados e double-booking) e a casa foi limpa;
-o que falta é só polimento de MVP (validar expediente, decidir o `conflict_mode`, CI) — nada bloqueante.
+**De 82 → 90 → 93:** riscos reais eliminados, casa limpa, expediente validado no backend e CI verde;
+o que falta é só polish (`conflict_mode`, `interval`, desacoplar o WhatsApp síncrono) — nada bloqueante.
