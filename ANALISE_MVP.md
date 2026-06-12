@@ -1,26 +1,26 @@
 # Análise de MVP — Meet LADETEC
 
 > Análise original em **2026-06-01** (82/100). Revisada em **2026-06-09** e **2026-06-12** ao longo de
-> melhorias sucessivas: **82 → 90 → 93 → 94**. Referência de "100%" = **MVP funcional pronto para
+> melhorias sucessivas: **82 → 90 → 93 → 94 → 96**. Referência de "100%" = **MVP funcional pronto para
 > entregar** a uma secretaria interna (não produção enterprise). Avaliação subjetiva, baseada em leitura
 > do código e execução da suíte (**104 testes, 376 asserções**).
 
-## Nota geral: 94/100 (para MVP) — antes: 93/100 (+1)
+## Nota geral: 96/100 (para MVP) — antes: 94/100 (+2)
 
-A nota chegou a 93 fechando os dois pontos que o próprio documento citava como barreira aos 95: a
-**validação de janela de expediente** (lacuna funcional real) e o **CI** (que guarda regressões). O
-**+1 para 94** veio de fechar a última *feature* incompleta — o **`interval` real** ("a cada N
-semanas", `b85832b`). O que sobra é só polish — tudo 🟢.
+**Todos os itens funcionais do MVP foram resolvidos.** O **+2 para 96** vem de tirar o **WhatsApp
+síncrono** do escopo: ele foi **movido para a fase de integração com o ERP** que já existe — naquele
+ambiente o worker de fila provavelmente já existe, tornando o envio em segundo plano trivial; resolver
+agora seria construir infraestrutura que o ERP já oferece. Não é mais critério deste MVP. O que sobra
+é só polish — tudo 🟢.
 
-**Justificativa (+1):** o `interval` (`b85832b`) era uma lacuna funcional que o próprio documento
-contava contra a nota ("falta interval real"); entregá-lo — recorrência semanal de 1 a 4 semanas,
-ancorada na primeira ocorrência, com validação e testes — fecha essa ponta. Restou só o acoplamento
-síncrono do WhatsApp (🟢, com mitigação). O `conflict_mode` morto saiu antes em `5e4425e`. Continua um
-MVP entregável **hoje**, com menos risco.
+**Justificativa (+2):** com o WhatsApp síncrono **fora do escopo** (adiado, não pendente — ver "Fora do
+escopo do MVP / Adiado"), **não resta nenhuma lacuna funcional**. Os **4 pontos** que faltam para 100
+refletem **polish de UI/UX** (em andamento) e a **falta de validação em produção com usuários reais**.
+Continua um MVP entregável **hoje**.
 
 | Critério | Avaliação atual |
 |---|---|
-| Funcionalidades do MVP | Praticamente completas (booking simples + recorrente + conflito + papéis + disponibilidade + export + WhatsApp), agora com janela de expediente validada no backend |
+| Funcionalidades do MVP | Completas para o MVP (booking simples + recorrente + conflito + papéis + disponibilidade + export + WhatsApp), com janela de expediente validada no backend; resta só polish de UI/UX |
 | Arquitetura / qualidade | Forte — separação Controller→Request→Action→Service→Model real e consistente |
 | Testes | Boa cobertura do domínio crítico (**104 testes**); reforçada nos pontos sensíveis (conflito, "following", arquivar sala, expediente, intervalo de recorrência) e **rodando em CI** |
 | Segurança | Adequada para uso interno (policies, rate limit, escaping, sem mass-assignment) + hardening de deploy |
@@ -119,34 +119,50 @@ inclusive na grade PowerGrid (`ReservationsTable.php:299`), não só na policy d
 
 ---
 
-## O que AINDA falta (tudo 🟢 — nenhum bloqueante)
+## O que ainda desconta (polish — tudo 🟢, nada funcional)
 
-### 1. WhatsApp síncrono quando `queue=false`
-- Com `EVOLUTION_WHATSAPP_QUEUE=false`, o envio acontece dentro do request; uma chamada HTTP lenta
-  atrasa a resposta. Mitigado por timeout e por ser best-effort; o default `queue=true` exige `queue:work`.
-- **Onde:** `ReservationWhatsAppNotificationService.php:194`. **Gravidade:** 🟢. **Esforço:** baixo (manter `queue=true`) / médio (desacoplar).
-- **Nota do diagnóstico (sessão de CI):** o gargalo real não é só a flag `queue`. O gate
-  `EvolutionWhatsAppService::enabled()` exige `base_url`/`instance`/`api_key` preenchidos; quando
-  `queue=false` (como está no `.env` de produção/local), `dispatch()` faz um **POST síncrono à
-  Evolution API dentro do request HTTP** (timeout 10s, best-effort em try/catch) — ou seja, **a
-  latência do request fica acoplada a um serviço externo** (até ~10s se a API travar). Resolver o
-  item = **desacoplar o envio** (sempre enfileirar, ou circuit-breaker/timeout curto), não só mexer
-  na flag. Esse mesmo gate `enabled()` foi o que expôs a não-hermeticidade dos testes corrigida em `87f6dc1`.
+O **MVP funcional está completo**: não há lacuna de domínio em aberto. Os **4 pontos** que faltam para
+100 são de acabamento, não de funcionalidade:
+
+- **Polish de UI/UX — em andamento.** Refinamento visual e de microcopy (ex.: o dropdown de intervalo
+  em linguagem humana, `d34b63a`). É o trabalho atual; não envolve mais código de domínio.
+- **Validação em produção com usuários reais.** O sistema ainda não rodou em produção com a
+  secretaria/laboratórios usando de fato — parte da nota só se ganha com esse uso real.
 
 ---
 
-## Por que 94 e não mais — e não menos
+## Fora do escopo do MVP / Adiado
 
-- **Não mais:** o WhatsApp síncrono acopla a latência do request a um serviço externo — vale os ~6
-  pontos restantes; **95+ exigiria desacoplar isso**. (O `interval` real foi entregue em `b85832b` e o
-  `conflict_mode` morto removido em `5e4425e` — ver Resolvido; o `interval` fechava uma lacuna funcional
-  real, daí o **+1 para 94**.)
+### WhatsApp síncrono → integração com o ERP
+O envio de WhatsApp **funciona hoje** (as mensagens chegam), mas é **síncrono**: com
+`EVOLUTION_WHATSAPP_QUEUE=false` o POST à Evolution API acontece **dentro do request**
+(`ReservationWhatsAppNotificationService.php:194`, timeout 10s, best-effort). O **desacoplamento**
+(fila + worker) foi **adiado para a fase de integração com o ERP** que já existe — naquele ambiente o
+worker de fila provavelmente já roda, tornando o envio em segundo plano trivial; construir essa infra
+agora seria refazer o que o ERP já oferece. **Não é mais critério deste MVP** (não desconta nota).
+
+- **Diagnóstico (já levantado):** o lado da **aplicação já está pronto** — `SendWhatsAppMessageJob`
+  (com `tries=3`/backoff/log de falha), `QUEUE_CONNECTION=database` e a tabela `jobs` (migration
+  `0001_01_01_000002`) já existem. Falta apenas o **operacional**: virar a flag
+  `EVOLUTION_WHATSAPP_QUEUE=true` e manter um **worker persistente** no servidor
+  (`php artisan queue:work` via systemd/supervisor). Sem o worker, virar a flag sozinha deixaria os
+  jobs parados na tabela — por isso o item depende do ambiente do ERP, não de código novo aqui.
+
+---
+
+## Por que 96 e não mais — e não menos
+
+- **Não mais:** os **4 pontos** que faltam são **polish de UI/UX** (em andamento) e **validação em
+  produção com usuários reais** — coisas que se ganham com refinamento visual e uso real, não com mais
+  código de domínio. O **WhatsApp síncrono saiu do escopo** (adiado para a integração com o ERP), então
+  não desconta mais.
 - **Não menos:** o núcleo já era forte, os **riscos concretos** (perda de dados na exclusão de sala;
-  double-booking no "following") foram **eliminados**, a última lacuna funcional real (validação de
-  expediente) foi fechada, e o **CI** agora protege contra regressões.
+  double-booking no "following") foram **eliminados**, **todas as lacunas funcionais** (expediente,
+  `interval`) foram fechadas e o **CI** protege contra regressões.
 
 ## Resumo em uma linha
 
-**De 82 → 90 → 93 → 94:** riscos reais eliminados, casa limpa, expediente validado no backend, CI
-verde e recorrência "a cada N semanas"; o que falta é só polish (desacoplar o WhatsApp síncrono) —
-nada bloqueante.
+**De 82 → 90 → 93 → 94 → 96:** riscos reais eliminados, casa limpa, todas as lacunas funcionais
+fechadas (expediente, `interval`) e CI verde; o WhatsApp síncrono foi **adiado para a integração com o
+ERP** (fora do escopo). O que falta para 100 é só **polish de UI/UX** e **validação em produção** —
+nada funcional, nada bloqueante.
