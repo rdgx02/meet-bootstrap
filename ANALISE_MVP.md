@@ -1,26 +1,28 @@
 # Análise de MVP — Meet LADETEC
 
-> Análise original em **2026-06-01** (82/100). Revisada em **2026-06-09** ao longo de melhorias
-> sucessivas: **82 → 90 → 93**. Referência de "100%" = **MVP funcional pronto para entregar** a uma
-> secretaria interna (não produção enterprise). Avaliação subjetiva, baseada em leitura do código e
-> execução da suíte (**98 testes, 341 asserções**).
+> Análise original em **2026-06-01** (82/100). Revisada em **2026-06-09** e **2026-06-12** ao longo de
+> melhorias sucessivas: **82 → 90 → 93 → 94**. Referência de "100%" = **MVP funcional pronto para
+> entregar** a uma secretaria interna (não produção enterprise). Avaliação subjetiva, baseada em leitura
+> do código e execução da suíte (**104 testes, 376 asserções**).
 
-## Nota geral: 93/100 (para MVP) — antes: 90/100 (+3)
+## Nota geral: 94/100 (para MVP) — antes: 93/100 (+1)
 
-A nota subiu porque os dois pontos que o próprio documento citava como barreira aos 95 foram
-fechados: a **validação de janela de expediente** (lacuna funcional real num sistema de reserva) e o
-**CI** (que agora guarda regressões). O que sobra é polish e feature incompleta — tudo 🟢.
+A nota chegou a 93 fechando os dois pontos que o próprio documento citava como barreira aos 95: a
+**validação de janela de expediente** (lacuna funcional real) e o **CI** (que guarda regressões). O
+**+1 para 94** veio de fechar a última *feature* incompleta — o **`interval` real** ("a cada N
+semanas", `b85832b`). O que sobra é só polish — tudo 🟢.
 
-**Justificativa (+3):** validar o expediente fechou a última lacuna funcional real e o CI verde passa
-a guardar regressões; o que ainda segura em 93 é `interval` não suportado e o acoplamento síncrono do
-WhatsApp (o `conflict_mode` meio-feito foi removido em `5e4425e` — ver Resolvido). Continua um MVP
-entregável **hoje**, com menos risco.
+**Justificativa (+1):** o `interval` (`b85832b`) era uma lacuna funcional que o próprio documento
+contava contra a nota ("falta interval real"); entregá-lo — recorrência semanal de 1 a 4 semanas,
+ancorada na primeira ocorrência, com validação e testes — fecha essa ponta. Restou só o acoplamento
+síncrono do WhatsApp (🟢, com mitigação). O `conflict_mode` morto saiu antes em `5e4425e`. Continua um
+MVP entregável **hoje**, com menos risco.
 
 | Critério | Avaliação atual |
 |---|---|
 | Funcionalidades do MVP | Praticamente completas (booking simples + recorrente + conflito + papéis + disponibilidade + export + WhatsApp), agora com janela de expediente validada no backend |
 | Arquitetura / qualidade | Forte — separação Controller→Request→Action→Service→Model real e consistente |
-| Testes | Boa cobertura do domínio crítico (**98 testes**); reforçada nos pontos sensíveis (conflito, "following", arquivar sala, expediente) e **rodando em CI** |
+| Testes | Boa cobertura do domínio crítico (**104 testes**); reforçada nos pontos sensíveis (conflito, "following", arquivar sala, expediente, intervalo de recorrência) e **rodando em CI** |
 | Segurança | Adequada para uso interno (policies, rate limit, escaping, sem mass-assignment) + hardening de deploy |
 | Performance | Sem problemas no volume esperado (uma secretaria) |
 | Bugs/riscos concretos | Os dois riscos concretos da v1 (perda de dados e double-booking) foram eliminados |
@@ -78,9 +80,21 @@ condição morta em `CreateRecurringReservationSeriesAction`, a cópia inerte em
 `conflict_mode` foi **dropada** de `reservation_series` via migration reversível (`down()` recria
 simétrico). **Comportamento strict preservado** e suíte **98 verde**.
 
-> Observação: a suíte saiu de 87 para **98 testes**, com a cobertura nova concentrada nos pontos
-> críticos (service de conflito, o bug do "following", arquivar/reativar sala, janela de expediente)
-> e agora **executada automaticamente em CI** — não foi volume vazio.
+### ✅ 8. `interval` real ("a cada N semanas") — `b85832b` (+ dropdown `d34b63a`)  (era 🟢, feature incompleta)
+O gerador de ocorrências **passa a ler o `interval`** (antes inerte, fixo em 1). A recorrência
+**semanal** aceita intervalo de **1 a 4 semanas**, ancorado na **primeira ocorrência gerada** — o que
+corrige o início no meio da semana (uma série quinzenal começando numa quarta não perde a primeira
+segunda). Validação `nullable|integer|min:1|max:4` (PT-BR) nos FormRequests de criação e edição de
+série; `following`/`all` herdam a cadência na regeneração. **Diária e mensal seguem fixas em 1.**
+Conflito e expediente continuam valendo por ocorrência. **Sem migration** (a coluna já existia).
+Coberto por `RecurringIntervalTest` (red→green: datas de 2 em 2 na criação e na regeneração, início no
+meio da semana ancorado na 1ª ocorrência, interval inválido rejeitado, série anual sem truncamento) →
+suíte **104 verde**. **UX (`d34b63a`):** o campo virou um **dropdown em linguagem humana** ("Toda
+semana / A cada N semanas") em vez de input numérico — o caso comum ("toda semana") fica óbvio.
+
+> Observação: a suíte saiu de 87 para **104 testes**, com a cobertura nova concentrada nos pontos
+> críticos (service de conflito, o bug do "following", arquivar/reativar sala, janela de expediente,
+> intervalo de recorrência) e agora **executada automaticamente em CI** — não foi volume vazio.
 
 ---
 
@@ -107,11 +121,7 @@ inclusive na grade PowerGrid (`ReservationsTable.php:299`), não só na policy d
 
 ## O que AINDA falta (tudo 🟢 — nenhum bloqueante)
 
-### 1. `interval` sempre 1
-- A coluna `interval` existe nas séries mas é sempre gravada como `1` — não há "a cada 2 semanas".
-- **Onde:** Actions de série (`'interval' => 1`). **Gravidade:** 🟢. **Esforço:** médio.
-
-### 2. WhatsApp síncrono quando `queue=false`
+### 1. WhatsApp síncrono quando `queue=false`
 - Com `EVOLUTION_WHATSAPP_QUEUE=false`, o envio acontece dentro do request; uma chamada HTTP lenta
   atrasa a resposta. Mitigado por timeout e por ser best-effort; o default `queue=true` exige `queue:work`.
 - **Onde:** `ReservationWhatsAppNotificationService.php:194`. **Gravidade:** 🟢. **Esforço:** baixo (manter `queue=true`) / médio (desacoplar).
@@ -125,17 +135,18 @@ inclusive na grade PowerGrid (`ReservationsTable.php:299`), não só na policy d
 
 ---
 
-## Por que 93 e não mais — e não menos
+## Por que 94 e não mais — e não menos
 
-- **Não mais:** falta `interval` real e o WhatsApp síncrono acopla a latência do request a um serviço
-  externo. Somados, valem os ~7 pontos restantes. 95+ exigiria fechar essas pontas. (O `conflict_mode`
-  era código morto 🟢 — removê-lo em `5e4425e` limpou a base, mas não fechou lacuna funcional nem
-  eliminou risco concreto, os dois movimentos que mexem na nota; por isso **segue 93**.)
+- **Não mais:** o WhatsApp síncrono acopla a latência do request a um serviço externo — vale os ~6
+  pontos restantes; **95+ exigiria desacoplar isso**. (O `interval` real foi entregue em `b85832b` e o
+  `conflict_mode` morto removido em `5e4425e` — ver Resolvido; o `interval` fechava uma lacuna funcional
+  real, daí o **+1 para 94**.)
 - **Não menos:** o núcleo já era forte, os **riscos concretos** (perda de dados na exclusão de sala;
   double-booking no "following") foram **eliminados**, a última lacuna funcional real (validação de
   expediente) foi fechada, e o **CI** agora protege contra regressões.
 
 ## Resumo em uma linha
 
-**De 82 → 90 → 93:** riscos reais eliminados, casa limpa, expediente validado no backend e CI verde;
-o que falta é só polish (`interval`, desacoplar o WhatsApp síncrono) — nada bloqueante.
+**De 82 → 90 → 93 → 94:** riscos reais eliminados, casa limpa, expediente validado no backend, CI
+verde e recorrência "a cada N semanas"; o que falta é só polish (desacoplar o WhatsApp síncrono) —
+nada bloqueante.
