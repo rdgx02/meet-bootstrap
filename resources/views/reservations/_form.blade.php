@@ -433,18 +433,17 @@
             @if (! $isEdit)
                 <div class="app-form-field" x-show="bookingMode === 'recurring' && recurrenceFrequency === 'weekly'" x-cloak>
                     <label for="recurrence_interval" class="app-form-label">A cada quantas semanas?</label>
-                    <input
+                    <select
                         id="recurrence_interval"
-                        type="number"
                         name="recurrence_interval"
-                        value="{{ old('recurrence_interval', 1) }}"
-                        min="1"
-                        max="4"
-                        step="1"
-                        inputmode="numeric"
-                        class="form-control @error('recurrence_interval') is-invalid @enderror"
+                        class="form-select @error('recurrence_interval') is-invalid @enderror"
                     >
-                    <small class="text-body-secondary">1 = toda semana, 2 = quinzenal, até 4.</small>
+                        @foreach ([1 => 'Toda semana', 2 => 'A cada 2 semanas', 3 => 'A cada 3 semanas', 4 => 'A cada 4 semanas'] as $intervalValue => $intervalLabel)
+                            <option value="{{ $intervalValue }}" @selected((string) old('recurrence_interval', 1) === (string) $intervalValue)>
+                                {{ $intervalLabel }}
+                            </option>
+                        @endforeach
+                    </select>
                     @error('recurrence_interval')
                         <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror
