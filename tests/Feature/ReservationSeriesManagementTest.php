@@ -34,7 +34,6 @@ class ReservationSeriesManagementTest extends TestCase
             'frequency' => 'weekly',
             'interval' => 1,
             'weekdays' => [1, 3],
-            'conflict_mode' => 'strict',
             'status' => 'active',
         ]);
 
@@ -78,7 +77,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'frequency' => 'daily',
                 'interval' => 1,
                 'weekdays' => null,
-                'conflict_mode' => 'strict',
                 'status' => 'active',
             ]);
 
@@ -163,7 +161,6 @@ class ReservationSeriesManagementTest extends TestCase
             'frequency' => 'weekly',
             'interval' => 1,
             'weekdays' => [1],
-            'conflict_mode' => 'strict',
             'status' => 'active',
         ]);
 
@@ -209,7 +206,6 @@ class ReservationSeriesManagementTest extends TestCase
             'frequency' => 'weekly',
             'interval' => 1,
             'weekdays' => [1],
-            'conflict_mode' => 'strict',
             'status' => 'active',
         ]);
 
@@ -245,7 +241,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'frequency' => 'daily',
                 'interval' => 1,
                 'weekdays' => null,
-                'conflict_mode' => 'strict',
                 'status' => 'active',
             ]);
 
@@ -347,7 +342,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'frequency' => 'daily',
                 'interval' => 1,
                 'weekdays' => null,
-                'conflict_mode' => 'strict',
                 'status' => 'active',
             ]);
 
@@ -407,7 +401,6 @@ class ReservationSeriesManagementTest extends TestCase
             'frequency' => 'weekly',
             'interval' => 1,
             'weekdays' => [1, 3],
-            'conflict_mode' => 'strict',
             'status' => 'active',
         ]);
 
@@ -438,7 +431,6 @@ class ReservationSeriesManagementTest extends TestCase
             'frequency' => 'weekly',
             'interval' => 1,
             'weekdays' => [1, 3],
-            'conflict_mode' => 'strict',
             'status' => 'active',
         ]);
 
@@ -467,7 +459,6 @@ class ReservationSeriesManagementTest extends TestCase
             'frequency' => 'weekly',
             'interval' => 1,
             'weekdays' => [1, 3],
-            'conflict_mode' => 'strict',
             'status' => 'active',
         ]);
 
@@ -517,7 +508,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'frequency' => 'daily',
                 'interval' => 1,
                 'weekdays' => null,
-                'conflict_mode' => 'strict',
                 'status' => 'active',
             ]);
 
@@ -594,7 +584,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'frequency' => 'daily',
                 'interval' => 1,
                 'weekdays' => null,
-                'conflict_mode' => 'strict',
                 'status' => 'active',
             ]);
 
@@ -712,7 +701,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'frequency' => 'daily',
                 'interval' => 1,
                 'weekdays' => null,
-                'conflict_mode' => 'strict',
                 'status' => 'active',
             ]);
 
@@ -811,7 +799,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'frequency' => 'daily',
                 'interval' => 1,
                 'weekdays' => null,
-                'conflict_mode' => 'strict',
                 'status' => 'active',
             ]);
 
@@ -875,7 +862,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'frequency' => 'daily',
                 'interval' => 1,
                 'weekdays' => null,
-                'conflict_mode' => 'strict',
                 'status' => 'active',
             ]);
 
@@ -945,7 +931,6 @@ class ReservationSeriesManagementTest extends TestCase
                 'frequency' => 'daily',
                 'interval' => 1,
                 'weekdays' => null,
-                'conflict_mode' => 'strict',
                 'status' => 'active',
             ]);
 

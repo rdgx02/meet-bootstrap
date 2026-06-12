@@ -87,7 +87,6 @@ class UpdateReservationFollowingAction
                 'frequency' => (string) $series->frequency,
                 'interval' => (int) $series->interval,
                 'weekdays' => $series->weekdays,
-                'conflict_mode' => (string) $series->conflict_mode,
                 'status' => 'active',
             ]);
 

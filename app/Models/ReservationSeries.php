@@ -23,7 +23,6 @@ class ReservationSeries extends Model
         'frequency',
         'interval',
         'weekdays',
-        'conflict_mode',
         'status',
     ];
 

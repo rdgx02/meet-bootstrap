@@ -19,9 +19,8 @@ class CreateRecurringReservationSeriesAction
     public function execute(array $data, int $creatorId): array
     {
         $occurrences = $this->occurrenceGenerator->generate($data);
-        $conflictMode = 'strict';
 
-        return DB::transaction(function () use ($data, $creatorId, $occurrences, $conflictMode): array {
+        return DB::transaction(function () use ($data, $creatorId, $occurrences): array {
             $validOccurrences = [];
             $conflicts = [];
 
@@ -37,7 +36,7 @@ class CreateRecurringReservationSeriesAction
                 $validOccurrences[] = $occurrence;
             }
 
-            if ($conflicts !== [] && $conflictMode === 'strict') {
+            if ($conflicts !== []) {
                 throw RecurringReservationConflictException::forOccurrences($conflicts);
             }
 
@@ -61,7 +60,6 @@ class CreateRecurringReservationSeriesAction
                 'weekdays' => $data['recurrence_frequency'] === 'weekly'
                     ? array_values(array_map('intval', $data['recurrence_weekdays'] ?? []))
                     : null,
-                'conflict_mode' => $conflictMode,
                 'status' => 'active',
             ]);
 
