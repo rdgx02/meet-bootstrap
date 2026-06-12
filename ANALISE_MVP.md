@@ -12,8 +12,9 @@ fechados: a **validação de janela de expediente** (lacuna funcional real num s
 **CI** (que agora guarda regressões). O que sobra é polish e feature incompleta — tudo 🟢.
 
 **Justificativa (+3):** validar o expediente fechou a última lacuna funcional real e o CI verde passa
-a guardar regressões; o que ainda segura em 93 é só `conflict_mode` meio-feito, `interval` não
-suportado e o acoplamento síncrono do WhatsApp. Continua um MVP entregável **hoje**, com menos risco.
+a guardar regressões; o que ainda segura em 93 é `interval` não suportado e o acoplamento síncrono do
+WhatsApp (o `conflict_mode` meio-feito foi removido em `5e4425e` — ver Resolvido). Continua um MVP
+entregável **hoje**, com menos risco.
 
 | Critério | Avaliação atual |
 |---|---|
@@ -69,6 +70,14 @@ limpo (CI) o gate `EvolutionWhatsAppService::enabled()` retornava `false` e o jo
 Corrigido com o helper `fakeEvolutionWhatsApp()` na base `TestCase` (seta também `base_url`/`instance`/
 `api_key` fake) → CI verde, **98 testes**.
 
+### ✅ 7. `conflict_mode` (código morto) removido — `5e4425e`  (era 🟢)
+O modo de conflito das séries era fixo em `'strict'` e o caminho alternativo ("criar válidas e pular
+conflitantes") nunca foi exposto na UI nem executava — **código morto**. Removidos a variável e a
+condição morta em `CreateRecurringReservationSeriesAction`, a cópia inerte em
+`UpdateReservationFollowingAction` e o campo do `$fillable` em `ReservationSeries`; a coluna
+`conflict_mode` foi **dropada** de `reservation_series` via migration reversível (`down()` recria
+simétrico). **Comportamento strict preservado** e suíte **98 verde**.
+
 > Observação: a suíte saiu de 87 para **98 testes**, com a cobertura nova concentrada nos pontos
 > críticos (service de conflito, o bug do "following", arquivar/reativar sala, janela de expediente)
 > e agora **executada automaticamente em CI** — não foi volume vazio.
@@ -98,16 +107,11 @@ inclusive na grade PowerGrid (`ReservationsTable.php:299`), não só na policy d
 
 ## O que AINDA falta (tudo 🟢 — nenhum bloqueante)
 
-### 1. `conflict_mode` é código morto (feature pela metade)
-- `CreateRecurringReservationSeriesAction` fixa `$conflictMode = 'strict'` (`:22`), então o caminho
-  "criar válidas e pular conflitantes" nunca roda; a coluna `conflict_mode` só guarda `'strict'`.
-- **Onde:** `CreateRecurringReservationSeriesAction.php:22,40`. **Gravidade:** 🟢. **Esforço:** baixo (remover) / médio (expor "lenient" na UI).
-
-### 2. `interval` sempre 1
+### 1. `interval` sempre 1
 - A coluna `interval` existe nas séries mas é sempre gravada como `1` — não há "a cada 2 semanas".
 - **Onde:** Actions de série (`'interval' => 1`). **Gravidade:** 🟢. **Esforço:** médio.
 
-### 3. WhatsApp síncrono quando `queue=false`
+### 2. WhatsApp síncrono quando `queue=false`
 - Com `EVOLUTION_WHATSAPP_QUEUE=false`, o envio acontece dentro do request; uma chamada HTTP lenta
   atrasa a resposta. Mitigado por timeout e por ser best-effort; o default `queue=true` exige `queue:work`.
 - **Onde:** `ReservationWhatsAppNotificationService.php:194`. **Gravidade:** 🟢. **Esforço:** baixo (manter `queue=true`) / médio (desacoplar).
@@ -123,9 +127,10 @@ inclusive na grade PowerGrid (`ReservationsTable.php:299`), não só na policy d
 
 ## Por que 93 e não mais — e não menos
 
-- **Não mais:** o `conflict_mode` pela metade é ambiguidade no domínio mais complexo do app, falta
-  `interval` real, e o WhatsApp síncrono acopla a latência do request a um serviço externo. Somados,
-  valem os ~7 pontos restantes. 95+ exigiria fechar essas pontas.
+- **Não mais:** falta `interval` real e o WhatsApp síncrono acopla a latência do request a um serviço
+  externo. Somados, valem os ~7 pontos restantes. 95+ exigiria fechar essas pontas. (O `conflict_mode`
+  era código morto 🟢 — removê-lo em `5e4425e` limpou a base, mas não fechou lacuna funcional nem
+  eliminou risco concreto, os dois movimentos que mexem na nota; por isso **segue 93**.)
 - **Não menos:** o núcleo já era forte, os **riscos concretos** (perda de dados na exclusão de sala;
   double-booking no "following") foram **eliminados**, a última lacuna funcional real (validação de
   expediente) foi fechada, e o **CI** agora protege contra regressões.
@@ -133,4 +138,4 @@ inclusive na grade PowerGrid (`ReservationsTable.php:299`), não só na policy d
 ## Resumo em uma linha
 
 **De 82 → 90 → 93:** riscos reais eliminados, casa limpa, expediente validado no backend e CI verde;
-o que falta é só polish (`conflict_mode`, `interval`, desacoplar o WhatsApp síncrono) — nada bloqueante.
+o que falta é só polish (`interval`, desacoplar o WhatsApp síncrono) — nada bloqueante.
