@@ -56,7 +56,9 @@ class CreateRecurringReservationSeriesAction
                 'requester' => (string) $data['requester'],
                 'phone' => (string) $data['phone'],
                 'frequency' => (string) $data['recurrence_frequency'],
-                'interval' => 1,
+                'interval' => $data['recurrence_frequency'] === 'weekly'
+                    ? max(1, (int) ($data['recurrence_interval'] ?? 1))
+                    : 1,
                 'weekdays' => $data['recurrence_frequency'] === 'weekly'
                     ? array_values(array_map('intval', $data['recurrence_weekdays'] ?? []))
                     : null,

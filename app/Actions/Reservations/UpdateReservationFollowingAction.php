@@ -39,6 +39,7 @@ class UpdateReservationFollowingAction
             'recurrence_ends_on' => $originalSeriesEndsOn,
             'recurrence_frequency' => $series->frequency,
             'recurrence_weekdays' => $series->weekdays ?? [],
+            'recurrence_interval' => $series->interval,
         ]);
 
         return DB::transaction(function () use ($series, $data, $originalReservationDate, $originalSeriesEndsOn, $generatedOccurrences): ReservationSeries {

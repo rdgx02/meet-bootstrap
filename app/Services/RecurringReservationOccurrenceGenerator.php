@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Carbon\CarbonImmutable;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
 
 class RecurringReservationOccurrenceGenerator
@@ -12,10 +13,11 @@ class RecurringReservationOccurrenceGenerator
         $startsOn = CarbonImmutable::parse($data['recurrence_starts_on']);
         $endsOn = CarbonImmutable::parse($data['recurrence_ends_on']);
         $frequency = (string) $data['recurrence_frequency'];
+        $interval = max(1, (int) ($data['recurrence_interval'] ?? 1));
 
         $dates = match ($frequency) {
             'daily' => $this->generateDailyDates($startsOn, $endsOn),
-            'weekly' => $this->generateWeeklyDates($startsOn, $endsOn, $data['recurrence_weekdays'] ?? []),
+            'weekly' => $this->generateWeeklyDates($startsOn, $endsOn, $data['recurrence_weekdays'] ?? [], $interval),
             'monthly' => $this->generateMonthlyDates($startsOn, $endsOn),
             default => collect(),
         };
@@ -47,7 +49,7 @@ class RecurringReservationOccurrenceGenerator
         return $dates;
     }
 
-    private function generateWeeklyDates(CarbonImmutable $startsOn, CarbonImmutable $endsOn, array $weekdays): Collection
+    private function generateWeeklyDates(CarbonImmutable $startsOn, CarbonImmutable $endsOn, array $weekdays, int $interval): Collection
     {
         $selectedWeekdays = collect($weekdays)
             ->map(fn (mixed $weekday): int => (int) $weekday)
@@ -57,12 +59,25 @@ class RecurringReservationOccurrenceGenerator
             ->values()
             ->all();
 
+        // Âncora = a semana (segunda a domingo) da PRIMEIRA ocorrência gerada, não a
+        // de starts_on: a série conta de N em N a partir da primeira vez que de fato
+        // acontece. Assim um início no meio da semana (ex.: quarta) com o weekday
+        // caindo na segunda seguinte não perde a primeira ocorrência. Uma ocorrência
+        // só entra se o índice da sua semana for múltiplo do intervalo (interval=1
+        // reproduz exatamente o comportamento de toda-semana).
+        $anchorWeek = null;
+
         $dates = collect();
         $cursor = $startsOn;
 
         while ($cursor->lessThanOrEqualTo($endsOn)) {
             if (in_array($cursor->dayOfWeekIso, $selectedWeekdays, true)) {
-                $dates->push($cursor);
+                $anchorWeek ??= $cursor->startOfWeek(CarbonInterface::MONDAY);
+                $weekIndex = (int) $anchorWeek->diffInWeeks($cursor->startOfWeek(CarbonInterface::MONDAY));
+
+                if ($weekIndex % $interval === 0) {
+                    $dates->push($cursor);
+                }
             }
 
             $cursor = $cursor->addDay();

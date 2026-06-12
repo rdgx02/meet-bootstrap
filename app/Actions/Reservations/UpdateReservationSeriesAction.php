@@ -66,7 +66,9 @@ class UpdateReservationSeriesAction
                 'phone' => (string) $data['phone'],
                 'owner_user_id' => (int) $data['owner_user_id'],
                 'frequency' => (string) $data['recurrence_frequency'],
-                'interval' => 1,
+                'interval' => $data['recurrence_frequency'] === 'weekly'
+                    ? max(1, (int) ($data['recurrence_interval'] ?? 1))
+                    : 1,
                 'weekdays' => $data['recurrence_frequency'] === 'weekly'
                     ? array_values(array_map('intval', $data['recurrence_weekdays'] ?? []))
                     : null,

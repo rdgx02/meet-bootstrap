@@ -99,6 +99,7 @@ abstract class ReservationRequest extends FormRequest
                 'array',
             ],
             'recurrence_weekdays.*' => ['integer', Rule::in([1, 2, 3, 4, 5, 6, 7])],
+            'recurrence_interval' => ['nullable', 'integer', 'min:1', 'max:4'],
         ];
     }
 
@@ -126,6 +127,9 @@ abstract class ReservationRequest extends FormRequest
             'owner_user_id.exists' => 'Titular inválido.',
             'recurrence_frequency.required' => 'Selecione a frequência da recorrência.',
             'recurrence_weekdays.required' => 'Selecione ao menos um dia da semana para a recorrência semanal.',
+            'recurrence_interval.integer' => 'O intervalo deve ser um número inteiro entre 1 e 4.',
+            'recurrence_interval.min' => 'O intervalo deve ser um número inteiro entre 1 e 4.',
+            'recurrence_interval.max' => 'O intervalo deve ser um número inteiro entre 1 e 4.',
         ];
     }
 

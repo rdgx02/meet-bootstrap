@@ -384,6 +384,7 @@ class ReservationController extends Controller
             'recurrence_ends_on' => $series->ends_on,
             'recurrence_frequency' => $series->frequency,
             'recurrence_weekdays' => $series->weekdays ?? [],
+            'recurrence_interval' => $series->interval,
         ]);
 
         return $series->fresh(['room', 'owner']);
