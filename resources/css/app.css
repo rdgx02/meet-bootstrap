@@ -1683,9 +1683,10 @@ a {
 
 .lims-page-title {
     margin: 0;
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: #2b3748;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #1f2f43;
 }
 
 .lims-page-subtitle {
@@ -1951,7 +1952,7 @@ a {
 
 .power-grid-table thead th,
 .power-grid-table .thead th {
-    padding: 0.42rem 0.5rem;
+    padding: 0.42rem 0.6rem;
     border-bottom: 1px solid #d3d9ec;
     background: var(--app-table-head-bg);
     color: var(--app-brand);
@@ -1970,7 +1971,7 @@ a {
 }
 
 .power-grid-table tbody td {
-    padding: 0.34rem 0.45rem;
+    padding: 0.34rem 0.6rem !important;
     border-bottom: 1px solid #e7ebf0;
     border-right: 0;
     vertical-align: middle;
