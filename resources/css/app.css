@@ -1798,6 +1798,48 @@ a {
     flex-wrap: wrap;
 }
 
+.lims-filters-toggle-row {
+    display: flex;
+}
+
+.lims-filters-toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.lims-filters-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.05rem;
+    height: 1.05rem;
+    padding: 0 0.28rem;
+    border-radius: 999px;
+    background: var(--app-danger);
+    color: #ffffff;
+    font-size: 0.62rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.lims-filters-toggle-caret {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease;
+}
+
+.lims-filters-toggle-caret.is-open {
+    transform: rotate(180deg);
+}
+
+.lims-filters-toggle-caret svg {
+    width: 0.85rem;
+    height: 0.85rem;
+}
+
 .lims-manual-filters {
     margin-bottom: 0.45rem;
     padding: 0.58rem 0.62rem;

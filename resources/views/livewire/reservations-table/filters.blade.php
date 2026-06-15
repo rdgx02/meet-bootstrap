@@ -1,6 +1,10 @@
 <div class="lims-grid-toolbar-wrap">
     @php
         $canManageReservations = auth()->user()?->canManageAgenda() ?? false;
+        $activeFilterCount = collect($manualFilters)
+            ->except('per_page')
+            ->reject(fn ($value) => $value === null || $value === '')
+            ->count();
     @endphp
 
     @if (session('success'))
@@ -15,13 +19,40 @@
         </div>
     @endif
 
+    <div class="lims-filters-toggle-row">
+        <button
+            type="button"
+            class="btn btn-sm lims-toolbar-btn lims-filters-toggle"
+            wire:click="$toggle('filtersOpen')"
+            aria-expanded="{{ $filtersOpen ? 'true' : 'false' }}"
+            aria-controls="reservation-filters-panel"
+        >
+            <span class="lims-toolbar-btn-icon-mark" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none">
+                    <path d="M3 5h14M6 10h8M8.5 15h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+            <span>Filtros</span>
+            @if (! $filtersOpen && $activeFilterCount > 0)
+                <span class="lims-filters-badge">{{ $activeFilterCount }}</span>
+            @endif
+            <span @class(['lims-filters-toggle-caret', 'is-open' => $filtersOpen]) aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none">
+                    <path d="M6 8l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+        </button>
+    </div>
+
     <form
         method="GET"
         action="{{ $scope === 'history' ? route('reservations.history') : route('reservations.index') }}"
-        class="lims-manual-filters"
+        @class(['lims-manual-filters', 'd-none' => ! $filtersOpen])
+        id="reservation-filters-panel"
     >
         <div class="lims-manual-filters-grid">
             <input type="hidden" name="per_page" value="{{ $manualFilters['per_page'] ?? $initialPerPage }}">
+            <input type="hidden" name="filters_open" value="1">
 
             <div>
                 <label for="toolbar_code" class="form-label fw-semibold mb-1">Código</label>
@@ -135,9 +166,9 @@
 
         <div class="lims-manual-filters-actions">
             <button type="submit" class="btn btn-sm lims-toolbar-btn">Aplicar filtros</button>
-            <a href="{{ $scope === 'history' ? route('reservations.history') : route('reservations.index') }}" class="btn btn-sm lims-toolbar-btn">
+            <button type="button" class="btn btn-sm lims-toolbar-btn" wire:click="clearFilters">
                 Limpar filtros
-            </a>
+            </button>
         </div>
     </form>
 

@@ -27,6 +27,8 @@ final class ReservationsTable extends PowerGridComponent
 
     public array $toolbarRooms = [];
 
+    public bool $filtersOpen = false;
+
     public function mount(string $scope = 'upcoming', array $filters = []): void
     {
         $this->scope = $scope;
@@ -43,6 +45,7 @@ final class ReservationsTable extends PowerGridComponent
             'number' => [],
         ];
         $this->manualFilters = $filters;
+        $this->filtersOpen = request()->boolean('filters_open');
         $this->initialPerPage = $this->resolvePerPage($filters['per_page'] ?? 20);
         $this->toolbarRooms = $this->rooms()
             ->map(fn (Room $room): array => [
@@ -54,6 +57,18 @@ final class ReservationsTable extends PowerGridComponent
         $this->sortDirection = $scope === 'history' ? 'desc' : 'asc';
 
         parent::mount();
+    }
+
+    public function clearFilters(): void
+    {
+        $this->manualFilters = ['per_page' => $this->initialPerPage];
+        $this->resetPage($this->scope === 'history' ? 'historyPage' : 'reservationsPage');
+
+        $this->js(<<<'JS'
+            document
+                .querySelectorAll('#reservation-filters-panel .js-date-picker, #reservation-filters-panel .js-time-picker')
+                .forEach((input) => input._flatpickr && input._flatpickr.clear());
+        JS);
     }
 
     public function setUp(): array
