@@ -94,7 +94,7 @@ final class ReservationsTable extends PowerGridComponent
     {
         return PowerGrid::fields()
             ->add('id')
-            ->add('code', fn (Reservation $reservation): string => 'AG-' . str_pad((string) $reservation->id, 5, '0', STR_PAD_LEFT))
+            ->add('code', fn (Reservation $reservation): string => '<span class="app-code-pill">AG-' . str_pad((string) $reservation->id, 5, '0', STR_PAD_LEFT) . '</span>')
             ->add('date')
             ->add('date_br', fn (Reservation $reservation): string => $reservation->date_br)
             ->add('start_time')
