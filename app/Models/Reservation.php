@@ -112,4 +112,28 @@ class Reservation extends Model
                 });
         });
     }
+
+    public function scopeForListScope(Builder $query, string $scope): Builder
+    {
+        $today = now()->toDateString();
+        $currentTime = now()->format('H:i:s');
+
+        if ($scope === 'history') {
+            return $query->where(function (Builder $historyQuery) use ($today, $currentTime): void {
+                $historyQuery->whereDate('date', '<', $today)
+                    ->orWhere(function (Builder $sameDayQuery) use ($today, $currentTime): void {
+                        $sameDayQuery->whereDate('date', '=', $today)
+                            ->where('end_time', '<=', $currentTime);
+                    });
+            });
+        }
+
+        return $query->where(function (Builder $upcomingQuery) use ($today, $currentTime): void {
+            $upcomingQuery->whereDate('date', '>', $today)
+                ->orWhere(function (Builder $sameDayQuery) use ($today, $currentTime): void {
+                    $sameDayQuery->whereDate('date', '=', $today)
+                        ->where('end_time', '>', $currentTime);
+                });
+        });
+    }
 }

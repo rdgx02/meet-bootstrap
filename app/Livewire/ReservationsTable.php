@@ -116,7 +116,7 @@ final class ReservationsTable extends PowerGridComponent
             ->add('start_time_br', fn (Reservation $reservation): string => $reservation->start_time_br)
             ->add('end_time')
             ->add('end_time_br', fn (Reservation $reservation): string => $reservation->end_time_br)
-            ->add('room_name', fn (Reservation $reservation): string => e($reservation->room?->name ?? '-'))
+            ->add('room_name', fn (Reservation $reservation): string => '<span class="app-room-pill">' . e($reservation->room?->name ?? '-') . '</span>')
             ->add('title', fn (Reservation $reservation): string => e($reservation->title))
             ->add('requester', fn (Reservation $reservation): string => e($reservation->requester))
             ->add('user_name', fn (Reservation $reservation): string => e($reservation->user?->name ?? '-'))
@@ -306,34 +306,9 @@ final class ReservationsTable extends PowerGridComponent
 
     private function baseScopedReservationsQuery(): Builder
     {
-        $today = now()->toDateString();
-        $currentTime = now()->format('H:i:s');
-
-        $query = Reservation::query();
-        $user = auth()->user();
-        $query->visibleTo($user);
-
-        if ($this->scope === 'history') {
-            $query->where(function (Builder $historyQuery) use ($today, $currentTime): void {
-                $historyQuery->whereDate('date', '<', $today)
-                    ->orWhere(function (Builder $sameDayQuery) use ($today, $currentTime): void {
-                        $sameDayQuery->whereDate('date', '=', $today)
-                            ->where('end_time', '<=', $currentTime);
-                    });
-            });
-
-            return $query;
-        }
-
-        $query->where(function (Builder $upcomingQuery) use ($today, $currentTime): void {
-            $upcomingQuery->whereDate('date', '>', $today)
-                ->orWhere(function (Builder $sameDayQuery) use ($today, $currentTime): void {
-                    $sameDayQuery->whereDate('date', '=', $today)
-                        ->where('end_time', '>', $currentTime);
-                });
-        });
-
-        return $query;
+        return Reservation::query()
+            ->visibleTo(auth()->user())
+            ->forListScope($this->scope);
     }
 
     private function applyManualFilters(Builder $query): void

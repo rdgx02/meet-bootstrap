@@ -329,8 +329,12 @@ class ReservationController extends Controller
             ? 'Consulte reservas que já aconteceram (somente leitura).'
             : 'Consulte e gerencie os agendamentos de hoje e futuros.';
         $filters = $request->validated();
+        $total = Reservation::query()
+            ->visibleTo($request->user())
+            ->forListScope($scope)
+            ->count();
 
-        return view('reservations.index', compact('scope', 'title', 'subtitle', 'filters'));
+        return view('reservations.index', compact('scope', 'title', 'subtitle', 'filters', 'total'));
     }
 
     private function returnToSeries(Reservation $reservation): ?string
