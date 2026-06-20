@@ -197,12 +197,13 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($dayReservations as $reservation)
+                                        @php($podeVerDetalhes = $reservation->isDetailVisibleTo($viewer))
                                         <tr>
                                             <td class="fw-semibold">{{ $reservation->room?->name ?? '-' }}</td>
                                             <td>{{ $reservation->start_time_br }} às {{ $reservation->end_time_br }}</td>
-                                            <td>{{ $reservation->title }}</td>
-                                            <td>{{ $reservation->requester }}</td>
-                                            <td>{{ $reservation->user?->name ?? '-' }}</td>
+                                            <td>{{ $podeVerDetalhes ? $reservation->title : 'Reservado' }}</td>
+                                            <td>{{ $podeVerDetalhes ? $reservation->requester : '—' }}</td>
+                                            <td>{{ $podeVerDetalhes ? ($reservation->user?->name ?? '-') : '—' }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>

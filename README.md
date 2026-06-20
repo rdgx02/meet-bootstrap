@@ -184,7 +184,7 @@ Observações:
 - Modo de sala específica com resumo principal de horários livres e ocupados.
 - Tabela operacional do dia preservada abaixo da disponibilidade para apoio da secretaria.
 - Identidade visual ajustada para o padrão institucional do LADETEC.
-- Suíte automatizada atual com `87` testes passando.
+- Suíte automatizada atual com `112` testes passando.
 
 ## Próximos passos sugeridos
 - Revisar visualmente os fluxos principais em uso real da secretaria.

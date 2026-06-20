@@ -16,9 +16,9 @@ class RecurringReservationOccurrenceGenerator
         $interval = max(1, (int) ($data['recurrence_interval'] ?? 1));
 
         $dates = match ($frequency) {
-            'daily' => $this->generateDailyDates($startsOn, $endsOn),
+            'daily' => $this->generateDailyDates($startsOn, $endsOn, $interval),
             'weekly' => $this->generateWeeklyDates($startsOn, $endsOn, $data['recurrence_weekdays'] ?? [], $interval),
-            'monthly' => $this->generateMonthlyDates($startsOn, $endsOn),
+            'monthly' => $this->generateMonthlyDates($startsOn, $endsOn, $interval),
             default => collect(),
         };
 
@@ -36,14 +36,14 @@ class RecurringReservationOccurrenceGenerator
         });
     }
 
-    private function generateDailyDates(CarbonImmutable $startsOn, CarbonImmutable $endsOn): Collection
+    private function generateDailyDates(CarbonImmutable $startsOn, CarbonImmutable $endsOn, int $interval = 1): Collection
     {
         $dates = collect();
         $cursor = $startsOn;
 
         while ($cursor->lessThanOrEqualTo($endsOn)) {
             $dates->push($cursor);
-            $cursor = $cursor->addDay();
+            $cursor = $cursor->addDays(max(1, $interval));
         }
 
         return $dates;
@@ -86,15 +86,21 @@ class RecurringReservationOccurrenceGenerator
         return $dates;
     }
 
-    private function generateMonthlyDates(CarbonImmutable $startsOn, CarbonImmutable $endsOn): Collection
+    private function generateMonthlyDates(CarbonImmutable $startsOn, CarbonImmutable $endsOn, int $interval = 1): Collection
     {
+        $interval = max(1, $interval);
         $dates = collect();
         $cursor = $startsOn->startOfMonth();
         $dayOfMonth = $startsOn->day;
+        $monthIndex = 0;
 
         while ($cursor->lessThanOrEqualTo($endsOn->startOfMonth())) {
-            if ($dayOfMonth <= $cursor->daysInMonth) {
-                $candidate = $cursor->setDay($dayOfMonth);
+            if ($monthIndex % $interval === 0) {
+                // "Clampa" para o último dia quando o mês não tem o dia-âncora
+                // (ex.: série no dia 31 cai em 28/02, 30/04...). Assim nenhuma
+                // ocorrência é perdida silenciosamente em meses curtos.
+                $targetDay = min($dayOfMonth, $cursor->daysInMonth);
+                $candidate = $cursor->setDay($targetDay);
 
                 if ($candidate->greaterThanOrEqualTo($startsOn) && $candidate->lessThanOrEqualTo($endsOn)) {
                     $dates->push($candidate);
@@ -102,6 +108,7 @@ class RecurringReservationOccurrenceGenerator
             }
 
             $cursor = $cursor->addMonth();
+            $monthIndex++;
         }
 
         return $dates;

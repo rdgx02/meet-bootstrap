@@ -14,9 +14,24 @@ class EvolutionWhatsAppService
     public function enabled(): bool
     {
         return (bool) config('services.evolution_whatsapp.enabled')
-            && filled(config('services.evolution_whatsapp.base_url'))
+            && $this->hasValidBaseUrl()
             && filled(config('services.evolution_whatsapp.instance'))
             && filled(config('services.evolution_whatsapp.api_key'));
+    }
+
+    /**
+     * Garante que a base_url é uma URL http(s) válida antes de enviar a apikey
+     * para ela — evita SSRF/exfiltração de credencial por config malformada.
+     */
+    private function hasValidBaseUrl(): bool
+    {
+        $baseUrl = (string) config('services.evolution_whatsapp.base_url');
+
+        if (! filled($baseUrl) || filter_var($baseUrl, FILTER_VALIDATE_URL) === false) {
+            return false;
+        }
+
+        return in_array(strtolower((string) parse_url($baseUrl, PHP_URL_SCHEME)), ['http', 'https'], true);
     }
 
     public function sendText(string $phone, string $message): void

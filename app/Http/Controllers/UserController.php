@@ -17,7 +17,7 @@ class UserController extends Controller
 
         $users = User::query()
             ->orderByDesc('is_active')
-            ->orderByRaw("CASE role WHEN ? THEN 0 WHEN ? THEN 1 ELSE 2 END", [
+            ->orderByRaw('CASE role WHEN ? THEN 0 WHEN ? THEN 1 ELSE 2 END', [
                 UserRole::Admin->value,
                 UserRole::Secretary->value,
             ])

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Reservation;
 use App\Models\Room;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -24,16 +25,16 @@ class AvailabilityOverviewService
      * @param  Collection<int, Reservation>  $reservations
      * @return Collection<int, array{room: Room, reservations: Collection<int, Reservation>, free_ranges: array<int, array{start: string, end: string, label: string}>, occupied_ranges: array<int, array{start: string, end: string, label: string, title: string, requester: string}>, is_free_all_day: bool, status: string, status_label: string, free_summary: string, occupied_summary: string}>
      */
-    public function summarize(Collection $rooms, Collection $reservations, ?Room $selectedRoom = null): Collection
+    public function summarize(Collection $rooms, Collection $reservations, ?Room $selectedRoom = null, ?User $viewer = null): Collection
     {
         $reservationsByRoom = $reservations->groupBy('room_id');
 
-        return $rooms->map(function (Room $room) use ($reservationsByRoom): array {
+        return $rooms->map(function (Room $room) use ($reservationsByRoom, $viewer): array {
             /** @var Collection<int, Reservation> $roomReservations */
             $roomReservations = $reservationsByRoom->get($room->id, collect())->values();
             $status = $this->resolveStatus($roomReservations);
             $freeRanges = $this->buildFreeRanges($roomReservations);
-            $occupiedRanges = $this->buildOccupiedRanges($roomReservations);
+            $occupiedRanges = $this->buildOccupiedRanges($roomReservations, $viewer);
 
             return [
                 'room' => $room,
@@ -92,15 +93,20 @@ class AvailabilityOverviewService
      * @param  Collection<int, Reservation>  $reservations
      * @return array<int, array{start: string, end: string, label: string, title: string, requester: string}>
      */
-    public function buildOccupiedRanges(Collection $reservations): array
+    public function buildOccupiedRanges(Collection $reservations, ?User $viewer = null): array
     {
-        return $reservations->map(function (Reservation $reservation): array {
+        return $reservations->map(function (Reservation $reservation) use ($viewer): array {
+            // Usuário comum vê apenas a ocupação (horário) de reservas alheias,
+            // nunca o título/solicitante. Os detalhes das próprias reservas e os
+            // de gestores continuam visíveis. Preserva a privacidade da agenda.
+            $showDetails = $reservation->isDetailVisibleTo($viewer);
+
             return [
                 'start' => Carbon::parse($reservation->start_time)->format('H:i'),
                 'end' => Carbon::parse($reservation->end_time)->format('H:i'),
                 'label' => sprintf('%s às %s', $reservation->start_time_br, $reservation->end_time_br),
-                'title' => $reservation->title,
-                'requester' => $reservation->requester,
+                'title' => $showDetails ? $reservation->title : 'Reservado',
+                'requester' => $showDetails ? $reservation->requester : '',
             ];
         })->all();
     }

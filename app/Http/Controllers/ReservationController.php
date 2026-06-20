@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Reservations\CreateReservationAction;
 use App\Actions\Reservations\CreateRecurringReservationSeriesAction;
+use App\Actions\Reservations\CreateReservationAction;
 use App\Actions\Reservations\DeleteReservationFollowingAction;
-use App\Actions\Reservations\UpdateReservationFollowingAction;
 use App\Actions\Reservations\UpdateReservationAction;
+use App\Actions\Reservations\UpdateReservationFollowingAction;
 use App\Exceptions\RecurringReservationConflictException;
 use App\Exceptions\ReservationConflictException;
 use App\Http\Requests\ListReservationsRequest;
 use App\Http\Requests\StoreReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
 use App\Models\Reservation;
-use App\Models\Room;
 use App\Models\ReservationSeries;
+use App\Models\Room;
 use App\Models\User;
 use App\Services\WhatsApp\ReservationWhatsAppNotificationService;
 use Illuminate\Http\Request;
@@ -189,8 +189,7 @@ class ReservationController extends Controller
         Reservation $reservation,
         DeleteReservationFollowingAction $deleteReservationFollowing,
         ReservationWhatsAppNotificationService $whatsAppNotifications
-    )
-    {
+    ) {
         $this->authorize('delete', $reservation);
 
         $scope = $request->input('series_scope', 'occurrence');
@@ -280,6 +279,17 @@ class ReservationController extends Controller
             ->filter()
             ->values();
 
+        // Proteção contra IDOR em lote: numa única consulta, garante que TODOS
+        // os ids selecionados são visíveis ao usuário (gestor vê tudo; usuário
+        // comum só o que é dele). Se algum id alheio entrar, retorna 403 —
+        // mesma semântica do antigo authorize('view') por linha, sem N queries.
+        $visibleCount = Reservation::query()
+            ->whereIn('id', $selectedIds)
+            ->visibleTo($request->user())
+            ->count();
+
+        abort_unless($visibleCount === $selectedIds->count(), 403);
+
         $reservations = Reservation::query()
             ->with(['room', 'user', 'editor'])
             ->whereIn('id', $selectedIds)
@@ -287,11 +297,7 @@ class ReservationController extends Controller
             ->orderBy('start_time')
             ->get();
 
-        foreach ($reservations as $reservation) {
-            $this->authorize('view', $reservation);
-        }
-
-        $filename = 'agendamentos-' . now()->format('Ymd-His') . '.csv';
+        $filename = 'agendamentos-'.now()->format('Ymd-His').'.csv';
 
         return response()->streamDownload(function () use ($reservations): void {
             $output = fopen('php://output', 'w');
@@ -300,7 +306,7 @@ class ReservationController extends Controller
 
             foreach ($reservations as $reservation) {
                 fputcsv($output, [
-                    'AG-' . str_pad((string) $reservation->id, 5, '0', STR_PAD_LEFT),
+                    'AG-'.str_pad((string) $reservation->id, 5, '0', STR_PAD_LEFT),
                     $reservation->room?->name ?? '-',
                     $reservation->title,
                     $reservation->requester,

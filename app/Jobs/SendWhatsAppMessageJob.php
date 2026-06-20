@@ -47,8 +47,22 @@ class SendWhatsAppMessageJob implements ShouldQueue
         Log::warning('Falha ao enviar mensagem de WhatsApp.', [
             'context_type' => $this->contextType,
             'context_id' => $this->contextId,
-            'phone' => $this->phone,
+            'phone' => self::maskPhone($this->phone),
             'error' => $exception->getMessage(),
         ]);
+    }
+
+    /**
+     * Mascara o telefone para o log (LGPD): mantém só os 4 últimos dígitos.
+     */
+    public static function maskPhone(string $phone): string
+    {
+        $digits = preg_replace('/\D+/', '', $phone) ?? '';
+
+        if (strlen($digits) <= 4) {
+            return '****';
+        }
+
+        return str_repeat('*', strlen($digits) - 4).substr($digits, -4);
     }
 }

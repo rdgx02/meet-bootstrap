@@ -41,6 +41,27 @@ class UserSeeder extends Seeder
             ]
         );
 
+        // Professores/usuarios comuns — titulares de reservas (a secretaria agenda
+        // em nome deles). Servem para demonstrar visibilidade e "reserva para".
+        $professores = [
+            'prof.henrique@meet.local' => 'Prof. Henrique',
+            'prof.monica@meet.local' => 'Profa. Monica',
+            'prof.silva@meet.local' => 'Prof. Silva',
+        ];
+
+        foreach ($professores as $email => $name) {
+            User::updateOrCreate(
+                ['email' => $email],
+                [
+                    'name' => $name,
+                    'password' => Hash::make($defaultPassword),
+                    'role' => UserRole::User,
+                    'is_active' => true,
+                    'email_verified_at' => now(),
+                ]
+            );
+        }
+
         $this->command?->warn('Usuarios iniciais atualizados. Altere as senhas no primeiro acesso.');
     }
 }

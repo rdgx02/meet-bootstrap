@@ -58,7 +58,11 @@ jobs:
       - name: Rodar a suíte
         run: composer run test
 
-      - name: Estilo (Pint) — informativo, não bloqueia
-        if: always()
-        continue-on-error: true
+      - name: Estilo (Pint) — bloqueia em divergência
         run: ./vendor/bin/pint --test
+
+      - name: Auditoria de segurança (Composer)
+        run: composer audit --no-interaction
+
+      - name: Auditoria de segurança (npm)
+        run: npm audit --audit-level=high

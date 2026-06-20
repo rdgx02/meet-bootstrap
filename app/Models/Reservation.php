@@ -25,6 +25,10 @@ class Reservation extends Model
         'phone',
     ];
 
+    protected $casts = [
+        'is_exception' => 'boolean',
+    ];
+
     /*
     |--------------------------------------------------------------------------
     | Model Events (auto auditoria)
@@ -96,6 +100,24 @@ class Reservation extends Model
     public function getEndTimeBrAttribute(): string
     {
         return Carbon::parse($this->end_time)->format('H:i');
+    }
+
+    /**
+     * Se o usuário pode ver os detalhes (título/solicitante) DESTA reserva.
+     * Gestor vê tudo; usuário comum só o que é dele (mesma regra do scopeVisibleTo,
+     * porém para um único modelo já carregado — usado na tela de disponibilidade).
+     */
+    public function isDetailVisibleTo(?User $user): bool
+    {
+        if ($user === null) {
+            return false;
+        }
+
+        if ($user->canManageAgenda()) {
+            return true;
+        }
+
+        return ($this->owner_user_id ?? $this->user_id) === $user->id;
     }
 
     public function scopeVisibleTo(Builder $query, ?User $user): Builder

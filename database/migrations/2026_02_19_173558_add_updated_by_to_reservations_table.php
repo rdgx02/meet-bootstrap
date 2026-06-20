@@ -10,22 +10,21 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::table('reservations', function (Blueprint $table) {
-        $table->foreignId('updated_by')
-            ->nullable()
-            ->after('user_id')
-            ->constrained('users')
-            ->nullOnDelete();
-    });
-}
+    {
+        Schema::table('reservations', function (Blueprint $table) {
+            $table->foreignId('updated_by')
+                ->nullable()
+                ->after('user_id')
+                ->constrained('users')
+                ->nullOnDelete();
+        });
+    }
 
-public function down(): void
-{
-    Schema::table('reservations', function (Blueprint $table) {
-        $table->dropForeign(['updated_by']);
-        $table->dropColumn('updated_by');
-    });
-}
-
+    public function down(): void
+    {
+        Schema::table('reservations', function (Blueprint $table) {
+            $table->dropForeign(['updated_by']);
+            $table->dropColumn('updated_by');
+        });
+    }
 };

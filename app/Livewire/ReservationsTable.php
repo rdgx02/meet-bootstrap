@@ -109,14 +109,14 @@ final class ReservationsTable extends PowerGridComponent
     {
         return PowerGrid::fields()
             ->add('id')
-            ->add('code', fn (Reservation $reservation): string => '<span class="app-code-pill">AG-' . str_pad((string) $reservation->id, 5, '0', STR_PAD_LEFT) . '</span>')
+            ->add('code', fn (Reservation $reservation): string => '<span class="app-code-pill">AG-'.str_pad((string) $reservation->id, 5, '0', STR_PAD_LEFT).'</span>')
             ->add('date')
             ->add('date_br', fn (Reservation $reservation): string => $reservation->date_br)
             ->add('start_time')
             ->add('start_time_br', fn (Reservation $reservation): string => $reservation->start_time_br)
             ->add('end_time')
             ->add('end_time_br', fn (Reservation $reservation): string => $reservation->end_time_br)
-            ->add('room_name', fn (Reservation $reservation): string => '<span class="app-room-pill">' . e($reservation->room?->name ?? '-') . '</span>')
+            ->add('room_name', fn (Reservation $reservation): string => '<span class="app-room-pill">'.e($reservation->room?->name ?? '-').'</span>')
             ->add('title', fn (Reservation $reservation): string => e($reservation->title))
             ->add('requester', fn (Reservation $reservation): string => e($reservation->requester))
             ->add('user_name', fn (Reservation $reservation): string => e($reservation->user?->name ?? '-'))
@@ -194,7 +194,7 @@ final class ReservationsTable extends PowerGridComponent
                         return;
                     }
 
-                    $query->where('id', 'like', '%' . $value . '%');
+                    $query->where('id', 'like', '%'.$value.'%');
                 }),
 
             Filter::select('room_name', 'room_id')
@@ -316,7 +316,7 @@ final class ReservationsTable extends PowerGridComponent
         $code = $this->normalizeReservationCodeFilter($this->manualFilters['code'] ?? null);
 
         if ($code !== null && $code !== '') {
-            $query->where('id', 'like', '%' . $code . '%');
+            $query->where('id', 'like', '%'.$code.'%');
         }
 
         if (filled($this->manualFilters['room_id'] ?? null)) {
@@ -324,11 +324,11 @@ final class ReservationsTable extends PowerGridComponent
         }
 
         if (filled($this->manualFilters['title'] ?? null)) {
-            $query->where('title', 'like', '%' . trim((string) $this->manualFilters['title']) . '%');
+            $query->where('title', 'like', '%'.trim((string) $this->manualFilters['title']).'%');
         }
 
         if (filled($this->manualFilters['requester'] ?? null)) {
-            $query->where('requester', 'like', '%' . trim((string) $this->manualFilters['requester']) . '%');
+            $query->where('requester', 'like', '%'.trim((string) $this->manualFilters['requester']).'%');
         }
 
         if (filled($this->manualFilters['date'] ?? null)) {
@@ -336,22 +336,22 @@ final class ReservationsTable extends PowerGridComponent
         }
 
         if (filled($this->manualFilters['start_time'] ?? null)) {
-            $query->where('start_time', 'like', trim((string) $this->manualFilters['start_time']) . '%');
+            $query->where('start_time', 'like', trim((string) $this->manualFilters['start_time']).'%');
         }
 
         if (filled($this->manualFilters['end_time'] ?? null)) {
-            $query->where('end_time', 'like', trim((string) $this->manualFilters['end_time']) . '%');
+            $query->where('end_time', 'like', trim((string) $this->manualFilters['end_time']).'%');
         }
 
         if (filled($this->manualFilters['user_name'] ?? null)) {
             $query->whereHas('user', function (Builder $userQuery): void {
-                $userQuery->where('name', 'like', '%' . trim((string) $this->manualFilters['user_name']) . '%');
+                $userQuery->where('name', 'like', '%'.trim((string) $this->manualFilters['user_name']).'%');
             });
         }
 
         if (filled($this->manualFilters['editor_name'] ?? null)) {
             $query->whereHas('editor', function (Builder $editorQuery): void {
-                $editorQuery->where('name', 'like', '%' . trim((string) $this->manualFilters['editor_name']) . '%');
+                $editorQuery->where('name', 'like', '%'.trim((string) $this->manualFilters['editor_name']).'%');
             });
         }
     }

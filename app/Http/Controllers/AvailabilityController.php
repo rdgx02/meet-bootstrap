@@ -32,6 +32,7 @@ class AvailabilityController extends Controller
             'rooms' => $rooms,
             'roomAvailability' => $roomAvailability,
             'primaryAvailability' => $primaryAvailability,
+            'viewer' => $request->user(),
         ]);
     }
 
@@ -63,7 +64,12 @@ class AvailabilityController extends Controller
             ->orderBy('start_time')
             ->get();
 
-        $roomAvailability = $this->availabilityOverview->summarize($rooms, $reservations, $selectedRoom);
+        $roomAvailability = $this->availabilityOverview->summarize(
+            $rooms,
+            $reservations,
+            $selectedRoom,
+            $request->user(),
+        );
 
         return [$selectedDate, $rooms, $reservations, $roomAvailability, $selectedRoom];
     }

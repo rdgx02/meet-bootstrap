@@ -203,7 +203,7 @@ class ReservationWhatsAppNotificationService
             Log::warning('Falha ao enviar mensagem de WhatsApp em modo síncrono.', [
                 'context_type' => $contextType,
                 'context_id' => $contextId,
-                'phone' => $phone,
+                'phone' => SendWhatsAppMessageJob::maskPhone($phone),
                 'error' => $exception->getMessage(),
             ]);
         }
@@ -211,11 +211,11 @@ class ReservationWhatsAppNotificationService
 
     private function reservationCode(int $id): string
     {
-        return 'AG-' . str_pad((string) $id, 5, '0', STR_PAD_LEFT);
+        return 'AG-'.str_pad((string) $id, 5, '0', STR_PAD_LEFT);
     }
 
     private function seriesCode(int $id): string
     {
-        return 'SR-' . str_pad((string) $id, 5, '0', STR_PAD_LEFT);
+        return 'SR-'.str_pad((string) $id, 5, '0', STR_PAD_LEFT);
     }
 }
